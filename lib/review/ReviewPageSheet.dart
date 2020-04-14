@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:perspektiv/bloc/CategoriesBloc.dart';
 import 'package:perspektiv/model/Category.dart';
@@ -128,24 +130,52 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
   }
 }
 
-class _ReviewSheetCollection extends StatelessWidget {
+class _ReviewSheetCollection extends StatefulWidget {
   final Category category;
   final Review review;
 
-  const _ReviewSheetCollection({Key key, this.category, this.review})
+  _ReviewSheetCollection({Key key, this.category, this.review})
       : super(key: key);
 
+  @override
+  __ReviewSheetCollectionState createState() => __ReviewSheetCollectionState();
+}
+
+class __ReviewSheetCollectionState extends State<_ReviewSheetCollection> {
   @override
   Widget build(BuildContext context) {
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.start,
       spacing: 8,
       runSpacing: 16,
-      children: category.subCategories.map((subCat) {
-        return InkWell(
-            onTap: () => review.onTapSubCategory(
-                category: category, subCategory: subCat),
-            child: SubCategoryItem(key: Key(subCat.name), subCategory: subCat));
+      children: widget.category.subCategories.map((subCat) {
+        return GestureDetector(
+          onTapDown: (_) {
+            widget.review.tapDown = true;
+            widget.review.onTapSubCategory(
+                category: widget.category, subCategory: subCat);
+          },
+          onTapUp: (_) {
+            widget.review.tapDown = false;
+          },
+          onVerticalDragStart: (_) {
+            widget.review.tapDown = false;
+          },
+          onHorizontalDragStart: (_) {
+            widget.review.tapDown = false;
+          },
+          child: InkWell(
+              // onTapDown: (details) {
+              //   print("tap down");
+              // },
+              // onTapCancel: () {
+              //   print("cancel");
+              // },
+              // onTap: () => review.onTapSubCategory(
+              //     category: category, subCategory: subCat),
+              child:
+                  SubCategoryItem(key: Key(subCat.name), subCategory: subCat)),
+        );
       }).toList(),
     );
   }

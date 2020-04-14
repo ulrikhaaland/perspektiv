@@ -26,8 +26,16 @@ class ReviewPage extends StatefulWidget {
 class _ReviewPageState extends State<ReviewPage> {
   @override
   void initState() {
-    widget.review.onAddCategory.addListener(() => setState(() {}));
+    widget.review.onAddCategory.addListener(() {
+      if (mounted) setState(() {});
+    });
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    widget.review.onAddCategory.removeListener(null);
+    super.dispose();
   }
 
   @override
@@ -37,7 +45,6 @@ class _ReviewPageState extends State<ReviewPage> {
       providers: [
         Provider<CategoriesBloc>.value(value: widget.categoriesBloc),
         Provider<ReviewBloc>.value(value: widget.reviewBloc),
-        Provider<Review>.value(value: widget.review),
       ],
       child: Scaffold(
           appBar: AppBar(
@@ -75,6 +82,14 @@ class _ReviewPageState extends State<ReviewPage> {
                       itemBuilder: (context, index) {
                         Category category = review.categories[index];
                         return _ReviewCategoryItem(
+                          onSubCategoryRemoved: (subCat) {
+                            category.subCategories.remove(subCat);
+                            if (category.subCategories.isEmpty) {
+                              setState(() {
+                                review.categories.remove(category);
+                              });
+                            }
+                          },
                           key: Key(category.name),
                           category: category,
                         );
@@ -95,10 +110,12 @@ class _ReviewPageState extends State<ReviewPage> {
 
 class _ReviewCategoryItem extends StatelessWidget {
   final Category category;
+  final void Function(SubCategory subCategory) onSubCategoryRemoved;
 
   const _ReviewCategoryItem({
     Key key,
     this.category,
+    this.onSubCategoryRemoved,
   }) : super(key: key);
 
   @override
@@ -117,12 +134,19 @@ class _ReviewCategoryItem extends StatelessWidget {
                 fontSize: 22),
           ),
           Divider(),
-          Column(
+          ListView(
+            shrinkWrap: true,
             key: Key("subs"),
             children: category.subCategories.map((subCat) {
-              return _ReviewSubCategoryItem(
+              return Dismissible(
+                onDismissed: (direction) {
+                  onSubCategoryRemoved(subCat);
+                },
                 key: Key(subCat.name),
-                subCategory: subCat,
+                child: _ReviewSubCategoryItem(
+                  key: Key(subCat.name),
+                  subCategory: subCat,
+                ),
               );
             }).toList(),
           ),

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:perspektiv/model/Category.dart';
 import 'package:perspektiv/model/SubCategory.dart';
@@ -8,6 +10,8 @@ class Review {
   String sentence;
   String paragraph;
   List<Category> categories;
+
+  bool tapDown;
 
   ChangeNotifier onAddCategory = ChangeNotifier();
 
@@ -20,34 +24,48 @@ class Review {
       this.categories,
       this.pageTitle});
 
-  void onTapSubCategory({Category category, SubCategory subCategory}) {
+  void onTapSubCategory(
+      {Category category, SubCategory subCategory, int millis}) {
     assert(category != null && subCategory != null);
+
+    SubCategory checkSubCat;
 
     Category checkCat = categories
         .firstWhere((cat) => cat.name == category.name, orElse: () => null);
 
     if (checkCat == null) {
+      checkSubCat = SubCategory(
+          name: subCategory.name, color: subCategory.color, percentage: 10);
       Category newCategory = Category(
         name: category.name,
-        subCategories: [
-          subCategory..percentage = 10,
-        ],
+        subCategories: [checkSubCat],
       );
       categories.add(newCategory);
-      onAddCategory.notifyListeners();
     } else {
-      SubCategory checkSubCat = checkCat.subCategories.firstWhere(
+      checkSubCat = checkCat.subCategories.firstWhere(
           (subCat) => subCat.name == subCategory.name,
           orElse: () => null);
       if (checkSubCat == null) {
-        checkCat.subCategories.add(subCategory..percentage = 10);
-      } else if (subCategory.percentage < 100) {
-        subCategory.percentage += 10;
-      } else if (subCategory.percentage > 0) {
-        subCategory.percentage -= 10;
+        checkSubCat = SubCategory(
+            name: subCategory.name, color: subCategory.color, percentage: 10);
+        checkCat.subCategories.add(checkSubCat);
+      } else if (checkSubCat.percentage < 100) {
+        checkSubCat.percentage += 10;
+      } else if (checkSubCat.percentage == 100) {
+        checkSubCat.percentage = 0;
       }
-      onSubChanged.value = subCategory;
-      onAddCategory.notifyListeners();
+
+      onSubChanged.value = checkSubCat;
     }
+    Timer(Duration(milliseconds: millis ?? 300), () {
+      if (checkSubCat.percentage == 100) tapDown = false;
+
+      if (tapDown)
+        onTapSubCategory(
+            category: category,
+            subCategory: checkSubCat,
+            millis: (millis ?? 300) - 20);
+    });
+    onAddCategory.notifyListeners();
   }
 }

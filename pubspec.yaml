@@ -27,6 +27,7 @@ dependencies:
   json_serializable:
   build_runner: ^1.6.9
   shared_preferences:
+  flutter_vibrate: ^1.0.0
 
 
 

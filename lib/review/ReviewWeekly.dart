@@ -53,17 +53,7 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
                 child: Container(
                   height: 100,
                   child: ReviewListItem(
-                    category: review.categories.firstWhere(
-                        (cat) =>
-                            cat.name.toLowerCase() ==
-                            widget.reviewBloc.reviewCategory.value
-                                .toLowerCase(),
-                        orElse: () => Category(subCategories: [
-                              SubCategory(
-                                  name: "Ikke definert",
-                                  color: Colors.grey,
-                                  percentage: 100),
-                            ])),
+                    review: review,
                     itemAmount: month.weeks.length,
                   ),
                 ),

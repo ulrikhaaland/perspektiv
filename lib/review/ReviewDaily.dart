@@ -38,6 +38,10 @@ class _ReviewDailyState extends State<ReviewDaily> {
     if (_categoriesBloc == null)
       _categoriesBloc = Provider.of<CategoriesBloc>(context);
 
+    double listItemHeight = _size.height / week.days.length - 42;
+
+    if (listItemHeight < 50) listItemHeight = 50;
+
     return ListView.builder(
         controller: widget.scrollController,
         shrinkWrap: true,
@@ -69,26 +73,19 @@ class _ReviewDailyState extends State<ReviewDaily> {
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ReviewPage(
-                      review: day.review ?? Review(),
+                      key: Key(day.day.toIso8601String()),
+                      review: day.review,
                       categoriesBloc: _categoriesBloc,
                       reviewBloc: widget.reviewBloc,
                     ),
                   ));
                 },
                 child: Container(
-                  height: _size.height / week.days.length - 42,
+                  height: listItemHeight,
                   child: ReviewListItem(
-                    category: review.categories.firstWhere(
-                        (cat) =>
-                            cat.name.toLowerCase() ==
-                            widget.reviewBloc.reviewCategory.value
-                                .toLowerCase(),
-                        orElse: () => Category(subCategories: [
-                              SubCategory(
-                                  name: "Ikke definert",
-                                  color: Colors.grey,
-                                  percentage: 100),
-                            ])),
+                    key: Key(day.day.toIso8601String()),
+                    review: review,
+                    reviewBloc: widget.reviewBloc,
                     itemAmount: week.days.length,
                   ),
                 ),

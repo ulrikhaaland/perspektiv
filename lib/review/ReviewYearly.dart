@@ -25,7 +25,7 @@ class _ReviewYearlyState extends State<ReviewYearly> {
     Decade decade = widget.reviewBloc.decade.value;
     assert(decade != null);
     return ListView.builder(
-      shrinkWrap: true,
+        shrinkWrap: true,
         controller: widget.scrollController,
         itemCount: decade.years.length,
         itemBuilder: (context, index) {
@@ -53,17 +53,7 @@ class _ReviewYearlyState extends State<ReviewYearly> {
                 child: Container(
                   height: 100,
                   child: ReviewListItem(
-                    category: review.categories.firstWhere(
-                        (cat) =>
-                            cat.name.toLowerCase() ==
-                            widget.reviewBloc.reviewCategory.value
-                                .toLowerCase(),
-                        orElse: () => Category(subCategories: [
-                              SubCategory(
-                                  name: "Ikke definert",
-                                  color: Colors.grey,
-                                  percentage: 100),
-                            ])),
+                    review: review,
                     itemAmount: decade.years.length,
                   ),
                 ),

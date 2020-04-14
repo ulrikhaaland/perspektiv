@@ -20,14 +20,14 @@ class ReviewMonthly extends StatefulWidget {
   final ReviewBloc reviewBloc;
   final ScrollController scrollController;
 
-  const ReviewMonthly({Key key, this.reviewBloc, this.scrollController}) : super(key: key);
+  const ReviewMonthly({Key key, this.reviewBloc, this.scrollController})
+      : super(key: key);
 
   @override
   _ReviewMonthlyState createState() => _ReviewMonthlyState();
 }
 
 class _ReviewMonthlyState extends State<ReviewMonthly> {
-
   @override
   Widget build(BuildContext context) {
     Year year = widget.reviewBloc.currentYear;
@@ -61,17 +61,7 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
                 child: Container(
                   height: 100,
                   child: ReviewListItem(
-                    category: review.categories.firstWhere(
-                        (cat) =>
-                            cat.name.toLowerCase() ==
-                            widget.reviewBloc.reviewCategory.value
-                                .toLowerCase(),
-                        orElse: () => Category(subCategories: [
-                              SubCategory(
-                                  name: "Ikke definert",
-                                  color: Colors.grey,
-                                  percentage: 100),
-                            ])),
+                    review: review,
                     itemAmount: year.months.length,
                   ),
                 ),

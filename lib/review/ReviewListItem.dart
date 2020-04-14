@@ -4,6 +4,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 import 'package:perspektiv/bloc/CategoriesBloc.dart';
+import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/model/Category.dart';
 import 'package:perspektiv/model/Month.dart';
 import 'package:perspektiv/model/Review.dart';
@@ -13,12 +14,13 @@ import 'package:provider/provider.dart';
 import '../main.dart';
 
 class ReviewListItem extends StatefulWidget {
-  final Category category;
   final int itemAmount;
+  final Review review;
+  final ReviewBloc reviewBloc;
 
-  const ReviewListItem({Key key, this.category, this.itemAmount})
+  const ReviewListItem({Key key, this.itemAmount, this.review, this.reviewBloc})
       : assert(itemAmount != null),
-        assert(category != null),
+        assert(review != null),
         super(key: key);
 
   @override
@@ -28,8 +30,6 @@ class ReviewListItem extends StatefulWidget {
 class ReviewListItemState extends State<ReviewListItem> {
   bool init = true;
 
-  CategoriesBloc _categoriesBloc;
-
   Category theCategoryView;
 
   double maxWidth;
@@ -38,19 +38,38 @@ class ReviewListItemState extends State<ReviewListItem> {
 
   @override
   void initState() {
-    theCategoryView = widget.category;
+    if (widget.review != null)
+      widget.review.onAddCategory.addListener(() {
+        if(mounted) setState(() {});
+      });
     super.initState();
   }
 
   @override
+  void dispose() {
+    widget.review.onAddCategory.removeListener(null);
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
+    theCategoryView = widget.review.categories
+        .firstWhere((cat) => cat.name == widget.reviewBloc.reviewCategory.value,
+            orElse: () => Category(subCategories: [
+                  SubCategory(
+                      name: "Ikke definert",
+                      color: Colors.grey,
+                      percentage: 100),
+                ]));
     size = MediaQuery.of(context).size;
 
     maxWidth = size.width - 24;
 
     if (init)
-      WidgetsBinding.instance.addPostFrameCallback((_) => Timer(
-          Duration(milliseconds: 200), () => setState(() => init = false)));
+      WidgetsBinding.instance
+          .addPostFrameCallback((_) => Timer(Duration(milliseconds: 200), () {
+                if (mounted) setState(() => init = false);
+              }));
 
     return Card(
       margin: EdgeInsets.symmetric(horizontal: 12),
@@ -108,6 +127,8 @@ class ReviewListItemState extends State<ReviewListItem> {
     double itemWidth = maxWidth / theCategoryView.subCategories.length;
     double itemHeight = (size.height / widget.itemAmount) - 12;
 
+    if(itemHeight < 50) itemHeight = 50;
+
     return Container(
       width: itemWidth,
       height: itemHeight,
@@ -119,18 +140,17 @@ class ReviewListItemState extends State<ReviewListItem> {
           Container(
             alignment: Alignment.center,
             decoration: BoxDecoration(
-                borderRadius: bgBorderRadius,
-                color: Colors.black.withOpacity(0.3)),
+                borderRadius: bgBorderRadius, color: Color(0xFFE8E8E8)),
           ),
           Align(
             alignment: Alignment.centerLeft,
             child: AnimatedContainer(
               decoration: BoxDecoration(
-                color: Colors.white,
+                color: sub.color,
                 borderRadius: fillBorderRadius,
               ),
               duration: Duration(milliseconds: 500),
-              height: (size.height / widget.itemAmount) - 12,
+              height: itemHeight,
               width: init ? 0 : fillWidth,
             ),
           ),
