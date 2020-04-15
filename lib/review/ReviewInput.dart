@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:perspektiv/model/Comment.dart';
 
 import '../main.dart';
 import '../model/Category.dart';
@@ -50,11 +51,7 @@ class ReviewInput extends StatelessWidget {
             width: 2,
             color: colorLeBleu,
           )),
-          enabledBorder: UnderlineInputBorder(
-              borderSide: BorderSide(
-            width: 0.5,
-            color: Colors.grey,
-          )),
+          enabledBorder: InputBorder.none,
         ),
       ),
     );

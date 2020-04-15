@@ -5,13 +5,15 @@ part 'Day.g.dart';
 
 @JsonSerializable(anyMap: true)
 class Day {
-  DateTime day;
+  DateTime dayDate;
+
+  String day;
 
   Review review;
 
-  String get dayName => _dayNames[day.weekday - 1];
+  String get dayName => _dayNames[dayDate.weekday - 1];
 
-  Day({this.day, this.review});
+  Day({this.day, this.review, this.dayDate});
 
   factory Day.fromJson(Map json) => _$DayFromJson(json);
 

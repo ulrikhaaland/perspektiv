@@ -5,12 +5,12 @@ import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/bloc/UserBloc.dart';
 import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Decade.dart';
-import 'package:perspektiv/review/ReviewDaily.dart';
-import 'package:perspektiv/review/ReviewWeekly.dart';
 import 'package:provider/provider.dart';
 
-import 'ReviewMonthly.dart';
-import 'ReviewYearly.dart';
+import 'span/ReviewDaily.dart';
+import 'span/ReviewMonthly.dart';
+import 'span/ReviewWeekly.dart';
+import 'span/ReviewYearly.dart';
 
 class Reviewables extends StatefulWidget {
   @override
@@ -47,9 +47,9 @@ class _ReviewablesState extends State<Reviewables> {
       Provider<UserBloc>.value(value: _userBloc),
     ];
 
-    _reviewBloc.decade.addListener(() {
+    _reviewBloc.doneLoading.addListener(() {
       setState(() {
-        _decade = _reviewBloc.decade.value;
+        _decade = _reviewBloc.decade;
       });
     });
 
@@ -70,14 +70,20 @@ class _ReviewablesState extends State<Reviewables> {
                 Icons.save,
                 color: isColorDark(colorLeBleu),
               ),
-              onPressed: () => _categoriesBloc.save()),
+              onPressed: () {
+                _categoriesBloc.saveCategories();
+                _reviewBloc.saveReviews();
+              }),
           actions: <Widget>[
             IconButton(
                 icon: Icon(
                   Icons.filter_vintage,
                   color: isColorDark(colorLeBleu),
                 ),
-                onPressed: () => _categoriesBloc.save()),
+                onPressed: () {
+                  _categoriesBloc.saveCategories();
+                  _reviewBloc.saveReviews();
+                }),
             IconButton(
               icon: Icon(
                 Icons.category,
@@ -90,7 +96,6 @@ class _ReviewablesState extends State<Reviewables> {
                       builder: (context) => CategoryPage(
                             key: Key("categoryPage"),
                             categoriesBloc: _categoriesBloc,
-
                           ))),
             ),
           ],

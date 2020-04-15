@@ -9,9 +9,9 @@ import 'package:perspektiv/model/Week.dart';
 import 'package:perspektiv/review/ReviewPage.dart';
 import 'package:provider/provider.dart';
 
-import '../helper.dart';
-import '../main.dart';
-import 'ReviewListItem.dart';
+import '../../helper.dart';
+import '../../main.dart';
+import '../ReviewListItem.dart';
 
 class ReviewDaily extends StatefulWidget {
   final ReviewBloc reviewBloc;
@@ -50,12 +50,19 @@ class _ReviewDailyState extends State<ReviewDaily> {
           Day day = week.days[index];
           Review review = day.review ??
               Review(
-                categories: [],
-                pageTitle: getFormattedDate(date: day.day),
-                comments: [],
-              );
+                  reviewSpan: ReviewSpan.daily,
+                  categories: [],
+                  pageTitle: getFormattedDate(date: day.dayDate),
+                  comments: [],
+                  id: widget.reviewBloc.currentYear.year +
+                      widget.reviewBloc.currentMonth.month +
+                      widget.reviewBloc.currentWeek.week +
+                      day.day);
           if (day.review == null) {
             day.review = review;
+          }
+          if (widget.reviewBloc.reviews.contains(review) == false) {
+            widget.reviewBloc.reviews.add(review);
           }
           return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +81,7 @@ class _ReviewDailyState extends State<ReviewDaily> {
                 onTap: () {
                   Navigator.of(context).push(MaterialPageRoute(
                     builder: (context) => ReviewPage(
-                      key: Key(day.day.toIso8601String()),
+                      key: Key(day.dayDate.toIso8601String()),
                       review: day.review,
                       categoriesBloc: _categoriesBloc,
                       reviewBloc: widget.reviewBloc,
@@ -84,7 +91,7 @@ class _ReviewDailyState extends State<ReviewDaily> {
                 child: Container(
 //                  height: listItemHeight,
                   child: ReviewListItem(
-                    key: Key(day.day.toIso8601String()),
+                    key: Key(day.dayDate.toIso8601String()),
                     review: review,
                     reviewBloc: widget.reviewBloc,
                     itemAmount: week.days.length,

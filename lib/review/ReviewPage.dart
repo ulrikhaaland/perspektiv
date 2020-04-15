@@ -4,6 +4,7 @@ import 'package:perspektiv/bloc/CategoriesBloc.dart';
 import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Category.dart';
+import 'package:perspektiv/model/Comment.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/model/SubCategory.dart';
 import 'package:perspektiv/review/ReviewInput.dart';
@@ -60,6 +61,17 @@ class _ReviewPageState extends State<ReviewPage> {
                 style: TextStyle(color: isColorDark(colorLeBleu)),
               ),
               actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.save,
+                    size: 30,
+                    color: Colors.white,
+                  ),
+                  onPressed: () {
+                    widget.reviewBloc.saveReviews();
+                    widget.categoriesBloc.saveCategories();
+                  },
+                ),
                 IconButton(
                   icon: Icon(
                     Icons.category,
@@ -200,7 +212,7 @@ class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
       padding: const EdgeInsets.symmetric(vertical: 8.0),
       child: Container(
           decoration: BoxDecoration(
-            border: Border.all(color: colorTextGrey, width: 0.5),
+            border: Border.all(color: colorBackGround, width: 1),
             borderRadius: BorderRadius.all(Radius.elliptical(20, 30)),
           ),
           width: size.width,
@@ -237,7 +249,7 @@ class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
                           decoration: BoxDecoration(
                               border: Border(
                                   right: BorderSide(
-                                      color: colorTextGrey, width: 0.5))),
+                                      color: colorBackGround, width: 1))),
                         ),
                     ],
                   ),

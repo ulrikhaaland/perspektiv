@@ -8,7 +8,7 @@ part 'Week.g.dart';
 
 @JsonSerializable(anyMap: true)
 class Week {
-  int week;
+  String week;
   List<Day> days;
   Review review;
 

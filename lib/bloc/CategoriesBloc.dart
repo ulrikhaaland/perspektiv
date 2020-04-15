@@ -1,14 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Category.dart';
-import 'package:perspektiv/model/Decade.dart';
-import 'package:perspektiv/model/Month.dart';
 import 'package:perspektiv/model/SubCategory.dart';
-import 'package:perspektiv/model/User.dart';
-import 'package:perspektiv/model/Week.dart';
-import 'package:perspektiv/model/Year.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 List<Category> mock = [
@@ -60,7 +54,7 @@ class CategoriesBloc {
           ?.toList();
     } else {
       categoryList.value = mock;
-      save();
+      saveCategories();
     }
   }
 
@@ -81,7 +75,7 @@ class CategoriesBloc {
     categoryList.value.add(category);
   }
 
-  Future<void> save() async {
+  Future<void> saveCategories() async {
     var prefs = await SharedPreferences.getInstance();
 
     await prefs.setString(

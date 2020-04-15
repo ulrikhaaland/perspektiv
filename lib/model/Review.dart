@@ -1,36 +1,41 @@
 import 'dart:async';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
 import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/model/Category.dart';
 import 'package:perspektiv/model/SubCategory.dart';
-
+import 'package:json_annotation/json_annotation.dart';
 import 'Category.dart';
+import 'Comment.dart';
 
+part 'Review.g.dart';
+
+@JsonSerializable(anyMap: true)
 class Review {
   String pageTitle;
   String word;
   String sentence;
   String paragraph;
-  DateTime date;
+  DateTime lastEdited;
+  String id;
   ReviewSpan reviewSpan;
   List<Category> categories;
   List<Comment> comments;
-
+  @JsonKey(ignore: true)
   bool tapDown;
-
+  @JsonKey(ignore: true)
   ChangeNotifier onAddCategory = ChangeNotifier();
-
+  @JsonKey(ignore: true)
   ValueNotifier<SubCategory> onSubChanged = ValueNotifier(null);
 
   Review(
       {this.word,
       this.sentence,
+      this.id,
       this.paragraph,
       this.categories,
       this.pageTitle,
-      this.date,
+      this.lastEdited,
       this.reviewSpan,
       this.comments});
 
@@ -88,4 +93,8 @@ class Review {
 
     onAddCategory.notifyListeners();
   }
+
+  factory Review.fromJson(Map json) => _$ReviewFromJson(json);
+
+  Map<String, dynamic> toJson() => _$ReviewToJson(this);
 }

@@ -14,6 +14,9 @@ Category _$CategoryFromJson(Map json) {
         ?.map((e) => e == null ? null : SubCategory.fromJson(e as Map))
         ?.toList(),
     init: json['init'] as bool,
+    comments: (json['comments'] as List)
+        ?.map((e) => e == null ? null : Comment.fromJson(e as Map))
+        ?.toList(),
   );
 }
 
@@ -21,5 +24,6 @@ Map<String, dynamic> _$CategoryToJson(Category instance) => <String, dynamic>{
       'id': instance.id,
       'name': instance.name,
       'init': instance.init,
+      'comments': instance.comments,
       'subCategories': instance.subCategories,
     };

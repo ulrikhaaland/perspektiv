@@ -25,6 +25,7 @@ const colorSorrow = Color(0xFF191A24);
 const colorLightPink = Color(0xFFF1B2A3);
 const colorFear = Color(0xFF7C70A0);
 const colorAnger = Color(0xFF963232);
+const colorBackGround = Color(0xFFE8E8E8);
 
 const List<Color> appColors = [
   colorLeBleu,

@@ -5,6 +5,7 @@ import 'package:flutter/foundation.dart';
 import 'package:perspektiv/model/Day.dart';
 import 'package:perspektiv/model/Decade.dart';
 import 'package:perspektiv/model/Month.dart';
+import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/model/Week.dart';
 import 'package:perspektiv/model/Year.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -12,7 +13,9 @@ import 'package:shared_preferences/shared_preferences.dart';
 enum ReviewSpan { daily, weekly, monthly, yearly }
 
 class ReviewBloc {
-  ValueNotifier<Decade> decade = ValueNotifier(null);
+  Decade decade;
+
+  ChangeNotifier doneLoading = ChangeNotifier();
 
   DateTime initDate;
 
@@ -23,6 +26,8 @@ class ReviewBloc {
   Week currentWeek;
 
   Day currentDay;
+
+  List<Review> reviews = [];
 
   ValueNotifier<String> reviewCategory = ValueNotifier(null);
 
@@ -46,7 +51,7 @@ class ReviewBloc {
           DateTime.now().subtract(Duration(days: 5)).day);
       await prefs.setString("initDate", initDate.toIso8601String());
     }
-    decade.value = _getDecade();
+    decade = _getDecade();
     return initDate;
   }
 
@@ -55,15 +60,15 @@ class ReviewBloc {
 
     var decadeData = prefs.getString("decade");
 
-    if (decade.value != null) {
-      decade.value = Decade.fromJson(jsonDecode(decadeData));
+    if (decade != null) {
+      decade = Decade.fromJson(jsonDecode(decadeData));
     } else {
-      decade.value = _getDecade();
+      decade = _getDecade();
     }
   }
 
   Decade _getDecade() {
-    return Decade(decade: 1, years: _getYears());
+    return Decade(decade: "1", years: _getYears());
   }
 
   List<Year> _getYears() {
@@ -71,7 +76,7 @@ class ReviewBloc {
 
     for (int i = 0; i <= (initDate.year - DateTime.now().year); i++) {
       years.add(Year(
-        year: initDate.year + i,
+        year: (initDate.year + i).toString(),
         months: _getMonths(initDate.year + i),
       ));
     }
@@ -84,7 +89,7 @@ class ReviewBloc {
 
     for (int i = 0; i <= (initDate.month - DateTime.now().month); i++) {
       months.add(Month(
-        month: initDate.month + i,
+        month: (initDate.month + i).toString(),
         weeks: _getWeeks(month: initDate.month + i, year: year),
       ));
     }
@@ -132,14 +137,15 @@ class ReviewBloc {
       /// While the continuously incremented firstDayOfMonth is in bounds of the relevant month
       while (month == firstDayOfMonth.month && isBeforeTomorrow) {
         /// Init the week which holds the days
-        Week week = Week(week: weekNumber, days: []);
+        Week week = Week(week: weekNumber.toString(), days: []);
 
         /// Indicates wether a week is filled up with days. The current week will
         /// not hold 7 days if current date is not a sunday
         bool hasACompleteWeek = false;
         while (!hasACompleteWeek) {
           /// Add day to week
-          week.days.add(Day(day: firstDayOfMonth));
+          week.days.add(Day(
+              dayDate: firstDayOfMonth, day: firstDayOfMonth.day.toString()));
 
           /// Increment firstDayOfMonth if it's before tomorrows date
           if (!firstDayOfMonth.add(Duration(days: 1)).isAfter(DateTime.now())) {
@@ -150,7 +156,8 @@ class ReviewBloc {
           /// then we return to a new loop
           if (firstDayOfMonth.weekday == 7) {
             hasACompleteWeek = true;
-            week.days.add(Day(day: firstDayOfMonth));
+            week.days.add(Day(
+                dayDate: firstDayOfMonth, day: firstDayOfMonth.day.toString()));
             weeks.add(week);
             weekNumber++;
             if (firstDayOfMonth.isAfter(initDate))
@@ -158,7 +165,8 @@ class ReviewBloc {
           } else if (firstDayOfMonth
               .add(Duration(days: 1))
               .isAfter(DateTime.now())) {
-//            week.days.add(Day(day: firstDayOfMonth));
+            week.days.add(Day(
+                dayDate: firstDayOfMonth, day: firstDayOfMonth.day.toString()));
             weeks.add(week);
             isBeforeTomorrow = false;
             break;
@@ -187,6 +195,41 @@ class ReviewBloc {
         incremented = incremented.add(Duration(days: 1));
       }
     }
+    getReviews();
     return weeksTilInitCount;
+  }
+
+  pairWithReview() {
+    List<Review> yearsReviews = reviews.where((rew) => rew.id.length == 4).toList();
+
+
+   yearsReviews.forEach((year) {
+     
+   });
+  }
+
+  Future<void> getReviews() async {
+    var prefs = await SharedPreferences.getInstance();
+
+    var reviewData = prefs.getString("reviews");
+    if (reviewData != null) {
+      var json = jsonDecode(reviewData);
+
+      reviews = (json['reviews'] as List)
+          ?.map((e) => e == null ? null : Review.fromJson(e as Map))
+          ?.toList();
+    }
+    doneLoading.notifyListeners();
+  }
+
+  Future<void> saveReviews() async {
+    pairWithReview();
+    // var prefs = await SharedPreferences.getInstance();
+
+    // await prefs.setString(
+    //     "reviews",
+    //     jsonEncode(<String, dynamic>{
+    //       'reviews': reviews,
+    //     }));
   }
 }

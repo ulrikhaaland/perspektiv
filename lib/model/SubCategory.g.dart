@@ -8,12 +8,19 @@ part of 'SubCategory.dart';
 
 SubCategory _$SubCategoryFromJson(Map json) {
   return SubCategory(
-      name: json['name'] as String, color: Color(json['colorValue'] as int))
-    ..colorValue = json['colorValue'] as int;
+    name: json['name'] as String,
+    percentage: (json['percentage'] as num)?.toDouble(),
+    color: Color(json['colorValue'] as int),
+    comments: (json['comments'] as List)
+        ?.map((e) => e == null ? null : Comment.fromJson(e as Map))
+        ?.toList(),
+  )..colorValue = json['colorValue'] as int;
 }
 
 Map<String, dynamic> _$SubCategoryToJson(SubCategory instance) =>
     <String, dynamic>{
       'name': instance.name,
       'colorValue': instance.color.value,
+      'percentage': instance.percentage,
+      'comments': instance.comments,
     };

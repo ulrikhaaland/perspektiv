@@ -8,10 +8,17 @@ part of 'Day.dart';
 
 Day _$DayFromJson(Map json) {
   return Day(
-    day: json['day'] == null ? null : DateTime.parse(json['day'] as String),
+    day: json['day'] as String,
+    review:
+        json['review'] == null ? null : Review.fromJson(json['review'] as Map),
+    dayDate: json['dayDate'] == null
+        ? null
+        : DateTime.parse(json['dayDate'] as String),
   );
 }
 
 Map<String, dynamic> _$DayToJson(Day instance) => <String, dynamic>{
-      'day': instance.day?.toIso8601String(),
+      'dayDate': instance.dayDate?.toIso8601String(),
+      'day': instance.day,
+      'review': instance.review,
     };

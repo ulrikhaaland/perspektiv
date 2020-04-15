@@ -11,10 +11,10 @@ part 'Month.g.dart';
 @JsonSerializable(anyMap: true)
 class Month {
   Review review;
-  int month;
+  String month;
   List<Week> weeks;
 
-  String get monthName => _monthNames[month - 1];
+  String get monthName => _monthNames[int.parse(month) - 1];
 
   Month({
     this.month,

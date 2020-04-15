@@ -10,7 +10,7 @@ part 'Year.g.dart';
 
 @JsonSerializable(anyMap: true)
 class Year {
-  int year;
+  String year;
   List<Month> months;
   Review review;
 

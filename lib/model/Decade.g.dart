@@ -8,7 +8,7 @@ part of 'Decade.dart';
 
 Decade _$DecadeFromJson(Map json) {
   return Decade(
-    decade: json['decade'] as int,
+    decade: json['decade'] as String,
     years: (json['years'] as List)
         ?.map((e) => e == null ? null : Year.fromJson(e as Map))
         ?.toList(),

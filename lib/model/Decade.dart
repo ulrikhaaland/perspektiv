@@ -5,7 +5,7 @@ part 'Decade.g.dart';
 
 @JsonSerializable(anyMap: true)
 class Decade {
-  int decade;
+  String decade;
   List<Year> years;
 
   Decade({this.decade, this.years});

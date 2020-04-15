@@ -1,5 +1,6 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'Comment.dart';
 import 'SubCategory.dart';
 
 part 'Category.g.dart';
@@ -20,9 +21,4 @@ class Category {
   Map<String, dynamic> toJson() => _$CategoryToJson(this);
 }
 
-class Comment {
-  String comment;
-  bool init;
 
-  Comment({this.comment, this.init});
-}

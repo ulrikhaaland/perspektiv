@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:perspektiv/bloc/CategoriesBloc.dart';
 import 'package:perspektiv/model/Category.dart';
+import 'package:perspektiv/model/Comment.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:provider/provider.dart';
 
