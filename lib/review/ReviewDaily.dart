@@ -81,7 +81,7 @@ class _ReviewDailyState extends State<ReviewDaily> {
                   ));
                 },
                 child: Container(
-                  height: listItemHeight,
+//                  height: listItemHeight,
                   child: ReviewListItem(
                     key: Key(day.day.toIso8601String()),
                     review: review,

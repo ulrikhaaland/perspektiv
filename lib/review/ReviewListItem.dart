@@ -128,6 +128,8 @@ class ReviewListItemState extends State<ReviewListItem> {
     double itemHeight = (size.height / widget.itemAmount) - 12;
 
     if(itemHeight < 50) itemHeight = 50;
+    else if(itemHeight > 100) itemHeight = 100;
+
 
     return Container(
       width: itemWidth,

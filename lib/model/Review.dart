@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/services.dart';
 import 'package:perspektiv/model/Category.dart';
 import 'package:perspektiv/model/SubCategory.dart';
 
@@ -58,14 +59,20 @@ class Review {
       onSubChanged.value = checkSubCat;
     }
     Timer(Duration(milliseconds: millis ?? 300), () {
-      if (checkSubCat.percentage == 100) tapDown = false;
+      if (checkSubCat.percentage == 100) {
+        tapDown = false;
+        HapticFeedback.heavyImpact();
+      }
 
-      if (tapDown)
+      if (tapDown) {
         onTapSubCategory(
             category: category,
             subCategory: checkSubCat,
             millis: (millis ?? 300) - 20);
+        HapticFeedback.lightImpact();
+      }
     });
+
     onAddCategory.notifyListeners();
   }
 }

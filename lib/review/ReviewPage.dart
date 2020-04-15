@@ -10,7 +10,7 @@ import 'package:provider/provider.dart';
 import '../CategoryPage.dart';
 import 'ReviewPageSheet.dart';
 
-class ReviewPage extends StatefulWidget {
+class reReviewPage extends StatefulWidget {
   final Review review;
   final CategoriesBloc categoriesBloc;
   final ReviewBloc reviewBloc;
