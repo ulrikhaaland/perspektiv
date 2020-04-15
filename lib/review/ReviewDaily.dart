@@ -52,6 +52,7 @@ class _ReviewDailyState extends State<ReviewDaily> {
               Review(
                 categories: [],
                 pageTitle: getFormattedDate(date: day.day),
+                comments: [],
               );
           if (day.review == null) {
             day.review = review;

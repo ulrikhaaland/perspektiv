@@ -6,11 +6,13 @@ import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Category.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/model/SubCategory.dart';
+import 'package:perspektiv/review/ReviewInput.dart';
 import 'package:provider/provider.dart';
 import '../CategoryPage.dart';
+import '../model/Category.dart';
 import 'ReviewPageSheet.dart';
 
-class reReviewPage extends StatefulWidget {
+class ReviewPage extends StatefulWidget {
   final Review review;
   final CategoriesBloc categoriesBloc;
   final ReviewBloc reviewBloc;
@@ -46,64 +48,84 @@ class _ReviewPageState extends State<ReviewPage> {
         Provider<CategoriesBloc>.value(value: widget.categoriesBloc),
         Provider<ReviewBloc>.value(value: widget.reviewBloc),
       ],
-      child: Scaffold(
-          appBar: AppBar(
-            iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
-            backgroundColor: colorLeBleu,
-            centerTitle: true,
-            title: Text(
-              review.pageTitle ?? "Review",
-              style: TextStyle(color: isColorDark(colorLeBleu)),
-            ),
-            actions: <Widget>[
-              IconButton(
-                icon: Icon(
-                  Icons.category,
-                  size: 30,
-                  color: colorHappiness,
-                ),
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CategoryPage(
-                              key: Key("categoryPage"),
-                              categoriesBloc: widget.categoriesBloc,
-                            ))),
+      child: GestureDetector(
+        onTap: () => FocusScope.of(context).unfocus(),
+        child: Scaffold(
+            appBar: AppBar(
+              iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
+              backgroundColor: colorLeBleu,
+              centerTitle: true,
+              title: Text(
+                review.pageTitle ?? "Review",
+                style: TextStyle(color: isColorDark(colorLeBleu)),
               ),
-            ],
-          ),
-          body: SizedBox.expand(
-            child: Stack(
-              children: <Widget>[
-                Container(
-                  height: MediaQuery.of(context).size.height * 0.7,
-                  child: ListView.builder(
-                      itemCount: review.categories.length,
-                      itemBuilder: (context, index) {
-                        Category category = review.categories[index];
-                        return _ReviewCategoryItem(
-                          onSubCategoryRemoved: (subCat) {
-                            category.subCategories.remove(subCat);
-                            if (category.subCategories.isEmpty) {
-                              setState(() {
-                                review.categories.remove(category);
-                              });
-                            }
-                          },
-                          key: Key(category.name),
-                          category: category,
-                        );
-                      }),
-                ),
-                Positioned(
-                  bottom: 0,
-                  child: ReviewPageSheet(
-                    review: review,
+              actions: <Widget>[
+                IconButton(
+                  icon: Icon(
+                    Icons.category,
+                    size: 30,
+                    color: colorHappiness,
                   ),
+                  onPressed: () => Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CategoryPage(
+                                key: Key("categoryPage"),
+                                categoriesBloc: widget.categoriesBloc,
+                              ))),
                 ),
               ],
             ),
-          )),
+            body: SizedBox.expand(
+              child: Stack(
+                children: <Widget>[
+                  Container(
+                    height: MediaQuery.of(context).size.height * 0.7,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: <Widget>[
+                        ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: review.comments.length,
+                            itemBuilder: (context, index) {
+                              Comment comment = review.comments[index];
+
+                              return ReviewInput(
+                                review: review,
+                                comment: comment,
+                              );
+                            }),
+                        ListView.builder(
+                            shrinkWrap: true,
+                            itemCount: review.categories.length,
+                            itemBuilder: (context, index) {
+                              Category category = review.categories[index];
+                              return _ReviewCategoryItem(
+                                onSubCategoryRemoved: (subCat) {
+                                  category.subCategories.remove(subCat);
+                                  if (category.subCategories.isEmpty) {
+                                    setState(() {
+                                      review.categories.remove(category);
+                                    });
+                                  }
+                                },
+                                key: Key(category.name),
+                                category: category,
+                              );
+                            }),
+                      ],
+                    ),
+                  ),
+                  Positioned(
+                    bottom: 0,
+                    child: ReviewPageSheet(
+                      review: review,
+                    ),
+                  ),
+                ],
+              ),
+            )),
+      ),
     );
   }
 }

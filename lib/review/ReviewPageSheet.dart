@@ -8,6 +8,13 @@ import 'package:provider/provider.dart';
 
 import '../CategoryItem.dart';
 import '../main.dart';
+import '../main.dart';
+import '../main.dart';
+import '../main.dart';
+import '../main.dart';
+import '../model/Category.dart';
+import '../model/Category.dart';
+import '../model/SubCategory.dart';
 
 class ReviewPageSheet extends StatefulWidget {
   final Review review;
@@ -62,7 +69,30 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                         backgroundColor: Color(0xFFE8E8E8),
                         titleSpacing: 0,
                         automaticallyImplyLeading: false,
+                        stretch: true,
                         pinned: true,
+                        leading: Container(
+                          width: 50,
+                          alignment: Alignment.centerRight,
+                          child: Icon(
+                            Icons.chat,
+                            color: Colors.transparent,
+                          ),
+                        ),
+                        actions: <Widget>[
+                          Container(
+                            alignment: Alignment.centerLeft,
+                            width: 50,
+                            child: IconButton(
+                              alignment: Alignment.centerLeft,
+                              icon: Icon(
+                                Icons.chat,
+                                color: colorLeBleu,
+                              ),
+                              onPressed: _onTapCommentButton,
+                            ),
+                          ),
+                        ],
                         title: Column(
                           children: <Widget>[
                             Container(
@@ -127,6 +157,23 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
             }),
       ),
     );
+  }
+
+  void _onTapCommentButton() {
+    Comment comment = Comment(comment: "", init: true);
+    if (widget.review.categories.isEmpty) {
+      widget.review.comments.add(comment);
+    } else {
+      Category latestCategory = widget.review.categories.last;
+
+      if (latestCategory.subCategories.isEmpty) {
+        latestCategory.comments.add(comment);
+      } else {
+        SubCategory latestSubCategory = latestCategory.subCategories.last;
+        latestSubCategory.comments.add(comment);
+      }
+    }
+    widget.review.onAddCategory.notifyListeners();
   }
 }
 

@@ -2,15 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/services.dart';
+import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/model/Category.dart';
 import 'package:perspektiv/model/SubCategory.dart';
+
+import 'Category.dart';
 
 class Review {
   String pageTitle;
   String word;
   String sentence;
   String paragraph;
+  DateTime date;
+  ReviewSpan reviewSpan;
   List<Category> categories;
+  List<Comment> comments;
 
   bool tapDown;
 
@@ -23,7 +29,10 @@ class Review {
       this.sentence,
       this.paragraph,
       this.categories,
-      this.pageTitle});
+      this.pageTitle,
+      this.date,
+      this.reviewSpan,
+      this.comments});
 
   void onTapSubCategory(
       {Category category, SubCategory subCategory, int millis}) {
@@ -36,10 +45,14 @@ class Review {
 
     if (checkCat == null) {
       checkSubCat = SubCategory(
-          name: subCategory.name, color: subCategory.color, percentage: 10);
+          name: subCategory.name,
+          color: subCategory.color,
+          percentage: 10,
+          comments: []);
       Category newCategory = Category(
         name: category.name,
         subCategories: [checkSubCat],
+        comments: [],
       );
       categories.add(newCategory);
     } else {
