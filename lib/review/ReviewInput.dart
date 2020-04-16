@@ -45,19 +45,21 @@ class ReviewInput extends StatelessWidget {
             color: colorTextGrey, fontStyle: FontStyle.italic, fontSize: 16),
         textCapitalization: TextCapitalization.sentences,
         decoration: InputDecoration(
-          suffix: InkWell(
-            onTap: () {
-              commentList.remove(comment);
-              review.onAddCategory.notifyListeners();
-            },
-            child: Icon(
-              Icons.delete,
-              color: colorLove,
-            ),
-          ),
-          hintText: "Kategori navn",
+//          suffix: InkWell(
+//            onTap: () {
+//              commentList.remove(comment);
+//              review.onAddCategory.notifyListeners();
+//            },
+//            child: Icon(
+//              Icons.delete,
+//              color: colorLove,
+//            ),
+//          ),
+          hintStyle: TextStyle(color: colorTextGrey),
+          hintText: comment.label,
           counterStyle: TextStyle(color: colorLeBleu),
           focusedBorder: UnderlineInputBorder(
+
               borderSide: BorderSide(
             width: 2,
             color: colorLeBleu,

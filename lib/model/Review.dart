@@ -42,15 +42,15 @@ class Review {
   void addComment() {
     Comment comment = Comment(comment: "", init: true);
     if (categories.isEmpty) {
-      comments.add(comment);
+      comments.add(comment..label = pageTitle);
     } else {
       Category latestCategory = categories.last;
 
       if (latestCategory.subCategories.isEmpty) {
-        latestCategory.comments.add(comment);
+        latestCategory.comments.add(comment..label = latestCategory.name);
       } else {
         SubCategory latestSubCategory = latestCategory.subCategories.last;
-        latestSubCategory.comments.add(comment);
+        latestSubCategory.comments.add(comment..label = latestSubCategory.name);
       }
     }
     onAddCategory.notifyListeners();

@@ -40,7 +40,7 @@ class ReviewListItemState extends State<ReviewListItem> {
   void initState() {
     if (widget.review != null)
       widget.review.onAddCategory.addListener(() {
-        if(mounted) setState(() {});
+        if (mounted) setState(() {});
       });
     super.initState();
   }
@@ -127,9 +127,9 @@ class ReviewListItemState extends State<ReviewListItem> {
     double itemWidth = maxWidth / theCategoryView.subCategories.length;
     double itemHeight = (size.height / widget.itemAmount) - 12;
 
-    if(itemHeight < 50) itemHeight = 50;
-    else if(itemHeight > 100) itemHeight = 100;
-
+    if (itemHeight < 50)
+      itemHeight = 50;
+    else if (itemHeight > 100) itemHeight = 100;
 
     return Container(
       width: itemWidth,
@@ -141,6 +141,7 @@ class ReviewListItemState extends State<ReviewListItem> {
         children: <Widget>[
           Container(
             alignment: Alignment.center,
+            width: itemWidth,
             decoration: BoxDecoration(
                 borderRadius: bgBorderRadius, color: Color(0xFFE8E8E8)),
           ),

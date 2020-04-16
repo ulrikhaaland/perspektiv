@@ -49,7 +49,7 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
         width: size.width,
         child: DraggableScrollableSheet(
             expand: false,
-            maxChildSize: 0.4,
+            maxChildSize: 0.3,
             minChildSize: 0.2,
             initialChildSize: 0.2,
             builder: (context, sheetController) {
@@ -138,7 +138,7 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                         ),
                         Container(
                           alignment: Alignment.topLeft,
-                          height: (size.height / 10) * 5,
+                          height: (size.height / 10) * 2,
                           child: TabBarView(
                             children: _categories.map((category) {
                               return Align(
@@ -177,6 +177,7 @@ class _ReviewSheetCollection extends StatefulWidget {
 class __ReviewSheetCollectionState extends State<_ReviewSheetCollection> {
   @override
   Widget build(BuildContext context) {
+    //TODO: Add gridviewbuilder
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.start,
       spacing: 8,

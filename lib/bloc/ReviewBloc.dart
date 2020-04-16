@@ -11,7 +11,7 @@ import 'package:perspektiv/model/Week.dart';
 import 'package:perspektiv/model/Year.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-enum ReviewSpan { daily, weekly, monthly, yearly }
+enum ReviewSpan { yearly, monthly, weekly, daily }
 
 class ReviewBloc {
   Decade decade;
@@ -274,12 +274,12 @@ class ReviewBloc {
 
   Future<void> saveReviews() async {
 //    pairWithReview();
-     var prefs = await SharedPreferences.getInstance();
+    var prefs = await SharedPreferences.getInstance();
 
-     await prefs.setString(
-         "reviews",
-         jsonEncode(<String, dynamic>{
-           'reviews': reviews,
-         }));
+    await prefs.setString(
+        "reviews",
+        jsonEncode(<String, dynamic>{
+          'reviews': reviews,
+        }));
   }
 }

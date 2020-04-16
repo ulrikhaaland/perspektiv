@@ -55,7 +55,7 @@ class _ReviewPageState extends State<ReviewPage> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-            resizeToAvoidBottomPadding: false,
+//            resizeToAvoidBottomPadding: false,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
@@ -110,18 +110,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                   ))
                               .toList(),
                         ),
-//                        ListView.builder(
-//                            controller: _scrollController,
-//                            shrinkWrap: true,
-//                            itemCount: review.comments.length,
-//                            itemBuilder: (context, index) {
-//                              Comment comment = review.comments[index];
-//
-//                              return ReviewInput(
-//                                commentList: review.comments,
-//                                comment: comment,
-//                              );
-//                            }),
+
                         Column(
                           children: review.categories
                               .map((category) => _ReviewCategoryItem(
@@ -138,26 +127,7 @@ class _ReviewPageState extends State<ReviewPage> {
                                   ))
                               .toList(),
                         )
-//    ListView.builder(
-//        controller: _scrollController,
-//        shrinkWrap: true,
-//        itemCount: review.categories.length,
-//        itemBuilder: (context, index) {
-//          Category category = review.categories[index];
-//          return _ReviewCategoryItem(
-//            onSubCategoryRemoved: (subCat) {
-//              category.subCategories.remove(subCat);
-//              if (category.subCategories.isEmpty) {
-//                setState(() {
-//                  review.categories.remove(category);
-//                });
-//              }
-//            },
-//            key: Key(category.name),
-//            category: category,
-//          );
-//        })
-//    ,
+
                       ],
                     ),
                   ),
@@ -300,9 +270,15 @@ class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
         ),
         Column(
           children: subCategory.comments
-              .map((comment) => ReviewInput(
-                    commentList: subCategory.comments,
-                    comment: comment,
+              .map((comment) => Dismissible(
+                    key: Key(comment.hashCode.toString()),
+                    onDismissed: (val) {
+                      subCategory.comments.remove(comment);
+                    },
+                    child: ReviewInput(
+                      commentList: subCategory.comments,
+                      comment: comment,
+                    ),
                   ))
               .toList(),
         )

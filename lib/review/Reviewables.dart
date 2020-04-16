@@ -61,99 +61,111 @@ class _ReviewablesState extends State<Reviewables> {
 
   @override
   Widget build(BuildContext context) {
-    return MultiProvider(
-      providers: providers,
-      child: Scaffold(
-        appBar: AppBar(
-          leading: IconButton(
-              icon: Icon(
-                Icons.save,
-                color: isColorDark(colorLeBleu),
-              ),
-              onPressed: () {
-                _categoriesBloc.saveCategories();
-                _reviewBloc.saveReviews();
-              }),
-          actions: <Widget>[
-            IconButton(
+    return WillPopScope(
+      onWillPop: () {
+        int index = _reviewBloc.reviewSpan.value.index;
+
+        if (index != 0) {
+          _reviewBloc.reviewSpan.value = ReviewSpan.values[index - 1];
+          return Future.value(false);
+        } else {
+          return Future.value(true);
+        }
+      },
+      child: MultiProvider(
+        providers: providers,
+        child: Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
                 icon: Icon(
-                  Icons.filter_vintage,
-                  color: isColorDark(colorLeBleu),
+                  Icons.save,
+                  color: isColorDark(Colors.white),
                 ),
                 onPressed: () {
                   _categoriesBloc.saveCategories();
                   _reviewBloc.saveReviews();
                 }),
-            IconButton(
-              icon: Icon(
-                Icons.category,
-                size: 30,
-                color: colorHappiness,
+            actions: <Widget>[
+              IconButton(
+                  icon: Icon(
+                    Icons.filter_vintage,
+                    color: isColorDark(Colors.white),
+                  ),
+                  onPressed: () {
+                    _categoriesBloc.saveCategories();
+                    _reviewBloc.saveReviews();
+                  }),
+              IconButton(
+                icon: Icon(
+                  Icons.category,
+                  size: 30,
+                  color: colorHappiness,
+                ),
+                onPressed: () => Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                        builder: (context) => CategoryPage(
+                              key: Key("categoryPage"),
+                              categoriesBloc: _categoriesBloc,
+                            ))),
               ),
-              onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                      builder: (context) => CategoryPage(
-                            key: Key("categoryPage"),
-                            categoriesBloc: _categoriesBloc,
-                          ))),
+            ],
+            centerTitle: true,
+            backgroundColor: Colors.white,
+            title: Text(
+              _getTitle(),
+              style: TextStyle(color: isColorDark(Colors.white)),
             ),
-          ],
-          centerTitle: true,
-          backgroundColor: colorLeBleu,
-          title: Text(
-            _getTitle(),
-            style: TextStyle(color: isColorDark(colorLeBleu)),
           ),
+          body: _decade == null
+              ? Center(
+                  child: CircularProgressIndicator(
+                  backgroundColor: colorHappiness,
+                  valueColor: AlwaysStoppedAnimation<Color>(colorLeBleu),
+                ))
+              : ValueListenableBuilder(
+                  valueListenable: _reviewBloc.reviewSpanListenable,
+                  builder: (context, ReviewSpan reviewSpan, idk) {
+                    Widget reviewContent;
+
+                    switch (reviewSpan) {
+                      case ReviewSpan.daily:
+                        reviewContent = ReviewDaily(
+                          reviewBloc: _reviewBloc,
+                          scrollController: _scrollController,
+                        );
+                        break;
+                      case ReviewSpan.weekly:
+                        reviewContent = ReviewWeekly(
+                          reviewBloc: _reviewBloc,
+                          scrollController: _scrollController,
+                        );
+
+                        break;
+                      case ReviewSpan.monthly:
+                        reviewContent = ReviewMonthly(
+                          reviewBloc: _reviewBloc,
+                          scrollController: _scrollController,
+                        );
+                        break;
+                      case ReviewSpan.yearly:
+                        reviewContent = ReviewYearly(
+                          reviewBloc: _reviewBloc,
+                          scrollController: _scrollController,
+                        );
+
+                        break;
+                      default:
+                        reviewContent = Container();
+                    }
+                    return ListView(
+                        controller: _scrollController,
+                        children: <Widget>[
+                          _getNavigator(),
+                          reviewContent,
+                        ]);
+                  }),
         ),
-        body: _decade == null
-            ? Center(
-                child: CircularProgressIndicator(
-                backgroundColor: colorHappiness,
-                valueColor: AlwaysStoppedAnimation<Color>(colorLeBleu),
-              ))
-            : ValueListenableBuilder(
-                valueListenable: _reviewBloc.reviewSpanListenable,
-                builder: (context, ReviewSpan reviewSpan, idk) {
-                  Widget reviewContent;
-
-                  switch (reviewSpan) {
-                    case ReviewSpan.daily:
-                      reviewContent = ReviewDaily(
-                        reviewBloc: _reviewBloc,
-                        scrollController: _scrollController,
-                      );
-                      break;
-                    case ReviewSpan.weekly:
-                      reviewContent = ReviewWeekly(
-                        reviewBloc: _reviewBloc,
-                        scrollController: _scrollController,
-                      );
-
-                      break;
-                    case ReviewSpan.monthly:
-                      reviewContent = ReviewMonthly(
-                        reviewBloc: _reviewBloc,
-                        scrollController: _scrollController,
-                      );
-                      break;
-                    case ReviewSpan.yearly:
-                      reviewContent = ReviewYearly(
-                        reviewBloc: _reviewBloc,
-                        scrollController: _scrollController,
-                      );
-
-                      break;
-                    default:
-                      reviewContent = Container();
-                  }
-                  return ListView(
-                      controller: _scrollController,
-                      children: <Widget>[
-                        _getNavigator(),
-                        reviewContent,
-                      ]);
-                }),
       ),
     );
   }

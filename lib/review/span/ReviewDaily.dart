@@ -68,7 +68,7 @@ class _ReviewDailyState extends State<ReviewDaily> {
             crossAxisAlignment: CrossAxisAlignment.start,
             children: <Widget>[
               Padding(
-                padding: EdgeInsets.symmetric(horizontal: 24, vertical: 4),
+                padding: EdgeInsets.only(left: 24, right: 24, bottom: 4, top: index == 0 ? 12 : 4),
                 child: Text(
                   day.dayName,
                   style: TextStyle(
@@ -89,7 +89,6 @@ class _ReviewDailyState extends State<ReviewDaily> {
                   ));
                 },
                 child: Container(
-//                  height: listItemHeight,
                   child: ReviewListItem(
                     key: Key(day.dayDate.toIso8601String()),
                     review: review,

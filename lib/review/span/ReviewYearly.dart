@@ -53,12 +53,9 @@ class _ReviewYearlyState extends State<ReviewYearly> {
                   widget.reviewBloc.currentYear = year;
                   widget.reviewBloc.reviewSpan.value = ReviewSpan.monthly;
                 },
-                child: Container(
-                  height: 100,
-                  child: ReviewListItem(
-                    review: review,
-                    itemAmount: decade.years.length,
-                  ),
+                child: ReviewListItem(
+                  review: review,
+                  itemAmount: decade.years.length,
                 ),
               ),
             ],
