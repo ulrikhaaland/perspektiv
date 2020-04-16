@@ -57,7 +57,7 @@ class _ReviewDailyState extends State<ReviewDaily> {
                   id: widget.reviewBloc.currentYear.year +
                       widget.reviewBloc.currentMonth.month +
                       widget.reviewBloc.currentWeek.week +
-                      day.day);
+                      addToZero(day.day));
           if (day.review == null) {
             day.review = review;
           }

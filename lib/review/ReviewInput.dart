@@ -1,25 +1,36 @@
 import 'package:flutter/material.dart';
 import 'package:perspektiv/model/Comment.dart';
+import 'package:provider/provider.dart';
 
 import '../main.dart';
 import '../model/Category.dart';
 import '../model/Review.dart';
 
 class ReviewInput extends StatelessWidget {
-  final Review review;
   final Comment comment;
+  final List<Comment> commentList;
 
-  const ReviewInput({Key key, this.review, this.comment})
-      : assert(review != null && comment != null),
+  const ReviewInput({Key key, this.comment, this.commentList})
+      : assert(comment != null),
         super(key: key);
 
   @override
   Widget build(BuildContext context) {
+    Review review = Provider.of<Review>(context);
+
+    assert(review != null);
+
     TextEditingController _textController = TextEditingController()
       ..text = comment.comment;
 
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (comment.init == true) comment.init = false;
+    });
     return Padding(
-      padding: const EdgeInsets.only(left: 16, right: 16, top: 12),
+      padding: const EdgeInsets.only(
+        left: 8,
+        right: 8,
+      ),
       child: TextField(
         minLines: 1,
         maxLines: 5,
@@ -36,7 +47,7 @@ class ReviewInput extends StatelessWidget {
         decoration: InputDecoration(
           suffix: InkWell(
             onTap: () {
-              review.comments.remove(comment);
+              commentList.remove(comment);
               review.onAddCategory.notifyListeners();
             },
             child: Icon(

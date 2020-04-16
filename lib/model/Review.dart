@@ -39,6 +39,23 @@ class Review {
       this.reviewSpan,
       this.comments});
 
+  void addComment() {
+    Comment comment = Comment(comment: "", init: true);
+    if (categories.isEmpty) {
+      comments.add(comment);
+    } else {
+      Category latestCategory = categories.last;
+
+      if (latestCategory.subCategories.isEmpty) {
+        latestCategory.comments.add(comment);
+      } else {
+        SubCategory latestSubCategory = latestCategory.subCategories.last;
+        latestSubCategory.comments.add(comment);
+      }
+    }
+    onAddCategory.notifyListeners();
+  }
+
   void onTapSubCategory(
       {Category category, SubCategory subCategory, int millis}) {
     assert(category != null && subCategory != null);
@@ -66,7 +83,10 @@ class Review {
           orElse: () => null);
       if (checkSubCat == null) {
         checkSubCat = SubCategory(
-            name: subCategory.name, color: subCategory.color, percentage: 10);
+            name: subCategory.name,
+            color: subCategory.color,
+            percentage: 10,
+            comments: []);
         checkCat.subCategories.add(checkSubCat);
       } else if (checkSubCat.percentage < 100) {
         checkSubCat.percentage += 10;

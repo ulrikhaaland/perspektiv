@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/foundation.dart';
+import 'package:perspektiv/helper.dart';
 import 'package:perspektiv/model/Day.dart';
 import 'package:perspektiv/model/Decade.dart';
 import 'package:perspektiv/model/Month.dart';
@@ -89,7 +90,7 @@ class ReviewBloc {
 
     for (int i = 0; i <= (initDate.month - DateTime.now().month); i++) {
       months.add(Month(
-        month: (initDate.month + i).toString(),
+        month: addToZero((initDate.month + i).toString()),
         weeks: _getWeeks(month: initDate.month + i, year: year),
       ));
     }
@@ -137,7 +138,7 @@ class ReviewBloc {
       /// While the continuously incremented firstDayOfMonth is in bounds of the relevant month
       while (month == firstDayOfMonth.month && isBeforeTomorrow) {
         /// Init the week which holds the days
-        Week week = Week(week: weekNumber.toString(), days: []);
+        Week week = Week(week: addToZero(weekNumber.toString()), days: []);
 
         /// Indicates wether a week is filled up with days. The current week will
         /// not hold 7 days if current date is not a sunday
@@ -145,7 +146,8 @@ class ReviewBloc {
         while (!hasACompleteWeek) {
           /// Add day to week
           week.days.add(Day(
-              dayDate: firstDayOfMonth, day: firstDayOfMonth.day.toString()));
+              dayDate: firstDayOfMonth,
+              day: addToZero(firstDayOfMonth.day.toString())));
 
           /// Increment firstDayOfMonth if it's before tomorrows date
           if (!firstDayOfMonth.add(Duration(days: 1)).isAfter(DateTime.now())) {
@@ -157,7 +159,8 @@ class ReviewBloc {
           if (firstDayOfMonth.weekday == 7) {
             hasACompleteWeek = true;
             week.days.add(Day(
-                dayDate: firstDayOfMonth, day: firstDayOfMonth.day.toString()));
+                dayDate: firstDayOfMonth,
+                day: addToZero(firstDayOfMonth.day.toString())));
             weeks.add(week);
             weekNumber++;
             if (firstDayOfMonth.isAfter(initDate))
@@ -166,7 +169,8 @@ class ReviewBloc {
               .add(Duration(days: 1))
               .isAfter(DateTime.now())) {
             week.days.add(Day(
-                dayDate: firstDayOfMonth, day: firstDayOfMonth.day.toString()));
+                dayDate: firstDayOfMonth,
+                day: addToZero(firstDayOfMonth.day.toString())));
             weeks.add(week);
             isBeforeTomorrow = false;
             break;
@@ -200,12 +204,58 @@ class ReviewBloc {
   }
 
   pairWithReview() {
-    List<Review> yearsReviews = reviews.where((rew) => rew.id.length == 4).toList();
+    List<Review> yearReviewList =
+        reviews.where((rew) => rew.id.length == 4).toList();
 
+    List<Review> monthReviewList =
+        reviews.where((rew) => rew.id.length == 6).toList();
 
-   yearsReviews.forEach((year) {
-     
-   });
+    List<Review> weekReviewList =
+        reviews.where((rew) => rew.id.length == 8).toList();
+
+    List<Review> dayReviewList =
+        reviews.where((rew) => rew.id.length == 10).toList();
+
+    /// Pair year
+    for (Review yearReview in yearReviewList) {
+      Year year = decade.years
+          .firstWhere((y) => y.year == yearReview.id, orElse: () => null);
+      if (year != null) {
+        year.review = yearReview;
+
+        /// Pair month
+        for (Review monthReview in monthReviewList) {
+          print(monthReview.id.substring(4, 6));
+          Month month = year.months.firstWhere(
+              (m) => m.month == monthReview.id.substring(4, 6),
+              orElse: () => null);
+          if (month != null) {
+            month.review = monthReview;
+
+            /// Pair week
+            for (Review weekReview in weekReviewList) {
+              Week week = month.weeks.firstWhere(
+                  (w) => w.week == weekReview.id.substring(6, 8),
+                  orElse: () => null);
+              if (week != null) {
+                week.review = weekReview;
+
+                /// Pair day
+                for (Review dayReview in dayReviewList) {
+                  Day day = week.days.firstWhere(
+                      (d) => d.day == dayReview.id.substring(8, 10),
+                      orElse: () => null);
+                  if (day != null) {
+                    day.review = dayReview;
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+    doneLoading.notifyListeners();
   }
 
   Future<void> getReviews() async {
@@ -219,17 +269,17 @@ class ReviewBloc {
           ?.map((e) => e == null ? null : Review.fromJson(e as Map))
           ?.toList();
     }
-    doneLoading.notifyListeners();
+    pairWithReview();
   }
 
   Future<void> saveReviews() async {
-    pairWithReview();
-    // var prefs = await SharedPreferences.getInstance();
+//    pairWithReview();
+     var prefs = await SharedPreferences.getInstance();
 
-    // await prefs.setString(
-    //     "reviews",
-    //     jsonEncode(<String, dynamic>{
-    //       'reviews': reviews,
-    //     }));
+     await prefs.setString(
+         "reviews",
+         jsonEncode(<String, dynamic>{
+           'reviews': reviews,
+         }));
   }
 }

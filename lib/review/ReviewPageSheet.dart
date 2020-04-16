@@ -40,6 +40,8 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
       _categoriesBloc = Provider.of<CategoriesBloc>(context);
 
     List<Category> _categories = _categoriesBloc.categoryList.value;
+
+    Review review = widget.review;
     return DefaultTabController(
       length: _categories.length,
       child: Container(
@@ -90,7 +92,7 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                                 Icons.chat,
                                 color: colorLeBleu,
                               ),
-                              onPressed: _onTapCommentButton,
+                              onPressed: review.addComment,
                             ),
                           ),
                         ],
@@ -144,7 +146,7 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                                 child: _ReviewSheetCollection(
                                   key: Key(category.name),
                                   category: category,
-                                  review: widget.review,
+                                  review: review,
                                 ),
                               );
                             }).toList(),
@@ -158,23 +160,6 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
             }),
       ),
     );
-  }
-
-  void _onTapCommentButton() {
-    Comment comment = Comment(comment: "", init: true);
-    if (widget.review.categories.isEmpty) {
-      widget.review.comments.add(comment);
-    } else {
-      Category latestCategory = widget.review.categories.last;
-
-      if (latestCategory.subCategories.isEmpty) {
-        latestCategory.comments.add(comment);
-      } else {
-        SubCategory latestSubCategory = latestCategory.subCategories.last;
-        latestSubCategory.comments.add(comment);
-      }
-    }
-    widget.review.onAddCategory.notifyListeners();
   }
 }
 

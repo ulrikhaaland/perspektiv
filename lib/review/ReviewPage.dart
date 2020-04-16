@@ -27,6 +27,8 @@ class ReviewPage extends StatefulWidget {
 }
 
 class _ReviewPageState extends State<ReviewPage> {
+  ScrollController _scrollController = ScrollController();
+
   @override
   void initState() {
     widget.review.onAddCategory.addListener(() {
@@ -48,10 +50,13 @@ class _ReviewPageState extends State<ReviewPage> {
       providers: [
         Provider<CategoriesBloc>.value(value: widget.categoriesBloc),
         Provider<ReviewBloc>.value(value: widget.reviewBloc),
+        Provider<Review>.value(value: review),
       ],
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
+            resizeToAvoidBottomPadding: false,
+            resizeToAvoidBottomInset: false,
             appBar: AppBar(
               iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
               backgroundColor: colorLeBleu,
@@ -92,39 +97,67 @@ class _ReviewPageState extends State<ReviewPage> {
               child: Stack(
                 children: <Widget>[
                   Container(
+                    color: Colors.transparent,
                     height: MediaQuery.of(context).size.height * 0.7,
-                    child: Column(
-                      mainAxisSize: MainAxisSize.min,
+                    child: ListView(
+                      controller: _scrollController,
                       children: <Widget>[
-                        ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: review.comments.length,
-                            itemBuilder: (context, index) {
-                              Comment comment = review.comments[index];
-
-                              return ReviewInput(
-                                review: review,
-                                comment: comment,
-                              );
-                            }),
-                        ListView.builder(
-                            shrinkWrap: true,
-                            itemCount: review.categories.length,
-                            itemBuilder: (context, index) {
-                              Category category = review.categories[index];
-                              return _ReviewCategoryItem(
-                                onSubCategoryRemoved: (subCat) {
-                                  category.subCategories.remove(subCat);
-                                  if (category.subCategories.isEmpty) {
-                                    setState(() {
-                                      review.categories.remove(category);
-                                    });
-                                  }
-                                },
-                                key: Key(category.name),
-                                category: category,
-                              );
-                            }),
+                        Column(
+                          children: review.comments
+                              .map((comment) => ReviewInput(
+                                    commentList: review.comments,
+                                    comment: comment,
+                                  ))
+                              .toList(),
+                        ),
+//                        ListView.builder(
+//                            controller: _scrollController,
+//                            shrinkWrap: true,
+//                            itemCount: review.comments.length,
+//                            itemBuilder: (context, index) {
+//                              Comment comment = review.comments[index];
+//
+//                              return ReviewInput(
+//                                commentList: review.comments,
+//                                comment: comment,
+//                              );
+//                            }),
+                        Column(
+                          children: review.categories
+                              .map((category) => _ReviewCategoryItem(
+                                    onSubCategoryRemoved: (subCat) {
+                                      category.subCategories.remove(subCat);
+                                      if (category.subCategories.isEmpty) {
+                                        setState(() {
+                                          review.categories.remove(category);
+                                        });
+                                      }
+                                    },
+                                    key: Key(category.name),
+                                    category: category,
+                                  ))
+                              .toList(),
+                        )
+//    ListView.builder(
+//        controller: _scrollController,
+//        shrinkWrap: true,
+//        itemCount: review.categories.length,
+//        itemBuilder: (context, index) {
+//          Category category = review.categories[index];
+//          return _ReviewCategoryItem(
+//            onSubCategoryRemoved: (subCat) {
+//              category.subCategories.remove(subCat);
+//              if (category.subCategories.isEmpty) {
+//                setState(() {
+//                  review.categories.remove(category);
+//                });
+//              }
+//            },
+//            key: Key(category.name),
+//            category: category,
+//          );
+//        })
+//    ,
                       ],
                     ),
                   ),
@@ -168,8 +201,7 @@ class _ReviewCategoryItem extends StatelessWidget {
                 fontSize: 22),
           ),
           Divider(),
-          ListView(
-            shrinkWrap: true,
+          Column(
             key: Key("subs"),
             children: category.subCategories.map((subCat) {
               return Dismissible(
@@ -208,55 +240,73 @@ class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
     Size size = MediaQuery.of(context).size;
     double itemHeight = size.height / 14;
 
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 8.0),
-      child: Container(
-          decoration: BoxDecoration(
-            border: Border.all(color: colorBackGround, width: 1),
-            borderRadius: BorderRadius.all(Radius.elliptical(20, 30)),
-          ),
-          width: size.width,
-          height: itemHeight,
-          child: LayoutBuilder(
-            builder: (context, constraints) {
-              return Stack(
-                children: <Widget>[
-                  AnimatedContainer(
-                    duration: Duration(milliseconds: 100),
-                    width: (constraints.maxWidth / 100) *
-                            widget.subCategory.percentage ??
-                        0,
-                    decoration: BoxDecoration(
-                      color: widget.subCategory.color,
-                      borderRadius: BorderRadius.only(
-                        topLeft: Radius.elliptical(20, 30),
-                        bottomLeft: Radius.elliptical(20, 30),
-                        topRight: widget.subCategory.percentage == 100
-                            ? Radius.elliptical(20, 30)
-                            : Radius.zero,
-                        bottomRight: widget.subCategory.percentage == 100
-                            ? Radius.elliptical(20, 30)
-                            : Radius.zero,
-                      ),
-                    ),
-                  ),
-                  Row(
+    SubCategory subCategory = widget.subCategory;
+
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Padding(
+          padding: const EdgeInsets.symmetric(vertical: 8.0),
+          child: Container(
+              decoration: BoxDecoration(
+                border: Border.all(color: colorBackGround, width: 1),
+                borderRadius: BorderRadius.all(Radius.elliptical(20, 30)),
+              ),
+              width: size.width,
+              height: itemHeight,
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  return Stack(
                     children: <Widget>[
-                      for (var i = 0; i < 9; i++)
-                        Container(
-                          width: constraints.maxWidth / 10,
-                          height: itemHeight,
-                          decoration: BoxDecoration(
-                              border: Border(
-                                  right: BorderSide(
-                                      color: colorBackGround, width: 1))),
+                      AnimatedContainer(
+                        duration: Duration(milliseconds: 100),
+                        width: (constraints.maxWidth / 100) *
+                                subCategory.percentage ??
+                            0,
+                        decoration: BoxDecoration(
+                          color: subCategory.color,
+                          borderRadius: BorderRadius.only(
+                            topLeft: Radius.elliptical(20, 30),
+                            bottomLeft: Radius.elliptical(20, 30),
+                            topRight: subCategory.percentage == 100
+                                ? Radius.elliptical(20, 30)
+                                : Radius.zero,
+                            bottomRight: subCategory.percentage == 100
+                                ? Radius.elliptical(20, 30)
+                                : Radius.zero,
+                          ),
                         ),
+                      ),
+                      Row(
+                        children: <Widget>[
+                          for (var i = 0; i < 9; i++)
+                            Container(
+                              width: constraints.maxWidth / 10,
+                              height: itemHeight,
+                              decoration: BoxDecoration(
+                                  border: Border(
+                                      right: BorderSide(
+                                          color: isDark(subCategory.color)
+                                              ? colorBackGround
+                                              : Colors.grey,
+                                          width: 1))),
+                            ),
+                        ],
+                      ),
                     ],
-                  ),
-                ],
-              );
-            },
-          )),
+                  );
+                },
+              )),
+        ),
+        Column(
+          children: subCategory.comments
+              .map((comment) => ReviewInput(
+                    commentList: subCategory.comments,
+                    comment: comment,
+                  ))
+              .toList(),
+        )
+      ],
     );
   }
 }

@@ -6,6 +6,7 @@ part 'Comment.g.dart';
 class Comment {
   String comment;
   bool init;
+  String label;
 
   Comment({this.comment, this.init});
 

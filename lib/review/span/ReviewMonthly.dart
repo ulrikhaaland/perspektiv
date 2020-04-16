@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:perspektiv/bloc/ReviewBloc.dart';
+import 'package:perspektiv/helper.dart';
 import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Month.dart';
 import 'package:perspektiv/model/Review.dart';
@@ -34,7 +35,7 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
               Review(
                   reviewSpan: ReviewSpan.monthly,
                   categories: [],
-                  id: widget.reviewBloc.currentYear.year + month.month);
+                  id: widget.reviewBloc.currentYear.year + addToZero(month.month));
           if (month.review == null) month.review = review;
            if (widget.reviewBloc.reviews.contains(review) == false) {
             widget.reviewBloc.reviews.add(review);

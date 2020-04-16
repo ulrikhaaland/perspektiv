@@ -40,12 +40,25 @@ const List<Color> appColors = [
 ];
 
 Color isColorDark(Color color) {
+  assert(color != null);
   double darkness =
       1 - (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
   if (darkness < 0.3) {
     return colorTextGrey; // It's a light color
   } else {
     return Colors.white; // It's a dark color
+  }
+}
+
+bool isDark(Color color) {
+  assert(color != null);
+
+  double darkness =
+      1 - (0.299 * color.red + 0.587 * color.green + 0.114 * color.blue) / 255;
+  if (darkness < 0.3) {
+    return false; // It's a light color
+  } else {
+    return true; // It's a dark color
   }
 }
 
@@ -57,7 +70,6 @@ class MyApp extends StatelessWidget {
       title: 'Flutter Demo',
       theme: ThemeData(
         appBarTheme: AppBarTheme(
-
           color: colorLeBleu,
           iconTheme: IconThemeData(color: colorTextGrey),
           textTheme: TextTheme(
@@ -74,5 +86,3 @@ class MyApp extends StatelessWidget {
     );
   }
 }
-
-

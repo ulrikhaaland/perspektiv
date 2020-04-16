@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:perspektiv/bloc/ReviewBloc.dart';
+import 'package:perspektiv/helper.dart';
 import 'package:perspektiv/model/Month.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/model/Week.dart';
@@ -34,7 +35,7 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
                   categories: [],
                   id: widget.reviewBloc.currentYear.year +
                       widget.reviewBloc.currentMonth.month +
-                      week.week);
+                      addToZero(week.week));
           if (week.review == null) week.review = review;
            if (widget.reviewBloc.reviews.contains(review) == false) {
             widget.reviewBloc.reviews.add(review);
