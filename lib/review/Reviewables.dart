@@ -1,3 +1,6 @@
+import 'dart:convert';
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:perspektiv/CategoryPage.dart';
 import 'package:perspektiv/bloc/CategoriesBloc.dart';
@@ -8,6 +11,7 @@ import 'package:perspektiv/model/Decade.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/review/ReviewListItem.dart';
 import 'package:provider/provider.dart';
+import 'package:spotify/spotify.dart';
 
 import 'span/ReviewDaily.dart';
 import 'span/ReviewMonthly.dart';
@@ -60,6 +64,7 @@ class _ReviewablesState extends State<Reviewables> {
     _reviewBloc.reviewSpan.addListener(() {
       setState(() {});
     });
+
     super.initState();
   }
 
@@ -119,7 +124,7 @@ class _ReviewablesState extends State<Reviewables> {
             flexibleSpace: FlexibleSpaceBar(
               titlePadding: EdgeInsets.only(bottom: 8),
               title: _getAppBarTitle(),
-            ) ,
+            ),
           ),
           body: _isLoading == true
               ? Center(
@@ -234,10 +239,12 @@ class _ReviewablesState extends State<Reviewables> {
       default:
     }
 
+    TextStyle style = TextStyle(fontSize: 20);
+    TextStyle bold = style.copyWith(fontWeight: FontWeight.bold);
     return Padding(
-      padding: const EdgeInsets.only(left: 24.0, top: 12),
+      padding: const EdgeInsets.only(left: 24.0, top: 12, bottom: 12),
       child: Container(
-        height: 20,
+        height: 25,
         child: Wrap(
           alignment: WrapAlignment.start,
           crossAxisAlignment: WrapCrossAlignment.center,
@@ -252,6 +259,7 @@ class _ReviewablesState extends State<Reviewables> {
                   children: <Widget>[
                     Text(
                       "Reviewly",
+                      style: style,
                     ),
                     Icon(Icons.arrow_right)
                   ],
@@ -267,10 +275,7 @@ class _ReviewablesState extends State<Reviewables> {
                   children: <Widget>[
                     Text(
                       _reviewBloc.currentYear.year.toString(),
-                      style: TextStyle(
-                          fontWeight: span == ReviewSpan.monthly
-                              ? FontWeight.bold
-                              : null),
+                      style: span == ReviewSpan.monthly ? bold : style,
                     ),
                     if (span != ReviewSpan.monthly) Icon(Icons.arrow_right)
                   ],
@@ -286,10 +291,7 @@ class _ReviewablesState extends State<Reviewables> {
                   children: <Widget>[
                     Text(
                       _reviewBloc.currentMonth.monthName,
-                      style: TextStyle(
-                          fontWeight: span == ReviewSpan.weekly
-                              ? FontWeight.bold
-                              : null),
+                      style: span == ReviewSpan.weekly ? bold : style,
                     ),
                     if (span != ReviewSpan.weekly) Icon(Icons.arrow_right)
                   ],
@@ -301,7 +303,7 @@ class _ReviewablesState extends State<Reviewables> {
                 children: <Widget>[
                   Text(
                     "Uke " + _reviewBloc.currentWeek.week.toString(),
-                    style: TextStyle(fontWeight: FontWeight.bold),
+                    style: bold,
                   ),
                 ],
               ),
@@ -357,4 +359,6 @@ class _ReviewablesState extends State<Reviewables> {
         _isLoading = false;
       });
   }
+
+  
 }

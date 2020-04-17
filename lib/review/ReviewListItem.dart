@@ -128,7 +128,7 @@ class ReviewListItemState extends State<ReviewListItem> {
 
     return Card(
       margin: EdgeInsets.symmetric(horizontal: widget.size == null ? 16 : 0),
-      color: widget.pageTitle != null ? Colors.white : Colors.white,
+      color: widget.pageTitle != null ? colorLeBleu : Colors.white,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.elliptical(20, 30))),
       child: _subCategoryItems,

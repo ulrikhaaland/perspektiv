@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:perspektiv/CategoryItem.dart';
 import 'package:perspektiv/model/Category.dart';
+import 'package:perspektiv/spotify.dart';
 import 'package:provider/provider.dart';
 
 import 'review/Reviewables.dart';
@@ -82,7 +83,8 @@ class MyApp extends StatelessWidget {
             DividerThemeData(indent: 0, endIndent: 0, thickness: 1, space: 1),
         primarySwatch: Colors.blue,
       ),
-      home: Reviewables(),
+      home: Spotify(),
+      // Reviewables(),
     );
   }
 }

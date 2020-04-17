@@ -27,6 +27,8 @@ dependencies:
   json_serializable:
   build_runner: ^1.6.9
   shared_preferences:
+  spotify: ^0.3.0
+  webview_flutter: ^0.3.20
 
 
 
