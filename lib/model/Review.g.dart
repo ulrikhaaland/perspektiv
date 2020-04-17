@@ -15,7 +15,7 @@ Review _$ReviewFromJson(Map json) {
     categories: (json['categories'] as List)
         ?.map((e) => e == null ? null : Category.fromJson(e as Map))
         ?.toList(),
-    pageTitle: json['pageTitle'] as String,
+    title: json['title'] as String,
     lastEdited: json['lastEdited'] == null
         ? null
         : DateTime.parse(json['lastEdited'] as String),
@@ -27,7 +27,7 @@ Review _$ReviewFromJson(Map json) {
 }
 
 Map<String, dynamic> _$ReviewToJson(Review instance) => <String, dynamic>{
-      'pageTitle': instance.pageTitle,
+      'title': instance.title,
       'word': instance.word,
       'sentence': instance.sentence,
       'paragraph': instance.paragraph,

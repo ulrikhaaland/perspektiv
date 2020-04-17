@@ -30,7 +30,11 @@ class _ReviewYearlyState extends State<ReviewYearly> {
           Year year = decade.years[index];
           Review review = year.review ??
               Review(
-                  reviewSpan: ReviewSpan.yearly, categories: [], id: year.year);
+                comments: [],
+                  reviewSpan: ReviewSpan.yearly,
+                  categories: [],
+                  id: year.year,
+                  title: year.year.toString());
           if (year.review == null) year.review = review;
           if (widget.reviewBloc.reviews.contains(review) == false) {
             widget.reviewBloc.reviews.add(review);
@@ -41,7 +45,7 @@ class _ReviewYearlyState extends State<ReviewYearly> {
               Padding(
                 padding: EdgeInsets.only(left: 24, right: 24, top: 12),
                 child: Text(
-                  year.year.toString(),
+                  review.title,
                   style: TextStyle(
                       color: colorTextGrey,
                       fontWeight: FontWeight.bold,

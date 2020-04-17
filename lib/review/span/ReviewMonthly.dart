@@ -33,11 +33,14 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
           Month month = year.months[index];
           Review review = month.review ??
               Review(
+                comments: [],
+                  title: month.monthName,
                   reviewSpan: ReviewSpan.monthly,
                   categories: [],
-                  id: widget.reviewBloc.currentYear.year + addToZero(month.month));
+                  id: widget.reviewBloc.currentYear.year +
+                      addToZero(month.month));
           if (month.review == null) month.review = review;
-           if (widget.reviewBloc.reviews.contains(review) == false) {
+          if (widget.reviewBloc.reviews.contains(review) == false) {
             widget.reviewBloc.reviews.add(review);
           }
           return Column(
@@ -46,7 +49,7 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
               Padding(
                 padding: EdgeInsets.only(left: 24, right: 24, top: 12),
                 child: Text(
-                  month.monthName,
+                  review.title,
                   style: TextStyle(
                       color: colorTextGrey,
                       fontWeight: FontWeight.bold,

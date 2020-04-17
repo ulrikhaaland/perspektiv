@@ -52,7 +52,7 @@ class _ReviewDailyState extends State<ReviewDaily> {
               Review(
                   reviewSpan: ReviewSpan.daily,
                   categories: [],
-                  pageTitle: getFormattedDate(date: day.dayDate),
+                  title: getFormattedDate(date: day.dayDate),
                   comments: [],
                   id: widget.reviewBloc.currentYear.year +
                       widget.reviewBloc.currentMonth.month +

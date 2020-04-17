@@ -12,7 +12,7 @@ part 'Review.g.dart';
 
 @JsonSerializable(anyMap: true)
 class Review {
-  String pageTitle;
+  String title;
   String word;
   String sentence;
   String paragraph;
@@ -34,7 +34,7 @@ class Review {
       this.id,
       this.paragraph,
       this.categories,
-      this.pageTitle,
+      this.title,
       this.lastEdited,
       this.reviewSpan,
       this.comments});
@@ -42,7 +42,7 @@ class Review {
   void addComment() {
     Comment comment = Comment(comment: "", init: true);
     if (categories.isEmpty) {
-      comments.add(comment..label = pageTitle);
+      comments.add(comment..label = title);
     } else {
       Category latestCategory = categories.last;
 

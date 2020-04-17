@@ -31,6 +31,8 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
           Week week = month.weeks[index];
           Review review = week.review ??
               Review(
+                comments: [],
+                title:  "Uke " + week.week,
                   reviewSpan: ReviewSpan.weekly,
                   categories: [],
                   id: widget.reviewBloc.currentYear.year +
@@ -46,7 +48,7 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
               Padding(
                 padding: EdgeInsets.only(left: 24, right: 24, top: 12),
                 child: Text(
-                  "Uke " + week.week,
+                 review.title,
                   style: TextStyle(
                       color: colorTextGrey,
                       fontWeight: FontWeight.bold,

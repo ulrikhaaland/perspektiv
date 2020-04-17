@@ -5,6 +5,8 @@ import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/bloc/UserBloc.dart';
 import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Decade.dart';
+import 'package:perspektiv/model/Review.dart';
+import 'package:perspektiv/review/ReviewListItem.dart';
 import 'package:provider/provider.dart';
 
 import 'span/ReviewDaily.dart';
@@ -79,7 +81,7 @@ class _ReviewablesState extends State<Reviewables> {
             leading: IconButton(
                 icon: Icon(
                   Icons.save,
-                  color: isColorDark(Colors.white),
+                  color: isColorDark(colorLeBleu),
                 ),
                 onPressed: () {
                   _categoriesBloc.saveCategories();
@@ -89,7 +91,7 @@ class _ReviewablesState extends State<Reviewables> {
               IconButton(
                   icon: Icon(
                     Icons.filter_vintage,
-                    color: isColorDark(Colors.white),
+                    color: isColorDark(colorLeBleu),
                   ),
                   onPressed: () {
                     _categoriesBloc.saveCategories();
@@ -111,11 +113,8 @@ class _ReviewablesState extends State<Reviewables> {
               ),
             ],
             centerTitle: true,
-            backgroundColor: Colors.white,
-            title: Text(
-              _getTitle(),
-              style: TextStyle(color: isColorDark(Colors.white)),
-            ),
+            backgroundColor: colorLeBleu,
+            title: _getAppBarTitle(),
           ),
           body: _decade == null
               ? Center(
@@ -159,10 +158,12 @@ class _ReviewablesState extends State<Reviewables> {
                         reviewContent = Container();
                     }
                     return ListView(
+                        shrinkWrap: true,
                         controller: _scrollController,
                         children: <Widget>[
                           _getNavigator(),
                           reviewContent,
+                          _getAppBarTitle()
                         ]);
                   }),
         ),
@@ -170,7 +171,7 @@ class _ReviewablesState extends State<Reviewables> {
     );
   }
 
-  String _getTitle() {
+  String _getAppBarTitleText() {
     switch (_reviewBloc.reviewSpan.value) {
       case ReviewSpan.daily:
         return "Uke " + _reviewBloc.currentWeek.week.toString();
@@ -303,6 +304,44 @@ class _ReviewablesState extends State<Reviewables> {
           ],
         ),
       ),
+    );
+  }
+
+  Widget _getAppBarTitle() {
+    Review review;
+
+    switch (_reviewBloc.reviewSpan.value) {
+      case ReviewSpan.yearly:
+        review = null;
+        break;
+      case ReviewSpan.monthly:
+        review = _reviewBloc.currentYear.review;
+        break;
+      case ReviewSpan.weekly:
+        review = _reviewBloc.currentMonth.review;
+
+        break;
+      case ReviewSpan.daily:
+        review = _reviewBloc.currentWeek.review;
+
+        break;
+    }
+    Widget titleText = Text(
+      _getAppBarTitleText(),
+      style: TextStyle(color: Colors.white),
+    );
+    if (review == null) {
+      return titleText;
+    }
+
+    Size size = Size(180, 50);
+
+    return ReviewListItem(
+      pageTitle: review.title,
+      size: size,
+      review: review,
+      reviewBloc: _reviewBloc,
+      itemAmount: 1,
     );
   }
 }

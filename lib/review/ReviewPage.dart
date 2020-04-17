@@ -62,7 +62,7 @@ class _ReviewPageState extends State<ReviewPage> {
               backgroundColor: colorLeBleu,
               centerTitle: true,
               title: Text(
-                review.pageTitle ?? "Review",
+                review.title ?? "Review",
                 style: TextStyle(color: isColorDark(colorLeBleu)),
               ),
               actions: <Widget>[
