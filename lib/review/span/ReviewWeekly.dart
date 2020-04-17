@@ -31,15 +31,15 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
           Week week = month.weeks[index];
           Review review = week.review ??
               Review(
-                comments: [],
-                title:  "Uke " + week.week,
+                  comments: [],
+                  title: "Uke " + week.week,
                   reviewSpan: ReviewSpan.weekly,
                   categories: [],
                   id: widget.reviewBloc.currentYear.year +
                       widget.reviewBloc.currentMonth.month +
                       addToZero(week.week));
           if (week.review == null) week.review = review;
-           if (widget.reviewBloc.reviews.contains(review) == false) {
+          if (widget.reviewBloc.reviews.contains(review) == false) {
             widget.reviewBloc.reviews.add(review);
           }
           return Column(
@@ -48,7 +48,7 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
               Padding(
                 padding: EdgeInsets.only(left: 24, right: 24, top: 12),
                 child: Text(
-                 review.title,
+                  review.title,
                   style: TextStyle(
                       color: colorTextGrey,
                       fontWeight: FontWeight.bold,
@@ -63,6 +63,7 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
                 child: Container(
                   height: 100,
                   child: ReviewListItem(
+                    reviewBloc: widget.reviewBloc,
                     review: review,
                     itemAmount: month.weeks.length,
                   ),

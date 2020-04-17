@@ -64,6 +64,7 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
                 child: Container(
                   height: 100,
                   child: ReviewListItem(
+                    reviewBloc: widget.reviewBloc,
                     review: review,
                     itemAmount: year.months.length,
                   ),

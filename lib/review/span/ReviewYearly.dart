@@ -45,7 +45,7 @@ class _ReviewYearlyState extends State<ReviewYearly> {
               Padding(
                 padding: EdgeInsets.only(left: 24, right: 24, top: 12),
                 child: Text(
-                  review.title,
+                  review.title ,
                   style: TextStyle(
                       color: colorTextGrey,
                       fontWeight: FontWeight.bold,
@@ -58,6 +58,7 @@ class _ReviewYearlyState extends State<ReviewYearly> {
                   widget.reviewBloc.reviewSpan.value = ReviewSpan.monthly;
                 },
                 child: ReviewListItem(
+                  reviewBloc: widget.reviewBloc,
                   review: review,
                   itemAmount: decade.years.length,
                 ),

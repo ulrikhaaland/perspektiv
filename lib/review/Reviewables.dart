@@ -29,6 +29,8 @@ class _ReviewablesState extends State<Reviewables> {
 
   List<Provider> providers;
 
+  bool _isLoading = true;
+
   @override
   void initState() {
     _categoriesBloc = CategoriesBloc();
@@ -40,6 +42,7 @@ class _ReviewablesState extends State<Reviewables> {
           _reviewBloc.reviewCategory.value == "") {
         _reviewBloc.reviewCategory.value =
             _categoriesBloc.categoryList.value[0].name;
+        _hasData();
       }
     });
 
@@ -50,9 +53,8 @@ class _ReviewablesState extends State<Reviewables> {
     ];
 
     _reviewBloc.doneLoading.addListener(() {
-      setState(() {
-        _decade = _reviewBloc.decade;
-      });
+      _decade = _reviewBloc.decade;
+      _hasData();
     });
 
     _reviewBloc.reviewSpan.addListener(() {
@@ -114,9 +116,12 @@ class _ReviewablesState extends State<Reviewables> {
             ],
             centerTitle: true,
             backgroundColor: colorLeBleu,
-            title: _getAppBarTitle(),
+            flexibleSpace: FlexibleSpaceBar(
+              titlePadding: EdgeInsets.only(bottom: 8),
+              title: _getAppBarTitle(),
+            ) ,
           ),
-          body: _decade == null
+          body: _isLoading == true
               ? Center(
                   child: CircularProgressIndicator(
                   backgroundColor: colorHappiness,
@@ -163,7 +168,6 @@ class _ReviewablesState extends State<Reviewables> {
                         children: <Widget>[
                           _getNavigator(),
                           reviewContent,
-                          _getAppBarTitle()
                         ]);
                   }),
         ),
@@ -334,14 +338,23 @@ class _ReviewablesState extends State<Reviewables> {
       return titleText;
     }
 
-    Size size = Size(180, 50);
+    Size size = MediaQuery.of(context).size;
 
     return ReviewListItem(
       pageTitle: review.title,
-      size: size,
+      size: Size(size.width / 1.8, size.height / 18),
       review: review,
       reviewBloc: _reviewBloc,
       itemAmount: 1,
     );
+  }
+
+  void _hasData() {
+    if (_decade != null &&
+        (_reviewBloc.reviewCategory.value != null &&
+            _reviewBloc.reviewCategory.value != "")) if (_isLoading == true)
+      setState(() {
+        _isLoading = false;
+      });
   }
 }

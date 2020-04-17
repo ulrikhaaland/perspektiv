@@ -74,6 +74,7 @@ class ReviewListItemState extends State<ReviewListItem> {
               }));
 
     Widget _subCategoryItems = Row(
+      mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: theCategoryView.subCategories
           .map((sub) => _getSubCategoryItem(sub))
@@ -126,7 +127,7 @@ class ReviewListItemState extends State<ReviewListItem> {
       );
 
     return Card(
-      margin: EdgeInsets.zero,
+      margin: EdgeInsets.symmetric(horizontal: widget.size == null ? 16 : 0),
       color: widget.pageTitle != null ? Colors.white : Colors.white,
       shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.all(Radius.elliptical(20, 30))),
@@ -169,6 +170,9 @@ class ReviewListItemState extends State<ReviewListItem> {
     Size size = widget.size ?? MediaQuery.of(context).size;
 
     double maxWidth = size.width;
+
+    if(widget.size == null) maxWidth -= 32;
+
 
     double widthAsPercentage =
         ((maxWidth / theCategoryView.subCategories.length) / 100);
