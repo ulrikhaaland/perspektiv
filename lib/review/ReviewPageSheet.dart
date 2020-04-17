@@ -49,7 +49,7 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
         width: size.width,
         child: DraggableScrollableSheet(
             expand: false,
-            maxChildSize: 0.3,
+            maxChildSize: 0.4,
             minChildSize: 0.2,
             initialChildSize: 0.2,
             builder: (context, sheetController) {
@@ -134,17 +134,19 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                       SliverList(
                           delegate: SliverChildListDelegate([
                         Container(
-                          height: 12,
+                          height: 16,
                         ),
                         Container(
+                          padding: EdgeInsets.only(top: 4 , left: 8, right: 8),
                           alignment: Alignment.topLeft,
-                          height: (size.height / 10) * 2,
+                          height: (size.height / 10) * 4,
                           child: TabBarView(
                             children: _categories.map((category) {
                               return Align(
                                 alignment: Alignment.topCenter,
                                 child: _ReviewSheetCollection(
                                   key: Key(category.name),
+                                  scrollController: sheetController,
                                   category: category,
                                   review: review,
                                 ),
@@ -166,9 +168,14 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
 class _ReviewSheetCollection extends StatefulWidget {
   final Category category;
   final Review review;
+  final ScrollController scrollController;
 
-  _ReviewSheetCollection({Key key, this.category, this.review})
-      : super(key: key);
+  _ReviewSheetCollection(
+      {Key key, this.category, this.review, this.scrollController})
+      : assert(category != null),
+        assert(scrollController != null),
+        assert(review != null),
+        super(key: key);
 
   @override
   __ReviewSheetCollectionState createState() => __ReviewSheetCollectionState();
@@ -178,6 +185,45 @@ class __ReviewSheetCollectionState extends State<_ReviewSheetCollection> {
   @override
   Widget build(BuildContext context) {
     //TODO: Add gridviewbuilder
+
+    return GridView.builder(
+        controller: widget.scrollController,
+        itemCount: widget.category.subCategories.length,
+        gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            crossAxisCount: 3,
+            crossAxisSpacing: 8,
+            mainAxisSpacing: 8,
+            childAspectRatio: 2.75),
+        itemBuilder: (context, index) {
+          SubCategory subCat = widget.category.subCategories[index];
+          return GestureDetector(
+            onTapDown: (_) {
+              widget.review.tapDown = true;
+              widget.review.onTapSubCategory(
+                  category: widget.category, subCategory: subCat);
+            },
+            onTapUp: (_) {
+              widget.review.tapDown = false;
+            },
+            onVerticalDragStart: (_) {
+              widget.review.tapDown = false;
+            },
+            onHorizontalDragStart: (_) {
+              widget.review.tapDown = false;
+            },
+            child: InkWell(
+                // onTapDown: (details) {
+                //   print("tap down");
+                // },
+                // onTapCancel: () {
+                //   print("cancel");
+                // },
+                // onTap: () => review.onTapSubCategory(
+                //     category: category, subCategory: subCat),
+                child: SubCategoryItem(
+                    key: Key(subCat.name), subCategory: subCat)),
+          );
+        });
     return Wrap(
       crossAxisAlignment: WrapCrossAlignment.start,
       spacing: 8,
