@@ -83,8 +83,9 @@ class MyApp extends StatelessWidget {
             DividerThemeData(indent: 0, endIndent: 0, thickness: 1, space: 1),
         primarySwatch: Colors.blue,
       ),
-      home: Spotify(),
-      // Reviewables(),
+      home:
+          //  Spotify(),
+          Reviewables(),
     );
   }
 }

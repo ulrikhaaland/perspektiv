@@ -40,6 +40,7 @@ class ReviewInput extends StatelessWidget {
 
           comment.comment = val;
         },
+        autocorrect: false,
         autofocus: comment.init,
         style: TextStyle(
             color: colorTextGrey, fontStyle: FontStyle.italic, fontSize: 16),
@@ -59,7 +60,6 @@ class ReviewInput extends StatelessWidget {
           hintText: comment.label,
           counterStyle: TextStyle(color: colorLeBleu),
           focusedBorder: UnderlineInputBorder(
-
               borderSide: BorderSide(
             width: 2,
             color: colorLeBleu,

@@ -48,11 +48,12 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
         height: size.height,
         width: size.width,
         child: DraggableScrollableSheet(
-            expand: false,
+            // expand: false,
             maxChildSize: 0.4,
             minChildSize: 0.2,
             initialChildSize: 0.2,
             builder: (context, sheetController) {
+              sheetController.animateTo(offset)
               return GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: Container(
@@ -137,9 +138,9 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                           height: 16,
                         ),
                         Container(
-                          padding: EdgeInsets.only(top: 4 , left: 8, right: 8),
+                          padding: EdgeInsets.only(top: 8 , left: 8, right: 8),
                           alignment: Alignment.topLeft,
-                          height: (size.height / 10) * 4,
+                          height: (size.height / 10) * 3,
                           child: TabBarView(
                             children: _categories.map((category) {
                               return Align(

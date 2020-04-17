@@ -126,13 +126,9 @@ class ReviewListItemState extends State<ReviewListItem> {
         ),
       );
 
-    return Card(
-      margin: EdgeInsets.symmetric(horizontal: widget.size == null ? 16 : 0),
-      color: widget.pageTitle != null ? colorLeBleu : Colors.white,
-      shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.all(Radius.elliptical(20, 30))),
-      child: _subCategoryItems,
-    );
+    if (widget.size == null)
+      return Align(alignment: Alignment.center, child: _subCategoryItems);
+      else return _subCategoryItems;
   }
 
   Widget _getSubCategoryItem(SubCategory sub) {
@@ -171,8 +167,7 @@ class ReviewListItemState extends State<ReviewListItem> {
 
     double maxWidth = size.width;
 
-    if(widget.size == null) maxWidth -= 32;
-
+    if (widget.size == null) maxWidth -= 32;
 
     double widthAsPercentage =
         ((maxWidth / theCategoryView.subCategories.length) / 100);

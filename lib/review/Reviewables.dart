@@ -95,15 +95,7 @@ class _ReviewablesState extends State<Reviewables> {
                   _reviewBloc.saveReviews();
                 }),
             actions: <Widget>[
-              IconButton(
-                  icon: Icon(
-                    Icons.filter_vintage,
-                    color: isColorDark(colorLeBleu),
-                  ),
-                  onPressed: () {
-                    _categoriesBloc.saveCategories();
-                    _reviewBloc.saveReviews();
-                  }),
+              
               IconButton(
                 icon: Icon(
                   Icons.category,
@@ -332,10 +324,14 @@ class _ReviewablesState extends State<Reviewables> {
 
         break;
     }
-    Widget titleText = Text(
+    Widget titleText = 
+    Padding(
+      padding: EdgeInsets.only(bottom: 4),
+      child:
+    Text(
       _getAppBarTitleText(),
-      style: TextStyle(color: Colors.white),
-    );
+      style: TextStyle(color: Colors.white, fontSize: 24),
+    ));
     if (review == null) {
       return titleText;
     }
@@ -344,7 +340,7 @@ class _ReviewablesState extends State<Reviewables> {
 
     return ReviewListItem(
       pageTitle: review.title,
-      size: Size(size.width / 1.8, size.height / 18),
+      size: Size(size.width / 1.8, size.height / 14),
       review: review,
       reviewBloc: _reviewBloc,
       itemAmount: 1,

@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
 import 'package:perspektiv/bloc/CategoriesBloc.dart';
@@ -32,7 +34,16 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   void initState() {
     widget.review.onAddCategory.addListener(() {
-      if (mounted) setState(() {});
+      if (mounted)
+        setState(() {
+          Timer(
+            Duration(milliseconds: 50),
+            () => _scrollController.animateTo(
+                _scrollController.position.maxScrollExtent,
+                duration: Duration(milliseconds: 250),
+                curve: Curves.linear),
+          );
+        });
     });
     super.initState();
   }
@@ -55,7 +66,7 @@ class _ReviewPageState extends State<ReviewPage> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-//            resizeToAvoidBottomPadding: false,
+           resizeToAvoidBottomPadding: false,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
@@ -102,15 +113,18 @@ class _ReviewPageState extends State<ReviewPage> {
                     child: ListView(
                       controller: _scrollController,
                       children: <Widget>[
-                        Column(
-                          children: review.comments
-                              .map((comment) => ReviewInput(
-                                    commentList: review.comments,
-                                    comment: comment,
-                                  ))
-                              .toList(),
+                        Padding(
+                          padding: const EdgeInsets.only(
+                              top: 16.0, left: 16, right: 16),
+                          child: Column(
+                            children: review.comments
+                                .map((comment) => ReviewInput(
+                                      commentList: review.comments,
+                                      comment: comment,
+                                    ))
+                                .toList(),
+                          ),
                         ),
-
                         Column(
                           children: review.categories
                               .map((category) => _ReviewCategoryItem(
@@ -127,7 +141,6 @@ class _ReviewPageState extends State<ReviewPage> {
                                   ))
                               .toList(),
                         )
-
                       ],
                     ),
                   ),
