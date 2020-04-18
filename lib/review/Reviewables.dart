@@ -112,6 +112,7 @@ class _ReviewablesState extends State<Reviewables> {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         mainAxisAlignment: MainAxisAlignment.start,
                         children: <Widget>[
+                          ///TODO: Replace with settings feature
                           Expanded(
                             child: Align(
                               alignment: Alignment.center,
