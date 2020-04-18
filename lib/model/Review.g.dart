@@ -71,8 +71,8 @@ T _$enumDecodeNullable<T>(
 }
 
 const _$ReviewSpanEnumMap = {
-  ReviewSpan.daily: 'daily',
-  ReviewSpan.weekly: 'weekly',
-  ReviewSpan.monthly: 'monthly',
   ReviewSpan.yearly: 'yearly',
+  ReviewSpan.monthly: 'monthly',
+  ReviewSpan.weekly: 'weekly',
+  ReviewSpan.daily: 'daily',
 };

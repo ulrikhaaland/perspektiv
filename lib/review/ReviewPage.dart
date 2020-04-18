@@ -37,14 +37,20 @@ class _ReviewPageState extends State<ReviewPage> {
       if (mounted)
         setState(() {
           //TODO: Add scrollfeedback on add comment
-          Timer(
-            Duration(milliseconds: 50),
-            () => _scrollController.animateTo(
-                _scrollController.position.maxScrollExtent,
-                duration: Duration(milliseconds: 250),
-                curve: Curves.linear),
-          );
         });
+    });
+    widget.review.onAddComment.addListener(() {
+      if (mounted)
+        setState(() {
+          //TODO: Add scrollfeedback on add comment
+        });
+      Timer(
+        Duration(milliseconds: 200),
+        () => _scrollController.animateTo(
+            _scrollController.position.maxScrollExtent,
+            duration: Duration(milliseconds: 250),
+            curve: Curves.linear),
+      );
     });
     super.initState();
   }
@@ -57,7 +63,11 @@ class _ReviewPageState extends State<ReviewPage> {
 
   @override
   Widget build(BuildContext context) {
+    Size size = MediaQuery.of(context).size;
+
+    int indexOfOrientation = MediaQuery.of(context).orientation.index;
     Review review = widget.review;
+
     return MultiProvider(
       providers: [
         Provider<CategoriesBloc>.value(value: widget.categoriesBloc),
@@ -69,42 +79,97 @@ class _ReviewPageState extends State<ReviewPage> {
         child: Scaffold(
             resizeToAvoidBottomPadding: false,
             resizeToAvoidBottomInset: false,
-            appBar: AppBar(
-              iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
-              backgroundColor: colorLeBleu,
-              centerTitle: true,
-              title: Text(
-                review.title ?? "Review",
-                style: TextStyle(color: isColorDark(colorLeBleu)),
+            appBar: PreferredSize(
+              preferredSize: Size(size.width, 80),
+              child: Material(
+                elevation: 10,
+                child: SizedBox.expand(
+                    child: Container(
+                        padding: EdgeInsets.only(
+                            top: indexOfOrientation == 0 ? 32 : 0),
+                        color: colorLeBleu,
+                        child: Row(
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          mainAxisAlignment: MainAxisAlignment.start,
+                          children: <Widget>[
+                            Expanded(
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.arrow_back_ios,
+                                  size: 30,
+                                  color: Colors.white,
+                                ),
+                                onPressed: () => Navigator.pop(context),
+                              ),
+                            ),
+                            Container(
+                              width: size.width / 1.8,
+                              child: Text(
+                                review.title ?? "Review",
+                                style: TextStyle(
+                                    color: isColorDark(colorLeBleu),
+                                    fontSize: 24),
+                                textAlign: TextAlign.center,
+                              ),
+                            ),
+                            Expanded(
+                              child: IconButton(
+                                icon: Icon(
+                                  Icons.category,
+                                  size: 30,
+                                  color: colorHappiness,
+                                ),
+                                onPressed: () => Navigator.push(
+                                    context,
+                                    MaterialPageRoute(
+                                        builder: (context) => CategoryPage(
+                                              key: Key("categoryPage"),
+                                              categoriesBloc:
+                                                  widget.categoriesBloc,
+                                            ))),
+                              ),
+                            ),
+                          ],
+                        ))),
               ),
-              actions: <Widget>[
-                IconButton(
-                  icon: Icon(
-                    Icons.save,
-                    size: 30,
-                    color: Colors.white,
-                  ),
-                  onPressed: () {
-                    widget.reviewBloc.saveReviews();
-                    widget.categoriesBloc.saveCategories();
-                  },
-                ),
-                IconButton(
-                  icon: Icon(
-                    Icons.category,
-                    size: 30,
-                    color: colorHappiness,
-                  ),
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CategoryPage(
-                                key: Key("categoryPage"),
-                                categoriesBloc: widget.categoriesBloc,
-                              ))),
-                ),
-              ],
             ),
+
+            // AppBar(
+            //   iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
+            //   backgroundColor: colorLeBleu,
+            //   centerTitle: true,
+            //   title: Text(
+            //     review.title ?? "Review",
+            //     style: TextStyle(color: isColorDark(colorLeBleu)),
+            //   ),
+            //   actions: <Widget>[
+            //     IconButton(
+            //       icon: Icon(
+            //         Icons.save,
+            //         size: 30,
+            //         color: Colors.white,
+            //       ),
+            //       onPressed: () {
+            //         widget.reviewBloc.saveReviews();
+            //         widget.categoriesBloc.saveCategories();
+            //       },
+            //     ),
+            //     IconButton(
+            //       icon: Icon(
+            //         Icons.category,
+            //         size: 30,
+            //         color: colorHappiness,
+            //       ),
+            //       onPressed: () => Navigator.push(
+            //           context,
+            //           MaterialPageRoute(
+            //               builder: (context) => CategoryPage(
+            //                     key: Key("categoryPage"),
+            //                     categoriesBloc: widget.categoriesBloc,
+            //                   ))),
+            //     ),
+            //   ],
+            // ),
             body: SizedBox.expand(
               child: Stack(
                 children: <Widget>[
@@ -119,9 +184,14 @@ class _ReviewPageState extends State<ReviewPage> {
                               top: 16.0, left: 16, right: 16),
                           child: Column(
                             children: review.comments
-                                .map((comment) => ReviewInput(
-                                      commentList: review.comments,
-                                      comment: comment,
+                                .map((comment) => Dismissible(
+                                      key: UniqueKey(),
+                                      onDismissed: (dir) =>
+                                          review.comments.remove(comment),
+                                      child: ReviewInput(
+                                        commentList: review.comments,
+                                        comment: comment,
+                                      ),
                                     ))
                                 .toList(),
                           ),
@@ -143,7 +213,7 @@ class _ReviewPageState extends State<ReviewPage> {
                               .toList(),
                         ),
                         Container(
-                          height: 100,
+                          height: 200,
                         )
                       ],
                     ),
@@ -280,6 +350,25 @@ class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
                             ),
                         ],
                       ),
+                      Align(
+                        alignment: Alignment.center,
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.all(
+                              Radius.elliptical(20, 30),
+                            ),
+                            color: Colors.black.withOpacity(0.2),
+                          ),
+                          child: Text(
+                            subCategory.name,
+                            textWidthBasis: TextWidthBasis.parent,
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                                color: isColorDark(subCategory.color)),
+                          ),
+                        ),
+                      )
                     ],
                   );
                 },

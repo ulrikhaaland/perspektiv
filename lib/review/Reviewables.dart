@@ -35,6 +35,8 @@ class _ReviewablesState extends State<Reviewables> {
 
   bool _isLoading = true;
 
+  int indexOfOrientation;
+
   @override
   void initState() {
     _categoriesBloc = CategoriesBloc();
@@ -70,6 +72,9 @@ class _ReviewablesState extends State<Reviewables> {
 
   @override
   Widget build(BuildContext context) {
+    indexOfOrientation = MediaQuery.of(context).orientation.index;
+
+    Size size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
         int index = _reviewBloc.reviewSpan.value.index;
@@ -84,40 +89,93 @@ class _ReviewablesState extends State<Reviewables> {
       child: MultiProvider(
         providers: providers,
         child: Scaffold(
-          appBar: AppBar(
-            leading: IconButton(
-                icon: Icon(
-                  Icons.save,
-                  color: isColorDark(colorLeBleu),
-                ),
-                onPressed: () {
-                  _categoriesBloc.saveCategories();
-                  _reviewBloc.saveReviews();
-                }),
-            actions: <Widget>[
-              
-              IconButton(
-                icon: Icon(
-                  Icons.category,
-                  size: 30,
-                  color: colorHappiness,
-                ),
-                onPressed: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => CategoryPage(
-                              key: Key("categoryPage"),
-                              categoriesBloc: _categoriesBloc,
-                            ))),
-              ),
-            ],
-            centerTitle: true,
-            backgroundColor: colorLeBleu,
-            flexibleSpace: FlexibleSpaceBar(
-              titlePadding: EdgeInsets.only(bottom: 8),
-              title: _getAppBarTitle(),
+          appBar: PreferredSize(
+            preferredSize: Size(size.width, 80),
+            child: Material(
+              elevation: 10,
+              child: SizedBox.expand(
+                  child: Container(
+                      padding: EdgeInsets.only(
+                          top: indexOfOrientation == 0 ? 32 : 0),
+                      color: colorLeBleu,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: IntrinsicHeight(
+                                child: IconButton(
+                                    alignment: Alignment.bottomCenter,
+                                    icon: Icon(
+                                      Icons.save,
+                                      size: 30,
+                                      color: isColorDark(colorLeBleu),
+                                    ),
+                                    onPressed: () {
+                                      _categoriesBloc.saveCategories();
+                                      _reviewBloc.saveReviews();
+                                    }),
+                              ),
+                            ),
+                          ),
+                          _getAppBarTitle(),
+                          Expanded(
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.category,
+                                size: 30,
+                                color: colorHappiness,
+                              ),
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CategoryPage(
+                                            key: Key("categoryPage"),
+                                            categoriesBloc: _categoriesBloc,
+                                          ))),
+                            ),
+                          ),
+                        ],
+                      ))),
             ),
           ),
+
+          // AppBar(
+          //   leading: IconButton(
+          //       icon: Icon(
+          //         Icons.save,
+          //         color: isColorDark(colorLeBleu),
+          //       ),
+          //       onPressed: () {
+          //         _categoriesBloc.saveCategories();
+          //         _reviewBloc.saveReviews();
+          //       }),
+          //   actions: <Widget>[
+
+          //     IconButton(
+          //       icon: Icon(
+          //         Icons.category,
+          //         size: 30,
+          //         color: colorHappiness,
+          //       ),
+          //       onPressed: () => Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //               builder: (context) => CategoryPage(
+          //                     key: Key("categoryPage"),
+          //                     categoriesBloc: _categoriesBloc,
+          //                   ))),
+          //     ),
+          //   ],
+          //   centerTitle: true,
+          //   backgroundColor: colorLeBleu,
+          //   flexibleSpace: FlexibleSpaceBar(
+          //     titlePadding: EdgeInsets.only(bottom: 8),
+          //     title: _getAppBarTitle(),
+          //   ),
+          // ),
           body: _isLoading == true
               ? Center(
                   child: CircularProgressIndicator(
@@ -324,23 +382,21 @@ class _ReviewablesState extends State<Reviewables> {
 
         break;
     }
-    Widget titleText = 
-    Padding(
-      padding: EdgeInsets.only(bottom: 4),
-      child:
-    Text(
-      _getAppBarTitleText(),
-      style: TextStyle(color: Colors.white, fontSize: 24),
-    ));
+    Widget titleText = Padding(
+        padding: EdgeInsets.only(bottom: 4),
+        child: Text(
+          _getAppBarTitleText(),
+          style: TextStyle(color: Colors.white, fontSize: 24),
+        ));
     if (review == null) {
       return titleText;
     }
 
     Size size = MediaQuery.of(context).size;
-
     return ReviewListItem(
       pageTitle: review.title,
-      size: Size(size.width / 1.8, size.height / 14),
+      size: Size(
+          size.width / 1.8, size.height / (indexOfOrientation == 0 ? 14 : 7)),
       review: review,
       reviewBloc: _reviewBloc,
       itemAmount: 1,
@@ -355,6 +411,4 @@ class _ReviewablesState extends State<Reviewables> {
         _isLoading = false;
       });
   }
-
-  
 }

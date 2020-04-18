@@ -26,6 +26,8 @@ class Review {
   @JsonKey(ignore: true)
   ChangeNotifier onAddCategory = ChangeNotifier();
   @JsonKey(ignore: true)
+  ChangeNotifier onAddComment = ChangeNotifier();
+  @JsonKey(ignore: true)
   ValueNotifier<SubCategory> onSubChanged = ValueNotifier(null);
 
   Review(
@@ -53,7 +55,7 @@ class Review {
         latestSubCategory.comments.add(comment..label = latestSubCategory.name);
       }
     }
-    onAddCategory.notifyListeners();
+    onAddComment.notifyListeners();
   }
 
   void onTapSubCategory(
