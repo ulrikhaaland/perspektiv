@@ -265,7 +265,7 @@ class _ReviewCategoryItem extends StatelessWidget {
                 onDismissed: (direction) {
                   onSubCategoryRemoved(subCat);
                 },
-                key: Key(subCat.name),
+                key: UniqueKey(),
                 child: _ReviewSubCategoryItem(
                   key: Key(subCat.name),
                   subCategory: subCat,

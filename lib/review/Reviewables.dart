@@ -10,6 +10,7 @@ import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Decade.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/review/ReviewListItem.dart';
+import 'package:perspektiv/undefined/LifeCycleEventHandler.dart';
 import 'package:provider/provider.dart';
 import 'package:spotify/spotify.dart';
 
@@ -51,6 +52,15 @@ class _ReviewablesState extends State<Reviewables> {
         _hasData();
       }
     });
+
+    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+        detachedCallBack: (AppLifecycleState state) async {
+          await _reviewBloc.saveReviews();
+          await _categoriesBloc.saveCategories();
+          print("Has Saved");
+          return;
+        },
+        resumeCallBack: () async {}));
 
     providers = [
       Provider<CategoriesBloc>.value(value: _categoriesBloc),
