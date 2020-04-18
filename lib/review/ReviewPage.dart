@@ -36,6 +36,7 @@ class _ReviewPageState extends State<ReviewPage> {
     widget.review.onAddCategory.addListener(() {
       if (mounted)
         setState(() {
+          //TODO: Add scrollfeedback on add comment
           Timer(
             Duration(milliseconds: 50),
             () => _scrollController.animateTo(
@@ -66,7 +67,7 @@ class _ReviewPageState extends State<ReviewPage> {
       child: GestureDetector(
         onTap: () => FocusScope.of(context).unfocus(),
         child: Scaffold(
-           resizeToAvoidBottomPadding: false,
+            resizeToAvoidBottomPadding: false,
             resizeToAvoidBottomInset: false,
             appBar: AppBar(
               iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
@@ -140,6 +141,9 @@ class _ReviewPageState extends State<ReviewPage> {
                                     category: category,
                                   ))
                               .toList(),
+                        ),
+                        Container(
+                          height: 100,
                         )
                       ],
                     ),

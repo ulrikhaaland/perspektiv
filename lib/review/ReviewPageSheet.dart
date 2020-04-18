@@ -53,7 +53,7 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
             minChildSize: 0.2,
             initialChildSize: 0.2,
             builder: (context, sheetController) {
-              sheetController.animateTo(offset)
+              // sheetController.animateTo(offset)
               return GestureDetector(
                 onTap: () => FocusScope.of(context).unfocus(),
                 child: Container(
