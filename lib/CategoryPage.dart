@@ -35,10 +35,10 @@ class _CategoryPageState extends State<CategoryPage> with ChangeNotifier {
       Provider<CategoriesBloc>.value(value: _categoriesBloc),
     ];
     _categoriesBloc.categoryList.addListener(() {
-      setState(() {});
+      if (mounted) setState(() {});
     });
     _categoriesBloc.onRemoveCategory.addListener(() {
-      setState(() {});
+      if (mounted) setState(() {});
     });
 
     super.initState();
@@ -46,6 +46,7 @@ class _CategoryPageState extends State<CategoryPage> with ChangeNotifier {
 
   @override
   void dispose() {
+    _categoriesBloc.categoryList.removeListener(null);
     _categoriesBloc.onRemoveCategory.removeListener(null);
     super.dispose();
   }

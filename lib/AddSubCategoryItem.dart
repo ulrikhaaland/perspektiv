@@ -72,7 +72,7 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
         title: Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            if (widget.category.name != null) ...[
+            if (widget.isCreate == true) ...[
               Text(
                 "Ny i ",
                 style: TextStyle(color: isColorDark(color)),
@@ -87,7 +87,7 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
               ),
             ] else ...[
               Text(
-                widget.subCategory.name,
+                "Rediger",
                 style: TextStyle(
                     color: isColorDark(
                   color,

@@ -10,6 +10,7 @@ import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Decade.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/review/ReviewListItem.dart';
+import 'package:perspektiv/undefined/LifeCycleEventHandler.dart';
 import 'package:provider/provider.dart';
 import 'package:spotify/spotify.dart';
 
@@ -35,6 +36,8 @@ class _ReviewablesState extends State<Reviewables> {
 
   bool _isLoading = true;
 
+  int indexOfOrientation;
+
   @override
   void initState() {
     _categoriesBloc = CategoriesBloc();
@@ -49,6 +52,15 @@ class _ReviewablesState extends State<Reviewables> {
         _hasData();
       }
     });
+
+    WidgetsBinding.instance.addObserver(LifecycleEventHandler(
+        detachedCallBack: (AppLifecycleState state) async {
+          await _reviewBloc.saveReviews();
+          await _categoriesBloc.saveCategories();
+          print("Has Saved");
+          return;
+        },
+        resumeCallBack: () async {}));
 
     providers = [
       Provider<CategoriesBloc>.value(value: _categoriesBloc),
@@ -70,6 +82,9 @@ class _ReviewablesState extends State<Reviewables> {
 
   @override
   Widget build(BuildContext context) {
+    indexOfOrientation = MediaQuery.of(context).orientation.index;
+
+    Size size = MediaQuery.of(context).size;
     return WillPopScope(
       onWillPop: () {
         int index = _reviewBloc.reviewSpan.value.index;
@@ -83,92 +98,144 @@ class _ReviewablesState extends State<Reviewables> {
       },
       child: MultiProvider(
         providers: providers,
-        child: SafeArea(
-          child: Scaffold(
-            appBar: AppBar(
-              leading: IconButton(
-                  icon: Icon(
-                    Icons.save,
-                    color: isColorDark(colorLeBleu),
-                  ),
-                  onPressed: () {
-                    _categoriesBloc.saveCategories();
-                    _reviewBloc.saveReviews();
-                  }),
-              actions: <Widget>[
-                
-                IconButton(
-                  icon: Icon(
-                    Icons.category,
-                    size: 30,
-                    color: colorHappiness,
-                  ),
-                  onPressed: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                          builder: (context) => CategoryPage(
-                                key: Key("categoryPage"),
-                                categoriesBloc: _categoriesBloc,
-                              ))),
-                ),
-              ],
-              centerTitle: true,
-              backgroundColor: colorLeBleu,
-              flexibleSpace: FlexibleSpaceBar(
-                titlePadding: EdgeInsets.only(bottom: 0),
-                title: _getAppBarTitle(),
-              ),
+        child: Scaffold(
+          appBar: PreferredSize(
+            preferredSize: Size(size.width, 80),
+            child: Material(
+              elevation: 10,
+              child: SizedBox.expand(
+                  child: Container(
+                      padding: EdgeInsets.only(
+                          top: indexOfOrientation == 0 ? 32 : 0),
+                      color: colorLeBleu,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: <Widget>[
+                          ///TODO: Replace with settings feature
+                          Expanded(
+                            child: Align(
+                              alignment: Alignment.center,
+                              child: IntrinsicHeight(
+                                child: IconButton(
+                                    alignment: Alignment.bottomCenter,
+                                    icon: Icon(
+                                      Icons.save,
+                                      size: 30,
+                                      color: isColorDark(colorLeBleu),
+                                    ),
+                                    onPressed: () {
+                                      _categoriesBloc.saveCategories();
+                                      _reviewBloc.saveReviews();
+                                    }),
+                              ),
+                            ),
+                          ),
+                          _getAppBarTitle(),
+                          Expanded(
+                            child: IconButton(
+                              icon: Icon(
+                                Icons.category,
+                                size: 30,
+                                color: colorHappiness,
+                              ),
+                              onPressed: () => Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) => CategoryPage(
+                                            key: Key("categoryPage"),
+                                            categoriesBloc: _categoriesBloc,
+                                          ))),
+                            ),
+                          ),
+                        ],
+                      ))),
             ),
-            body: _isLoading == true
-                ? Center(
-                    child: CircularProgressIndicator(
-                    backgroundColor: colorHappiness,
-                    valueColor: AlwaysStoppedAnimation<Color>(colorLeBleu),
-                  ))
-                : ValueListenableBuilder(
-                    valueListenable: _reviewBloc.reviewSpanListenable,
-                    builder: (context, ReviewSpan reviewSpan, idk) {
-                      Widget reviewContent;
-
-                      switch (reviewSpan) {
-                        case ReviewSpan.daily:
-                          reviewContent = ReviewDaily(
-                            reviewBloc: _reviewBloc,
-                            scrollController: _scrollController,
-                          );
-                          break;
-                        case ReviewSpan.weekly:
-                          reviewContent = ReviewWeekly(
-                            reviewBloc: _reviewBloc,
-                            scrollController: _scrollController,
-                          );
-
-                          break;
-                        case ReviewSpan.monthly:
-                          reviewContent = ReviewMonthly(
-                            reviewBloc: _reviewBloc,
-                            scrollController: _scrollController,
-                          );
-                          break;
-                        case ReviewSpan.yearly:
-                          reviewContent = ReviewYearly(
-                            reviewBloc: _reviewBloc,
-                            scrollController: _scrollController,
-                          );
-
-                          break;
-                        default:
-                          reviewContent = Container();
-                      }
-                      return ListView(
-                          shrinkWrap: true,
-                          controller: _scrollController,
-                          children: <Widget>[
-                            _getNavigator(),
-                            reviewContent,
-                          ]);
-                    }),
           ),
+
+          // AppBar(
+          //   leading: IconButton(
+          //       icon: Icon(
+          //         Icons.save,
+          //         color: isColorDark(colorLeBleu),
+          //       ),
+          //       onPressed: () {
+          //         _categoriesBloc.saveCategories();
+          //         _reviewBloc.saveReviews();
+          //       }),
+          //   actions: <Widget>[
+
+          //     IconButton(
+          //       icon: Icon(
+          //         Icons.category,
+          //         size: 30,
+          //         color: colorHappiness,
+          //       ),
+          //       onPressed: () => Navigator.push(
+          //           context,
+          //           MaterialPageRoute(
+          //               builder: (context) => CategoryPage(
+          //                     key: Key("categoryPage"),
+          //                     categoriesBloc: _categoriesBloc,
+          //                   ))),
+          //     ),
+          //   ],
+          //   centerTitle: true,
+          //   backgroundColor: colorLeBleu,
+          //   flexibleSpace: FlexibleSpaceBar(
+          //     titlePadding: EdgeInsets.only(bottom: 8),
+          //     title: _getAppBarTitle(),
+          //   ),
+          // ),
+          body: _isLoading == true
+              ? Center(
+                  child: CircularProgressIndicator(
+                  backgroundColor: colorHappiness,
+                  valueColor: AlwaysStoppedAnimation<Color>(colorLeBleu),
+                ))
+              : ValueListenableBuilder(
+                  valueListenable: _reviewBloc.reviewSpanListenable,
+                  builder: (context, ReviewSpan reviewSpan, idk) {
+                    Widget reviewContent;
+
+                    switch (reviewSpan) {
+                      case ReviewSpan.daily:
+                        reviewContent = ReviewDaily(
+                          reviewBloc: _reviewBloc,
+                          scrollController: _scrollController,
+                        );
+                        break;
+                      case ReviewSpan.weekly:
+                        reviewContent = ReviewWeekly(
+                          reviewBloc: _reviewBloc,
+                          scrollController: _scrollController,
+                        );
+
+                        break;
+                      case ReviewSpan.monthly:
+                        reviewContent = ReviewMonthly(
+                          reviewBloc: _reviewBloc,
+                          scrollController: _scrollController,
+                        );
+                        break;
+                      case ReviewSpan.yearly:
+                        reviewContent = ReviewYearly(
+                          reviewBloc: _reviewBloc,
+                          scrollController: _scrollController,
+                        );
+
+                        break;
+                      default:
+                        reviewContent = Container();
+                    }
+                    return ListView(
+                        shrinkWrap: true,
+                        controller: _scrollController,
+                        children: <Widget>[
+                          _getNavigator(),
+                          reviewContent,
+                        ]);
+                  }),
         ),
       ),
     );
@@ -326,23 +393,21 @@ class _ReviewablesState extends State<Reviewables> {
 
         break;
     }
-    Widget titleText = 
-    Padding(
-      padding: EdgeInsets.only(bottom: 4),
-      child:
-    Text(
-      _getAppBarTitleText(),
-      style: TextStyle(color: Colors.white, fontSize: 24),
-    ));
+    Widget titleText = Padding(
+        padding: EdgeInsets.only(bottom: 4),
+        child: Text(
+          _getAppBarTitleText(),
+          style: TextStyle(color: Colors.white, fontSize: 24),
+        ));
     if (review == null) {
       return titleText;
     }
 
     Size size = MediaQuery.of(context).size;
-
     return ReviewListItem(
       pageTitle: review.title,
-      size: Size(size.width / 1.8, size.height / 14),
+      size: Size(
+          size.width / 1.8, size.height / (indexOfOrientation == 0 ? 14 : 7)),
       review: review,
       reviewBloc: _reviewBloc,
       itemAmount: 1,
@@ -357,6 +422,4 @@ class _ReviewablesState extends State<Reviewables> {
         _isLoading = false;
       });
   }
-
-  
 }

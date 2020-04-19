@@ -88,10 +88,12 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                             alignment: Alignment.centerLeft,
                             width: 50,
                             child: IconButton(
+                              
                               alignment: Alignment.centerLeft,
                               icon: Icon(
                                 Icons.chat,
                                 color: colorLeBleu,
+                                size: 30,
                               ),
                               onPressed: review.addComment,
                             ),
