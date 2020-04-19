@@ -126,9 +126,9 @@ class ReviewListItemState extends State<ReviewListItem> {
         ),
       );
 
-    if (widget.size == null)
+//    if (widget.size == null)
       return Align(alignment: Alignment.center, child: _subCategoryItems);
-      else return _subCategoryItems;
+//      else return _subCategoryItems;
   }
 
   Widget _getSubCategoryItem(SubCategory sub) {
