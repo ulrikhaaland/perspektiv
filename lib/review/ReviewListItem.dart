@@ -127,7 +127,7 @@ class ReviewListItemState extends State<ReviewListItem> {
       );
 
 //    if (widget.size == null)
-      return Align(alignment: Alignment.center, child: _subCategoryItems);
+    return Align(alignment: Alignment.center, child: _subCategoryItems);
 //      else return _subCategoryItems;
   }
 
@@ -217,16 +217,20 @@ class ReviewListItemState extends State<ReviewListItem> {
             Container(
               padding: EdgeInsets.all(4),
               decoration: BoxDecoration(
+                border: Border.all(
+                  color: colorBackGround,
+                  width: 2,
+                ),
                 borderRadius: BorderRadius.all(
                   Radius.elliptical(20, 30),
                 ),
-                color: Colors.black.withOpacity(0.2),
+                color: Colors.white,
               ),
               child: Text(
-                sub.name,
+                " " + sub.name + " ",
                 textWidthBasis: TextWidthBasis.parent,
                 textAlign: TextAlign.center,
-                style: TextStyle(color: isColorDark(sub.color)),
+                style: TextStyle(color: sub.color),
               ),
             )
         ],
