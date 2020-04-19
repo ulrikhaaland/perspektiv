@@ -10,6 +10,8 @@ import 'Comment.dart';
 
 part 'Review.g.dart';
 
+enum TapType { doubleTap, singleTap }
+
 @JsonSerializable(anyMap: true)
 class Review {
   String title;
@@ -59,7 +61,10 @@ class Review {
   }
 
   void onTapSubCategory(
-      {Category category, SubCategory subCategory, int millis}) {
+      {Category category,
+      SubCategory subCategory,
+      int millis,
+      TapType tapType}) {
     assert(category != null && subCategory != null);
 
     SubCategory checkSubCat;
@@ -91,7 +96,10 @@ class Review {
             comments: []);
         checkCat.subCategories.add(checkSubCat);
       } else if (checkSubCat.percentage < 100) {
-        checkSubCat.percentage += 10;
+        if (tapType == TapType.doubleTap)
+          checkSubCat.percentage = 100;
+        else
+          checkSubCat.percentage += 10;
       } else if (checkSubCat.percentage == 100) {
         checkSubCat.percentage = 0;
       }

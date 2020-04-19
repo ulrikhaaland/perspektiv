@@ -343,32 +343,39 @@ class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
                               decoration: BoxDecoration(
                                   border: Border(
                                       right: BorderSide(
-                                          color: isDark(subCategory.color)
-                                              ? colorBackGround
-                                              : Colors.grey,
+                                          color:
+                                              isDark(color: subCategory.color)
+                                                  ? colorBackGround
+                                                  : Colors.grey,
                                           width: 1))),
                             ),
                         ],
                       ),
                       Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.all(
-                              Radius.elliptical(20, 30),
+                          alignment: Alignment.center,
+                          child: Container(
+                            padding: EdgeInsets.all(4),
+                            decoration: BoxDecoration(
+                              border: Border.all(
+                                color: colorBackGround,
+                                width: 2,
+                              ),
+                              borderRadius: BorderRadius.all(
+                                Radius.elliptical(20, 30),
+                              ),
+                              color: isDark(
+                                color: subCategory.color,
+                              )
+                                  ? Colors.white
+                                  : Colors.black.withOpacity(0.3),
                             ),
-                            color: Colors.black.withOpacity(0.2),
-                          ),
-                          child: Text(
-                            subCategory.name,
-                            textWidthBasis: TextWidthBasis.parent,
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                                color: isColorDark(subCategory.color)),
-                          ),
-                        ),
-                      )
+                            child: Text(
+                              " " + subCategory.name + " ",
+                              textWidthBasis: TextWidthBasis.parent,
+                              textAlign: TextAlign.center,
+                              style: TextStyle(color: subCategory.color),
+                            ),
+                          ))
                     ],
                   );
                 },

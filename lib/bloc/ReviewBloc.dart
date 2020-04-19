@@ -48,6 +48,7 @@ class ReviewBloc {
     if (prefsInitDate != null) initDate = DateTime.parse(prefsInitDate);
 
     if (initDate == null) {
+      // TODO: remove or edit the subtract(?)
       initDate = DateTime(DateTime.now().year, DateTime.now().month,
           DateTime.now().subtract(Duration(days: 5)).day);
       await prefs.setString("initDate", initDate.toIso8601String());
@@ -97,6 +98,8 @@ class ReviewBloc {
 
     return months;
   }
+
+  // void _
 
   List<Week> _getWeeks({int month, int year}) {
     List<Week> weeks = [];

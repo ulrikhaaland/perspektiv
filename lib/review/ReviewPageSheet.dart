@@ -88,7 +88,6 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                             alignment: Alignment.centerLeft,
                             width: 50,
                             child: IconButton(
-                              
                               alignment: Alignment.centerLeft,
                               icon: Icon(
                                 Icons.chat,
@@ -140,7 +139,7 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                           height: 16,
                         ),
                         Container(
-                          padding: EdgeInsets.only(top: 8 , left: 8, right: 8),
+                          padding: EdgeInsets.only(top: 8, left: 8, right: 8),
                           alignment: Alignment.topLeft,
                           height: (size.height / 10) * 3,
                           child: TabBarView(
@@ -214,6 +213,10 @@ class __ReviewSheetCollectionState extends State<_ReviewSheetCollection> {
             onHorizontalDragStart: (_) {
               widget.review.tapDown = false;
             },
+            // onDoubleTap: () => widget.review.onTapSubCategory(
+            //     category: widget.category,
+            //     subCategory: subCat,
+            //     tapType: TapType.doubleTap),
             child: InkWell(
                 // onTapDown: (details) {
                 //   print("tap down");

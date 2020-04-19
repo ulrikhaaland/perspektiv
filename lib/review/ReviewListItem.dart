@@ -219,7 +219,7 @@ class ReviewListItemState extends State<ReviewListItem> {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: colorBackGround,
-                  width: 2,
+                  width: 3,
                 ),
                 borderRadius: BorderRadius.all(
                   Radius.elliptical(20, 30),
@@ -227,12 +227,13 @@ class ReviewListItemState extends State<ReviewListItem> {
                 color: Colors.white,
               ),
               child: Text(
-                " " + sub.name + " ",
+                sub.name,
                 textWidthBasis: TextWidthBasis.parent,
-                textAlign: TextAlign.center,
+                textAlign: TextAlign.start,
+                overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: sub.color),
               ),
-            )
+            ),
         ],
       ),
     );
