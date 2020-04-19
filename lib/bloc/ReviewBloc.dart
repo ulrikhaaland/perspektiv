@@ -156,6 +156,7 @@ class ReviewBloc {
 
           /// If firstDayOfMonth is a sunday then the week is filled up
           /// then we return to a new loop
+          print(DateTime.now());
           if (firstDayOfMonth.weekday == 7) {
             hasACompleteWeek = true;
             week.days.add(Day(
@@ -163,8 +164,15 @@ class ReviewBloc {
                 day: addToZero(firstDayOfMonth.day.toString())));
             weeks.add(week);
             weekNumber++;
-            if (firstDayOfMonth.isAfter(initDate))
+            if (firstDayOfMonth.isAfter(initDate)) {
               firstDayOfMonth = firstDayOfMonth.add(Duration(days: 1));
+              if (firstDayOfMonth
+                  .add(Duration(days: 1))
+                  .isAfter(DateTime.now())) {
+                isBeforeTomorrow = false;
+                break;
+              }
+            }
           } else if (firstDayOfMonth
               .add(Duration(days: 1))
               .isAfter(DateTime.now())) {
@@ -223,7 +231,7 @@ class ReviewBloc {
       if (year != null) {
         year.review = yearReview;
 
-        /// Pair month  
+        /// Pair month
         for (Review monthReview in monthReviewList) {
           print(monthReview.id.substring(4, 6));
           Month month = year.months.firstWhere(
