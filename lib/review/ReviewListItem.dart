@@ -219,12 +219,16 @@ class ReviewListItemState extends State<ReviewListItem> {
               decoration: BoxDecoration(
                 border: Border.all(
                   color: colorBackGround,
-                  width: 3,
+                  width: 2,
                 ),
                 borderRadius: BorderRadius.all(
                   Radius.elliptical(20, 30),
                 ),
-                color: Colors.white,
+                color: isDark(
+                  color: sub.color,
+                )
+                    ? Colors.white
+                    : Colors.black.withOpacity(0.3),
               ),
               child: Text(
                 sub.name,
@@ -233,7 +237,7 @@ class ReviewListItemState extends State<ReviewListItem> {
                 overflow: TextOverflow.ellipsis,
                 style: TextStyle(color: sub.color),
               ),
-            ),
+            )
         ],
       ),
     );

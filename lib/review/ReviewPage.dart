@@ -40,17 +40,18 @@ class _ReviewPageState extends State<ReviewPage> {
         });
     });
     widget.review.onAddComment.addListener(() {
-      if (mounted)
+      if (mounted) {
         setState(() {
           //TODO: Add scrollfeedback on add comment
         });
-      Timer(
-        Duration(milliseconds: 200),
-        () => _scrollController.animateTo(
-            _scrollController.position.maxScrollExtent,
-            duration: Duration(milliseconds: 250),
-            curve: Curves.linear),
-      );
+        // Timer(
+        //   Duration(milliseconds: 200),
+        //   () => _scrollController.animateTo(
+        //       _scrollController.position.maxScrollExtent,
+        //       duration: Duration(milliseconds: 250),
+        //       curve: Curves.linear),
+        // );
+      }
     });
     super.initState();
   }
@@ -352,30 +353,32 @@ class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
                         ],
                       ),
                       Align(
-                          alignment: Alignment.center,
-                          child: Container(
-                            padding: EdgeInsets.all(4),
-                            decoration: BoxDecoration(
-                              border: Border.all(
-                                color: colorBackGround,
-                                width: 2,
-                              ),
-                              borderRadius: BorderRadius.all(
-                                Radius.elliptical(20, 30),
-                              ),
-                              color: isDark(
-                                color: subCategory.color,
-                              )
-                                  ? Colors.white
-                                  : Colors.black.withOpacity(0.3),
+                        alignment: Alignment.center,
+                        child: Container(
+                          padding: EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            border: Border.all(
+                              color: colorBackGround,
+                              width: 2,
                             ),
-                            child: Text(
-                              " " + subCategory.name + " ",
-                              textWidthBasis: TextWidthBasis.parent,
-                              textAlign: TextAlign.center,
-                              style: TextStyle(color: subCategory.color),
+                            borderRadius: BorderRadius.all(
+                              Radius.elliptical(20, 30),
                             ),
-                          ))
+                            color: isDark(
+                              color: subCategory.color,
+                            )
+                                ? Colors.white
+                                : Colors.black.withOpacity(0.3),
+                          ),
+                          child: Text(
+                            subCategory.name,
+                            textWidthBasis: TextWidthBasis.parent,
+                            textAlign: TextAlign.start,
+                            overflow: TextOverflow.ellipsis,
+                            style: TextStyle(color: subCategory.color),
+                          ),
+                        ),
+                      )
                     ],
                   );
                 },

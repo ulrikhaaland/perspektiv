@@ -122,7 +122,8 @@ class _ReviewablesState extends State<Reviewables> {
                                     icon: Icon(
                                       Icons.save,
                                       size: 30,
-                                      color: isColorDark(colorLeBleu),
+                                      color: Colors.transparent,
+                                      // isColorDark(colorLeBleu),
                                     ),
                                     onPressed: () {
                                       _categoriesBloc.saveCategories();

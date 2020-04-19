@@ -41,7 +41,7 @@ class ReviewInput extends StatelessWidget {
           comment.comment = val;
         },
         autocorrect: false,
-        autofocus: comment.init,
+        autofocus: true,
         style: TextStyle(
             color: colorTextGrey, fontStyle: FontStyle.italic, fontSize: 16),
         textCapitalization: TextCapitalization.sentences,
