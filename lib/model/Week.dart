@@ -22,7 +22,7 @@ class Week {
 
   Map<String, dynamic> toJson() => _$WeekToJson(this);
 
-  void _aggregate() {
+  void aggregate() {
     aggregatedCategories = [];
 
     for (var day in days) {
@@ -32,22 +32,35 @@ class Week {
               .firstWhere((c) => c.name == category.name, orElse: () => null);
 
           if (cat == null) {
-            aggregatedCategories.add(category);
+            aggregatedCategories.add(Category(
+                name: category.name,
+                comments: category.comments,
+                subCategories: category.subCategories));
           } else {
             cat.subCategories.addAll(category.subCategories);
           }
         }
-        if (aggregatedCategories.isNotEmpty)
-          for (var category in aggregatedCategories) {
-            if (category.subCategories.isNotEmpty) {
-              SubCategory subSurvivor = category.subCategories[0];
-              subSurvivor.percentage = subSurvivor.percentage / category.subCategories.length;
-              for (var subCategory in category.subCategories) {
-                // if(sub)
-              }
-            }
-          }
       }
     }
+    if (aggregatedCategories.isNotEmpty)
+      for (var category in aggregatedCategories) {
+        if (category.subCategories.isNotEmpty) {
+          SubCategory subSurvivor = category.subCategories[0];
+
+          List<SubCategory> isEquals = category.subCategories
+              .where((sub) => sub.name == subSurvivor.name)
+              .toList();
+
+          subSurvivor.percentage = subSurvivor.percentage / isEquals.length;
+
+          for (var subCategory in isEquals) {
+            if (subCategory != subSurvivor) {
+              subSurvivor.percentage = subSurvivor.percentage +
+                  (subCategory.percentage / isEquals.length);
+              category.subCategories.remove(subCategory);
+            }
+          }
+        }
+      }
   }
 }

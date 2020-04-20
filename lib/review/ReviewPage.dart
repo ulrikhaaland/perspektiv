@@ -44,13 +44,13 @@ class _ReviewPageState extends State<ReviewPage> {
         setState(() {
           //TODO: Add scrollfeedback on add comment
         });
-         Timer(
-           Duration(milliseconds: 200),
-           () => _scrollController.animateTo(
-               _scrollController.position.maxScrollExtent,
-               duration: Duration(milliseconds: 250),
-               curve: Curves.linear),
-         );
+        Timer(
+          Duration(milliseconds: 200),
+          () => _scrollController.animateTo(
+              _scrollController.position.maxScrollExtent,
+              duration: Duration(milliseconds: 250),
+              curve: Curves.linear),
+        );
       }
     });
     super.initState();
@@ -134,43 +134,6 @@ class _ReviewPageState extends State<ReviewPage> {
                         ))),
               ),
             ),
-
-            // AppBar(
-            //   iconTheme: IconThemeData(color: isColorDark(colorLeBleu)),
-            //   backgroundColor: colorLeBleu,
-            //   centerTitle: true,
-            //   title: Text(
-            //     review.title ?? "Review",
-            //     style: TextStyle(color: isColorDark(colorLeBleu)),
-            //   ),
-            //   actions: <Widget>[
-            //     IconButton(
-            //       icon: Icon(
-            //         Icons.save,
-            //         size: 30,
-            //         color: Colors.white,
-            //       ),
-            //       onPressed: () {
-            //         widget.reviewBloc.saveReviews();
-            //         widget.categoriesBloc.saveCategories();
-            //       },
-            //     ),
-            //     IconButton(
-            //       icon: Icon(
-            //         Icons.category,
-            //         size: 30,
-            //         color: colorHappiness,
-            //       ),
-            //       onPressed: () => Navigator.push(
-            //           context,
-            //           MaterialPageRoute(
-            //               builder: (context) => CategoryPage(
-            //                     key: Key("categoryPage"),
-            //                     categoriesBloc: widget.categoriesBloc,
-            //                   ))),
-            //     ),
-            //   ],
-            // ),
             body: SizedBox.expand(
               child: Stack(
                 children: <Widget>[
