@@ -44,13 +44,13 @@ class _ReviewPageState extends State<ReviewPage> {
         setState(() {
           //TODO: Add scrollfeedback on add comment
         });
-        // Timer(
-        //   Duration(milliseconds: 200),
-        //   () => _scrollController.animateTo(
-        //       _scrollController.position.maxScrollExtent,
-        //       duration: Duration(milliseconds: 250),
-        //       curve: Curves.linear),
-        // );
+         Timer(
+           Duration(milliseconds: 200),
+           () => _scrollController.animateTo(
+               _scrollController.position.maxScrollExtent,
+               duration: Duration(milliseconds: 250),
+               curve: Curves.linear),
+         );
       }
     });
     super.initState();
@@ -183,10 +183,11 @@ class _ReviewPageState extends State<ReviewPage> {
                         Padding(
                           padding: const EdgeInsets.only(
                               top: 16.0, left: 16, right: 16),
-                          child: Column(
+                          child: ListView(
+                            shrinkWrap: true,
                             children: review.comments
                                 .map((comment) => Dismissible(
-                                      key: UniqueKey(),
+                                      key: Key(comment.hashCode.toString()),
                                       onDismissed: (dir) =>
                                           review.comments.remove(comment),
                                       child: ReviewInput(
@@ -266,7 +267,7 @@ class _ReviewCategoryItem extends StatelessWidget {
                 onDismissed: (direction) {
                   onSubCategoryRemoved(subCat);
                 },
-                key: UniqueKey(),
+                key: Key(subCat.hashCode.toString()),
                 child: _ReviewSubCategoryItem(
                   key: Key(subCat.name),
                   subCategory: subCat,
