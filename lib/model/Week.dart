@@ -23,19 +23,22 @@ class Week {
   Map<String, dynamic> toJson() => _$WeekToJson(this);
 
   void aggregate() {
+    if (days.isEmpty) return;
+
     aggregatedCategories = [];
 
     for (var day in days) {
-      if (day.review.categories.isNotEmpty) {
+      if (day.review != null) if (day.review.categories.isNotEmpty) {
         for (var category in day.review.categories) {
           Category cat = aggregatedCategories
-              .firstWhere((c) => c.name == category.name, orElse: () => null);
+              .singleWhere((c) => category.name == c.name, orElse: () => null);
 
           if (cat == null) {
             aggregatedCategories.add(Category(
+                id: "aggregated",
                 name: category.name,
-                comments: category.comments,
-                subCategories: category.subCategories));
+                comments: []..addAll(category.comments),
+                subCategories: []..addAll(category.subCategories)));
           } else {
             cat.subCategories.addAll(category.subCategories);
           }

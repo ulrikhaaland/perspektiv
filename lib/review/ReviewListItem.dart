@@ -20,6 +20,7 @@ class ReviewListItem extends StatefulWidget {
   final String pageTitle;
   final ReviewBloc reviewBloc;
   final Size size;
+  final List<Category> reviewCategories;
 
   const ReviewListItem(
       {Key key,
@@ -27,7 +28,8 @@ class ReviewListItem extends StatefulWidget {
       this.review,
       this.reviewBloc,
       this.size,
-      this.pageTitle})
+      this.pageTitle,
+      this.reviewCategories})
       : assert(itemAmount != null),
         assert(review != null),
         super(key: key);
@@ -58,14 +60,14 @@ class ReviewListItemState extends State<ReviewListItem> {
 
   @override
   Widget build(BuildContext context) {
-    theCategoryView = widget.review.categories
-        .firstWhere((cat) => cat.name == widget.reviewBloc.reviewCategory.value,
-            orElse: () => Category(subCategories: [
-                  SubCategory(
-                      name: "Ikke definert",
-                      color: Colors.grey,
-                      percentage: 100),
-                ]));
+    List<Category> categoryList =
+        widget.reviewCategories ?? widget.review.categories;
+    theCategoryView = categoryList.firstWhere(
+        (cat) => cat.name == widget.reviewBloc.reviewCategory.value,
+        orElse: () => Category(subCategories: [
+              SubCategory(
+                  name: "Ikke definert", color: Colors.grey, percentage: 100),
+            ]));
 
     if (init)
       WidgetsBinding.instance

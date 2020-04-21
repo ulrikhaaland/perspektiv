@@ -6,14 +6,15 @@ import 'package:perspektiv/CategoryPage.dart';
 import 'package:perspektiv/bloc/CategoriesBloc.dart';
 import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/bloc/UserBloc.dart';
+import 'package:perspektiv/helper/LifeCycleEventHandler.dart';
 import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/Decade.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/review/ReviewListItem.dart';
-import 'package:perspektiv/undefined/LifeCycleEventHandler.dart';
 import 'package:provider/provider.dart';
 import 'package:spotify/spotify.dart';
 
+import 'DisplaySettings.dart';
 import 'span/ReviewDaily.dart';
 import 'span/ReviewMonthly.dart';
 import 'span/ReviewWeekly.dart';
@@ -120,14 +121,12 @@ class _ReviewablesState extends State<Reviewables> {
                                 child: IconButton(
                                     alignment: Alignment.bottomCenter,
                                     icon: Icon(
-                                      Icons.save,
+                                      Icons.layers,
                                       size: 30,
-                                      color: Colors.transparent,
-                                      // isColorDark(colorLeBleu),
+                                      color: isColorDark(colorLeBleu),
                                     ),
                                     onPressed: () {
-                                      _categoriesBloc.saveCategories();
-                                      _reviewBloc.saveReviews();
+                                      _showBottomSheet(context);
                                     }),
                               ),
                             ),
@@ -394,17 +393,23 @@ class _ReviewablesState extends State<Reviewables> {
 
         break;
     }
-    Widget titleText = Padding(
-        padding: EdgeInsets.only(bottom: 4),
-        child: Text(
-          _getAppBarTitleText(),
-          style: TextStyle(color: Colors.white, fontSize: 24),
-        ));
+
+    Size size = MediaQuery.of(context).size;
+
+    Widget titleText = Container(
+      alignment: Alignment.center,
+      width: size.width / 1.8,
+      child: Padding(
+          padding: EdgeInsets.only(bottom: 4),
+          child: Text(
+            _getAppBarTitleText(),
+            style: TextStyle(color: Colors.white, fontSize: 24),
+          )),
+    );
     if (review == null) {
       return titleText;
     }
 
-    Size size = MediaQuery.of(context).size;
     return ReviewListItem(
       pageTitle: review.title,
       size: Size(
@@ -422,5 +427,20 @@ class _ReviewablesState extends State<Reviewables> {
       setState(() {
         _isLoading = false;
       });
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        isDismissible: true, // <--- this line
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.elliptical(20, 30),
+                topRight: Radius.elliptical(20, 30))),
+        context: context,
+        builder: (builder) {
+          return DisplaySettings(
+            reviewBloc: _reviewBloc,
+          );
+        });
   }
 }

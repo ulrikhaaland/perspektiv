@@ -28,9 +28,10 @@ class _ReviewYearlyState extends State<ReviewYearly> {
         itemCount: decade.years.length,
         itemBuilder: (context, index) {
           Year year = decade.years[index];
+          year.aggregate();
           Review review = year.review ??
               Review(
-                comments: [],
+                  comments: [],
                   reviewSpan: ReviewSpan.yearly,
                   categories: [],
                   id: year.year,
@@ -45,7 +46,7 @@ class _ReviewYearlyState extends State<ReviewYearly> {
               Padding(
                 padding: EdgeInsets.only(left: 24, right: 24, top: 12),
                 child: Text(
-                  review.title ,
+                  review.title,
                   style: TextStyle(
                       color: colorTextGrey,
                       fontWeight: FontWeight.bold,
@@ -59,6 +60,10 @@ class _ReviewYearlyState extends State<ReviewYearly> {
                 },
                 child: ReviewListItem(
                   reviewBloc: widget.reviewBloc,
+                  reviewCategories:
+                      (widget.reviewBloc.aggregated.value ?? false) == true
+                          ? review.categories
+                          : year.aggregatedCategories,
                   review: review,
                   itemAmount: decade.years.length,
                 ),

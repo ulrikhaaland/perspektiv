@@ -29,6 +29,7 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
         itemCount: month.weeks.length,
         itemBuilder: (context, index) {
           Week week = month.weeks[index];
+          week.aggregate();
           Review review = week.review ??
               Review(
                   comments: [],
@@ -63,6 +64,7 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
                 child: Container(
                   height: 100,
                   child: ReviewListItem(
+                    reviewCategories: (widget.reviewBloc.aggregated.value ?? false) == true ? review.categories : week.aggregatedCategories,
                     reviewBloc: widget.reviewBloc,
                     review: review,
                     itemAmount: month.weeks.length,

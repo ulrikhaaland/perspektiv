@@ -30,6 +30,8 @@ class ReviewBloc {
 
   List<Review> reviews = [];
 
+  ValueNotifier<bool> aggregated = ValueNotifier(false);
+
   ValueNotifier<String> reviewCategory = ValueNotifier(null);
 
   ValueNotifier<ReviewSpan> reviewSpan = ValueNotifier(ReviewSpan.yearly);

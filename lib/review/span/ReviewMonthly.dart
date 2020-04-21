@@ -31,9 +31,10 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
         itemCount: year.months.length,
         itemBuilder: (context, index) {
           Month month = year.months[index];
+          month.aggregate();
           Review review = month.review ??
               Review(
-                comments: [],
+                  comments: [],
                   title: month.monthName,
                   reviewSpan: ReviewSpan.monthly,
                   categories: [],
@@ -64,6 +65,10 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
                 child: Container(
                   height: 100,
                   child: ReviewListItem(
+                    reviewCategories:
+                        (widget.reviewBloc.aggregated.value ?? false) == true
+                            ? review.categories
+                            : month.aggregatedCategories,
                     reviewBloc: widget.reviewBloc,
                     review: review,
                     itemAmount: year.months.length,
