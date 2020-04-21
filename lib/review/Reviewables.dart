@@ -54,6 +54,8 @@ class _ReviewablesState extends State<Reviewables> {
       }
     });
 
+    _reviewBloc.aggregated.addListener(() => setState(() {}));
+
     WidgetsBinding.instance.addObserver(LifecycleEventHandler(
         detachedCallBack: (AppLifecycleState state) async {
           await _reviewBloc.saveReviews();
