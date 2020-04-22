@@ -25,48 +25,42 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
     Year year = widget.reviewBloc.currentYear;
 
     assert(year != null);
-    return ListView.builder(
-        shrinkWrap: true,
-        controller: widget.scrollController,
-        itemCount: year.months.length,
-        itemBuilder: (context, index) {
-          Month month = year.months[index];
-          month.aggregate();
-          Review review = month.review ??
-              Review(
-                  comments: [],
-                  title: month.monthName,
-                  reviewSpan: ReviewSpan.monthly,
-                  categories: [],
-                  id: widget.reviewBloc.currentYear.year +
-                      addToZero(month.month));
-          if (month.review == null) month.review = review;
-          if (widget.reviewBloc.reviews.contains(review) == false) {
-            widget.reviewBloc.reviews.add(review);
-          }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 24, right: 24, top: 12),
-                child: Text(
-                  review.title,
-                  style: TextStyle(
-                      color: colorTextGrey,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 22),
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32.0),
+      child: ListView.builder(
+          shrinkWrap: true,
+          controller: widget.scrollController,
+          itemCount: year.months.length,
+          itemBuilder: (context, index) {
+            Month month = year.months[index];
+            month.aggregate();
+            Review review = month.review ??
+                Review(
+                    comments: [],
+                    title: month.monthName,
+                    reviewSpan: ReviewSpan.monthly,
+                    categories: [],
+                    id: widget.reviewBloc.currentYear.year +
+                        addToZero(month.month));
+            if (month.review == null) month.review = review;
+            if (widget.reviewBloc.reviews.contains(review) == false) {
+              widget.reviewBloc.reviews.add(review);
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(left: 24, right: 24, top: 12),
+                  child: _getReviewListItemTitle(review: review, month: month),
                 ),
-              ),
-              InkWell(
-                onTap: () {
-                  widget.reviewBloc.currentMonth = month;
-                  widget.reviewBloc.reviewSpan.value = ReviewSpan.weekly;
-                },
-                child: Container(
-                  height: 100,
+                InkWell(
+                  onTap: () {
+                    widget.reviewBloc.currentMonth = month;
+                    widget.reviewBloc.reviewSpan.value = ReviewSpan.weekly;
+                  },
                   child: ReviewListItem(
                     reviewCategories:
-                        (widget.reviewBloc.aggregated.value ?? false) == true
+                        widget.reviewBloc.aggregated.value == false
                             ? review.categories
                             : month.aggregatedCategories,
                     reviewBloc: widget.reviewBloc,
@@ -74,9 +68,34 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
                     itemAmount: year.months.length,
                   ),
                 ),
-              ),
-            ],
-          );
-        });
+              ],
+            );
+          }),
+    );
+  }
+
+  Widget _getReviewListItemTitle({Review review, Month month}) {
+    TextStyle style = TextStyle(
+        color: colorTextGrey, fontWeight: FontWeight.bold, fontSize: 22);
+    if (widget.reviewBloc.aggregated.value == false) {
+      return Text(
+        review.title,
+        style: style,
+      );
+    } else {
+      String lastWeekNumber = "";
+      if (month.weeks.length > 1) {
+        lastWeekNumber = "-" + month.weeks.last.week;
+      }
+      return RichText(
+          text: TextSpan(children: [
+        TextSpan(
+          text: "Aggregert ",
+          style: style,
+        ),
+        TextSpan(
+            text: month.weeks.first.review.title + lastWeekNumber, style: style)
+      ]));
+    }
   }
 }

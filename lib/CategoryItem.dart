@@ -171,12 +171,5 @@ class _SubCategoryItemState extends State<SubCategoryItem> {
         overflow: TextOverflow.ellipsis,
       ),
     );
-//    Text(
-//          widget.subCategory.name,
-//          style: TextStyle(
-//              color: _isColorDark(widget.subCategory.color)
-//                  ? Colors.white
-//                  : colorTextGrey),
-//        ),
   }
 }

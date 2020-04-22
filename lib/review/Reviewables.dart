@@ -76,6 +76,8 @@ class _ReviewablesState extends State<Reviewables> {
       _hasData();
     });
 
+    _reviewBloc.reviewCategory.addListener(() => setState(() {}));
+
     _reviewBloc.reviewSpan.addListener(() {
       setState(() {});
     });
@@ -436,12 +438,12 @@ class _ReviewablesState extends State<Reviewables> {
         isDismissible: true, // <--- this line
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
-                topLeft: Radius.elliptical(20, 30),
-                topRight: Radius.elliptical(20, 30))),
+                topLeft: Radius.circular(8), topRight: Radius.circular(8))),
         context: context,
         builder: (builder) {
           return DisplaySettings(
             reviewBloc: _reviewBloc,
+            categoriesBloc: _categoriesBloc,
           );
         });
   }

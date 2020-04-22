@@ -44,63 +44,67 @@ class _ReviewDailyState extends State<ReviewDaily> {
 
     week.aggregate();
 
-    return ListView.builder(
-        controller: widget.scrollController,
-        shrinkWrap: true,
-        itemCount: week.days.length,
-        itemBuilder: (context, index) {
-          Day day = week.days[index];
-          Review review = day.review ??
-              Review(
-                  reviewSpan: ReviewSpan.daily,
-                  categories: [],
-                  title: getFormattedDate(date: day.dayDate),
-                  comments: [],
-                  id: widget.reviewBloc.currentYear.year +
-                      widget.reviewBloc.currentMonth.month +
-                      widget.reviewBloc.currentWeek.week +
-                      addToZero(day.day));
-          if (day.review == null) {
-            day.review = review;
-          }
-          if (widget.reviewBloc.reviews.contains(review) == false) {
-            widget.reviewBloc.reviews.add(review);
-          }
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: <Widget>[
-              Padding(
-                padding: EdgeInsets.only(left: 24, right: 24, bottom: 4, top: index == 0 ? 12 : 4),
-                child: Text(
-                  day.dayName,
-                  style: TextStyle(
-                      color: colorTextGrey,
-                      fontWeight: FontWeight.bold,
-                      fontSize: 14),
-                ),
-              ),
-              InkWell(
-                onTap: () {
-                  Navigator.of(context).push(MaterialPageRoute(
-                    builder: (context) => ReviewPage(
-                      key: Key(day.dayDate.toIso8601String()),
-                      review: day.review,
-                      categoriesBloc: _categoriesBloc,
-                      reviewBloc: widget.reviewBloc,
-                    ),
-                  ));
-                },
-                child: Container(
-                  child: ReviewListItem(
-                    key: Key(day.dayDate.toIso8601String()),
-                    review: review,
-                    reviewBloc: widget.reviewBloc,
-                    itemAmount: week.days.length,
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 32.0),
+      child: ListView.builder(
+          controller: widget.scrollController,
+          shrinkWrap: true,
+          itemCount: week.days.length,
+          itemBuilder: (context, index) {
+            Day day = week.days[index];
+            Review review = day.review ??
+                Review(
+                    reviewSpan: ReviewSpan.daily,
+                    categories: [],
+                    title: getFormattedDate(date: day.dayDate),
+                    comments: [],
+                    id: widget.reviewBloc.currentYear.year +
+                        widget.reviewBloc.currentMonth.month +
+                        widget.reviewBloc.currentWeek.week +
+                        addToZero(day.day));
+            if (day.review == null) {
+              day.review = review;
+            }
+            if (widget.reviewBloc.reviews.contains(review) == false) {
+              widget.reviewBloc.reviews.add(review);
+            }
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Padding(
+                  padding: EdgeInsets.only(
+                      left: 24, right: 24, bottom: 4, top: index == 0 ? 12 : 4),
+                  child: Text(
+                    day.dayName,
+                    style: TextStyle(
+                        color: colorTextGrey,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14),
                   ),
                 ),
-              ),
-            ],
-          );
-        });
+                InkWell(
+                  onTap: () {
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (context) => ReviewPage(
+                        key: Key(day.dayDate.toIso8601String()),
+                        review: day.review,
+                        categoriesBloc: _categoriesBloc,
+                        reviewBloc: widget.reviewBloc,
+                      ),
+                    ));
+                  },
+                  child: Container(
+                    child: ReviewListItem(
+                      key: Key(day.dayDate.toIso8601String()),
+                      review: review,
+                      reviewBloc: widget.reviewBloc,
+                      itemAmount: week.days.length,
+                    ),
+                  ),
+                ),
+              ],
+            );
+          }),
+    );
   }
 }
