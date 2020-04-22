@@ -136,13 +136,14 @@ class _ReviewablesState extends State<Reviewables> {
                                 child: IconButton(
                                     alignment: Alignment.bottomCenter,
                                     icon: Icon(
-                                      Icons.layers,
+                                      Icons.arrow_back_ios,
                                       size: 30,
-                                      color: isColorDark(colorLeBleu),
+                                      color: _reviewBloc.reviewSpan.value !=
+                                              ReviewSpan.yearly
+                                          ? isColorDark(colorLeBleu)
+                                          : Colors.transparent,
                                     ),
-                                    onPressed: () {
-                                      _showBottomSheet(context);
-                                    }),
+                                    onPressed: _handleOnTapBackButton),
                               ),
                             ),
                           ),
@@ -457,5 +458,13 @@ class _ReviewablesState extends State<Reviewables> {
             categoriesBloc: _categoriesBloc,
           );
         });
+  }
+
+  void _handleOnTapBackButton() {
+    ReviewSpan span = _reviewBloc.reviewSpan.value;
+
+    setState(() {
+      if (span.index != 0) _reviewBloc.reviewSpan.value = ReviewSpan.values[span.index - 1];
+    });
   }
 }
