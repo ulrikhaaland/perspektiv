@@ -104,6 +104,17 @@ class _ReviewablesState extends State<Reviewables> {
       child: MultiProvider(
         providers: providers,
         child: Scaffold(
+          floatingActionButton: FloatingActionButton(
+            backgroundColor: colorLeBleu,
+            onPressed: () {
+              _showBottomSheet(context);
+            },
+            child: Icon(
+              Icons.layers,
+              size: 30,
+              color: isColorDark(colorLeBleu),
+            ),
+          ),
           appBar: PreferredSize(
             preferredSize: Size(size.width, 80),
             child: Material(

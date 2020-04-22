@@ -32,6 +32,8 @@ class _DisplaySettingsState extends State<DisplaySettings> {
     ReviewBloc _reviewBloc = widget.reviewBloc;
     bool showInfo = false;
 
+    Size size = MediaQuery.of(context).size;
+
     return Padding(
       padding: EdgeInsets.all(16.0),
       child: Column(
@@ -81,7 +83,8 @@ class _DisplaySettingsState extends State<DisplaySettings> {
           Container(
             height: 16,
           ),
-          Expanded(
+          Container(
+            height: 160,
             child: GridView.builder(
                 itemCount: widget.categoriesBloc.categoryList.value.length,
                 gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -110,6 +113,14 @@ class _DisplaySettingsState extends State<DisplaySettings> {
                   );
                 }),
           ),
+          Align(
+            alignment: Alignment.centerRight,
+            child: IconButton(
+              icon: Icon(Icons.close),
+              onPressed: () => Navigator.pop(context),
+              iconSize: 30,
+            ),
+          ),
         ],
       ),
     );
@@ -134,9 +145,9 @@ class __CategoryGridItemState extends State<_CategoryGridItem> {
   Widget build(BuildContext context) {
     Size deviceSize = MediaQuery.of(context).size;
     return InkWell(
-      highlightColor: colorLeBleu,
+      highlightColor: colorLeBleu.withOpacity(0.5),
       borderRadius: BorderRadius.all(Radius.circular(8)),
-      splashColor: colorHappiness,
+//      splashColor: colorDeepSea.withOpacity(0.2),
       onTap: widget.onSelect,
       child: AnimatedContainer(
         padding: EdgeInsets.all(8),
