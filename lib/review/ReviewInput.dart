@@ -24,7 +24,7 @@ class ReviewInput extends StatelessWidget {
       ..text = comment.comment;
 
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (comment.init == true) comment.init = false;
+      if (comment.init != false) comment.init = false;
     });
     return Padding(
       padding: const EdgeInsets.only(
@@ -41,7 +41,7 @@ class ReviewInput extends StatelessWidget {
           comment.comment = val;
         },
         autocorrect: false,
-        autofocus: true,
+        autofocus: comment.init,
         style: TextStyle(
             color: colorTextGrey, fontStyle: FontStyle.italic, fontSize: 16),
         textCapitalization: TextCapitalization.sentences,
