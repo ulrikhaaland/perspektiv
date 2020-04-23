@@ -57,7 +57,8 @@ class _ReviewYearlyState extends State<ReviewYearly> {
                   child: ReviewListItem(
                     reviewBloc: widget.reviewBloc,
                     reviewCategories:
-                        (widget.reviewBloc.aggregated.value ?? false) == false
+                        //TODO: fix needed when user has not yet entered into underlying values so
+                        widget.reviewBloc.aggregated.value == false
                             ? review.categories
                             : year.aggregatedCategories,
                     review: review,
