@@ -93,8 +93,14 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
           text: "Aggregert ",
           style: style,
         ),
-        TextSpan(
-            text: month.weeks.first.review.title + lastWeekNumber, style: style)
+        if (month.weeks.first.review != null)
+          TextSpan(
+              text: month.weeks.first.review.title + lastWeekNumber,
+              style: style)
+        else
+          TextSpan(
+              text: month.monthName,
+              style: style)
       ]));
     }
   }

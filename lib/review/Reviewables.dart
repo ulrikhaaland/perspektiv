@@ -464,7 +464,8 @@ class _ReviewablesState extends State<Reviewables> {
     ReviewSpan span = _reviewBloc.reviewSpan.value;
 
     setState(() {
-      if (span.index != 0) _reviewBloc.reviewSpan.value = ReviewSpan.values[span.index - 1];
+      if (span.index != 0)
+        _reviewBloc.reviewSpan.value = ReviewSpan.values[span.index - 1];
     });
   }
 }

@@ -79,7 +79,8 @@ class ReviewListItemState extends State<ReviewListItem> {
       mainAxisSize: MainAxisSize.min,
       mainAxisAlignment: MainAxisAlignment.center,
       children: theCategoryView.subCategories
-          .map((sub) => _getSubCategoryItem(sub))
+          .map((sub) => _getSubCategoryItem(sub,
+              isFirst: theCategoryView.subCategories.first == sub))
           .toList(),
     );
 
@@ -133,7 +134,7 @@ class ReviewListItemState extends State<ReviewListItem> {
 //      else return _subCategoryItems;
   }
 
-  Widget _getSubCategoryItem(SubCategory sub) {
+  Widget _getSubCategoryItem(SubCategory sub, {bool isFirst}) {
     BorderRadius fillBorderRadius;
     BorderRadius bgBorderRadius;
 
@@ -174,7 +175,12 @@ class ReviewListItemState extends State<ReviewListItem> {
     double widthAsPercentage =
         ((maxWidth / theCategoryView.subCategories.length) / 100);
 
-    double fillWidth = widthAsPercentage * sub.percentage;
+    double fillWidth = widthAsPercentage *
+        (widget.pageTitle != null
+            ? (isFirst == true && sub.percentage == 10
+                ? (sub.percentage + 11)
+                : sub.percentage)
+            : sub.percentage);
 
     double itemWidth = size.width;
     double itemHeight = size.height;

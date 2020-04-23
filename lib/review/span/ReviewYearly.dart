@@ -90,9 +90,12 @@ class _ReviewYearlyState extends State<ReviewYearly> {
           text: "Aggregert ",
           style: style,
         ),
-        TextSpan(
-            text: year.months.first.review.title + lastMonthNumber,
-            style: style)
+        if (year.months.first.review != null)
+          TextSpan(
+              text: year.months.first.review.title + lastMonthNumber,
+              style: style)
+        else
+          TextSpan(text: year.year, style: style)
       ]));
     }
   }

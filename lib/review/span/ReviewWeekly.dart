@@ -97,9 +97,12 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
           text: "Aggregert ",
           style: style,
         ),
-        TextSpan(
-            text: week.days.first.day + lastDayNumber + " " + month.monthName,
-            style: style)
+        if (week.days.first.review != null)
+          TextSpan(
+              text: week.days.first.day + lastDayNumber + " " + month.monthName,
+              style: style)
+        else
+          TextSpan(text: "Uke " + week.week, style: style)
       ]));
     }
   }
