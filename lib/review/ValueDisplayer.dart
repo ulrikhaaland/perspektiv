@@ -63,7 +63,13 @@ class _ValueDisplayerState extends State<ValueDisplayer> {
         );
         break;
       case DisplayType.pieChart:
-        return Container();
+        return Container(
+          height: 400,
+          child: PieChart(
+            key: Key("pieChart"),
+            subCategories: category.subCategories,
+          ),
+        );
         break;
 
       default:
@@ -210,11 +216,8 @@ class HorizontalBarChart extends StatefulWidget {
 }
 
 class _HorizontalBarChartState extends State<HorizontalBarChart> {
-  List<charts.Series<SubCategory, String>> seriesList;
-
   @override
   void initState() {
-    seriesList = _createSeries();
     super.initState();
   }
 
@@ -223,8 +226,11 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
     return new charts.BarChart(
       _createSeries(),
       animate: true,
-      vertical: false,
-      barRendererDecorator: new charts.BarLabelDecorator<String>(),
+      vertical: true,
+      barRendererDecorator: new charts.BarLabelDecorator<String>(
+        labelPosition: charts.BarLabelPosition.inside,
+        labelAnchor: charts.BarLabelAnchor.middle,
+      ),
       // Hide domain axis.
       domainAxis:
           new charts.OrdinalAxisSpec(renderSpec: new charts.NoneRenderSpec()),
@@ -241,8 +247,8 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
         id: 'subCategories',
         domainFn: (SubCategory subCategory, _) => subCategory.name,
         measureFn: (SubCategory subCategory, _) => subCategory.percentage / 10,
-        measureLowerBoundFn: (SubCategory subCategory, _) => 10,
-        measureUpperBoundFn: (SubCategory subCategory, _) => 10,
+//        measureLowerBoundFn: (SubCategory subCategory, _) => 10,
+//        measureUpperBoundFn: (SubCategory subCategory, _) => 10,
         data: widget.subCategories,
         // Set a label accessor to control the text of the bar label.
         labelAccessorFn: (SubCategory subCategory, _) => '${subCategory.name}',
@@ -262,26 +268,22 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
   }
 }
 
-class PieChart extends StatelessWidget {
-  final List<charts.Series> seriesList;
-  final bool animate;
+class PieChart extends StatefulWidget {
+  final List<SubCategory> subCategories;
 
-  PieChart(this.seriesList, {this.animate});
-
-  /// Creates a [PieChart] with sample data and no transition.
-  factory PieChart.withSampleData() {
-    return new PieChart(
-      _createSampleData(),
-      // Disable animations for image tests.
-      animate: false,
-    );
-  }
-
+  PieChart({Key key, this.subCategories})
+      : assert(subCategories != null),
+        super(key: key);
 
   @override
+  _PieChartState createState() => _PieChartState();
+}
+
+class _PieChartState extends State<PieChart> {
+  @override
   Widget build(BuildContext context) {
-    return new charts.PieChart(seriesList,
-        animate: animate,
+    return new charts.PieChart(_createSeries(),
+        animate: false,
         // Add an [ArcLabelDecorator] configured to render labels outside of the
         // arc with a leader line.
         //
@@ -298,32 +300,36 @@ class PieChart extends StatelessWidget {
         ]));
   }
 
-  /// Create one series with sample hard coded data.
-  static List<charts.Series<LinearSales, int>> _createSampleData() {
-    final data = [
-      new LinearSales(0, 100),
-      new LinearSales(1, 75),
-      new LinearSales(2, 25),
-      new LinearSales(3, 5),
-    ];
-
+  List<charts.Series<SubCategory, int>> _createSeries() {
     return [
-      new charts.Series<LinearSales, int>(
-        id: 'Sales',
-        domainFn: (LinearSales sales, _) => sales.year,
-        measureFn: (LinearSales sales, _) => sales.sales,
-        data: data,
+      new charts.Series<SubCategory, int>(
+        colorFn: (SubCategory subCategory, _) {
+          final color = subCategory.color;
+          return charts.ColorUtil.fromDartColor(color);
+        },
+
+        id: 'subCategories',
+        domainFn: (SubCategory subCategory, _) =>
+            subCategory.hashCode,
+        measureFn: (SubCategory subCategory, _) =>
+            subCategory.percentage.toInt(),
+        data: widget.subCategories,
         // Set a label accessor to control the text of the arc label.
-        labelAccessorFn: (LinearSales row, _) => '${row.year}: ${row.sales}',
+        labelAccessorFn: (SubCategory subCategory, _) => '${subCategory.name}',
+        measureLowerBoundFn: (SubCategory subCategory, _) => 10,
+        measureUpperBoundFn: (SubCategory subCategory, _) => 10,
+        insideLabelStyleAccessorFn: (SubCategory subCategory, _) {
+          return new charts.TextStyleSpec(
+              fontSize: 16,
+              color: charts.ColorUtil.fromDartColor(
+                  isColorDark(subCategory.color)));
+        },
+        outsideLabelStyleAccessorFn: (SubCategory subCategory, _) {
+          return new charts.TextStyleSpec(
+              fontSize: 16,
+              color: charts.ColorUtil.fromDartColor(colorTextGrey));
+        },
       )
     ];
   }
-}
-
-/// Sample linear data type.
-class LinearSales {
-  final int year;
-  final int sales;
-
-  LinearSales(this.year, this.sales);
 }
