@@ -29,6 +29,7 @@ dependencies:
   shared_preferences:
   spotify: ^0.3.0
   webview_flutter: ^0.3.20
+  charts_flutter: ^0.9.0
 
 
 

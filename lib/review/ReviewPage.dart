@@ -14,6 +14,7 @@ import 'package:provider/provider.dart';
 import '../CategoryPage.dart';
 import '../model/Category.dart';
 import 'ReviewPageSheet.dart';
+import 'ValueDisplayer.dart';
 
 class ReviewPage extends StatefulWidget {
   final Review review;
@@ -161,19 +162,27 @@ class _ReviewPageState extends State<ReviewPage> {
                                 .toList(),
                           ),
                         ),
-                        Column(
+                        ListView(
+                          controller: _scrollController,
+                          shrinkWrap: true,
                           children: review.categories
-                              .map((category) => _ReviewCategoryItem(
-                                    onSubCategoryRemoved: (subCat) {
-                                      category.subCategories.remove(subCat);
-                                      if (category.subCategories.isEmpty) {
-                                        setState(() {
-                                          review.categories.remove(category);
-                                        });
-                                      }
+                              .map((category) => Dismissible(
+                                    key: Key(category.hashCode.toString()),
+                                    onDismissed: (_) {
+                                      review.categories.remove(category);
                                     },
-                                    key: Key(category.name),
-                                    category: category,
+                                    child: _ReviewCategoryItem(
+                                      onSubCategoryRemoved: (subCat) {
+                                        category.subCategories.remove(subCat);
+                                        if (category.subCategories.isEmpty) {
+                                          setState(() {
+                                            review.categories.remove(category);
+                                          });
+                                        }
+                                      },
+                                      key: Key(category.name),
+                                      category: category,
+                                    ),
                                   ))
                               .toList(),
                         ),
@@ -223,146 +232,12 @@ class _ReviewCategoryItem extends StatelessWidget {
                 fontSize: 22),
           ),
           Divider(),
-          Column(
-            key: Key("subs"),
-            children: category.subCategories.map((subCat) {
-              return Dismissible(
-                onDismissed: (direction) {
-                  onSubCategoryRemoved(subCat);
-                },
-                key: Key(subCat.hashCode.toString()),
-                child: _ReviewSubCategoryItem(
-                  key: Key(subCat.name),
-                  subCategory: subCat,
-                ),
-              );
-            }).toList(),
+          ValueDisplayer(
+            category: category,
+            onSubCategoryRemoved: (sub) => onSubCategoryRemoved(sub),
           ),
         ],
       ),
-    );
-  }
-}
-
-class _ReviewSubCategoryItem extends StatefulWidget {
-  final SubCategory subCategory;
-
-  const _ReviewSubCategoryItem({
-    Key key,
-    this.subCategory,
-  }) : super(key: key);
-
-  @override
-  __ReviewSubCategoryItemState createState() => __ReviewSubCategoryItemState();
-}
-
-class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
-  @override
-  Widget build(BuildContext context) {
-    Size size = MediaQuery.of(context).size;
-    double itemHeight = size.height / 14;
-
-    SubCategory subCategory = widget.subCategory;
-
-    return Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        Padding(
-          padding: const EdgeInsets.symmetric(vertical: 8.0),
-          child: Container(
-              decoration: BoxDecoration(
-                border: Border.all(color: colorBackGround, width: 1),
-                borderRadius: BorderRadius.all(Radius.elliptical(20, 30)),
-              ),
-              width: size.width,
-              height: itemHeight,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  return Stack(
-                    children: <Widget>[
-                      AnimatedContainer(
-                        duration: Duration(milliseconds: 100),
-                        width: (constraints.maxWidth / 100) *
-                                subCategory.percentage ??
-                            0,
-                        decoration: BoxDecoration(
-                          color: subCategory.color,
-                          borderRadius: BorderRadius.only(
-                            topLeft: Radius.elliptical(20, 30),
-                            bottomLeft: Radius.elliptical(20, 30),
-                            topRight: subCategory.percentage == 100
-                                ? Radius.elliptical(20, 30)
-                                : Radius.zero,
-                            bottomRight: subCategory.percentage == 100
-                                ? Radius.elliptical(20, 30)
-                                : Radius.zero,
-                          ),
-                        ),
-                      ),
-                      Row(
-                        children: <Widget>[
-                          for (var i = 0; i < 9; i++)
-                            Container(
-                              width: constraints.maxWidth / 10,
-                              height: itemHeight,
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(
-                                          color:
-                                              isDark(color: subCategory.color)
-                                                  ? colorBackGround
-                                                  : Colors.grey,
-                                          width: 1))),
-                            ),
-                        ],
-                      ),
-                      Align(
-                        alignment: Alignment.center,
-                        child: Container(
-                          padding: EdgeInsets.all(4),
-                          decoration: BoxDecoration(
-                            border: Border.all(
-                              color: colorBackGround,
-                              width: 2,
-                            ),
-                            borderRadius: BorderRadius.all(
-                              Radius.elliptical(20, 30),
-                            ),
-                            color: isDark(
-                              color: subCategory.color,
-                            )
-                                ? Colors.white
-                                : Colors.black.withOpacity(0.3),
-                          ),
-                          child: Text(
-                            subCategory.name,
-                            textWidthBasis: TextWidthBasis.parent,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: subCategory.color),
-                          ),
-                        ),
-                      )
-                    ],
-                  );
-                },
-              )),
-        ),
-        Column(
-          children: subCategory.comments
-              .map((comment) => Dismissible(
-                    key: Key(comment.hashCode.toString()),
-                    onDismissed: (val) {
-                      subCategory.comments.remove(comment);
-                    },
-                    child: ReviewInput(
-                      commentList: subCategory.comments,
-                      comment: comment,
-                    ),
-                  ))
-              .toList(),
-        )
-      ],
     );
   }
 }

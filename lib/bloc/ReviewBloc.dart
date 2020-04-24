@@ -13,6 +13,8 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 enum ReviewSpan { yearly, monthly, weekly, daily }
 
+enum DisplayType { filler, barChart, pieChart }
+
 class ReviewBloc {
   Decade decade;
 
@@ -29,6 +31,8 @@ class ReviewBloc {
   Day currentDay;
 
   List<Review> reviews = [];
+
+  ValueNotifier<DisplayType> displayType = ValueNotifier(DisplayType.filler);
 
   ValueNotifier<bool> aggregated = ValueNotifier(false);
 

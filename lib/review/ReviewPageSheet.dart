@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:perspektiv/bloc/CategoriesBloc.dart';
+import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/model/Category.dart';
 import 'package:perspektiv/model/Comment.dart';
 import 'package:perspektiv/model/Review.dart';
@@ -32,12 +33,19 @@ class ReviewPageSheet extends StatefulWidget {
 
 class _ReviewPageSheetState extends State<ReviewPageSheet> {
   CategoriesBloc _categoriesBloc;
+  ReviewBloc _reviewBloc;
+
+  @override
+  void initState() {
+    _categoriesBloc = Provider.of<CategoriesBloc>(context, listen: false);
+    _reviewBloc = Provider.of<ReviewBloc>(context, listen: false);
+
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    if (_categoriesBloc == null)
-      _categoriesBloc = Provider.of<CategoriesBloc>(context);
 
     List<Category> _categories = _categoriesBloc.categoryList.value;
 
@@ -75,13 +83,33 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
                         automaticallyImplyLeading: false,
                         stretch: true,
                         pinned: true,
-                        leading: Container(
-                          width: 50,
-                          alignment: Alignment.centerRight,
-                          child: Icon(
-                            Icons.chat,
-                            color: Colors.transparent,
-                          ),
+                        leading: Padding(
+                          padding: const EdgeInsets.all(6.0),
+                          child: Container(
+                              width: 30,
+                              decoration: BoxDecoration(
+                                  color: Colors.white, shape: BoxShape.circle),
+                              alignment: Alignment.center,
+                              child: IconButton(
+                                  padding: EdgeInsets.zero,
+                                  icon: Icon(
+                                    _getLeadingIcon(),
+                                    color: colorFear,
+                                    size: 25,
+                                  ),
+                                  onPressed: () {
+                                    setState(() {
+                                      if (_reviewBloc.displayType.value.index !=
+                                          (DisplayType.values.length - 1))
+                                        _reviewBloc.displayType.value =
+                                            DisplayType.values[_reviewBloc
+                                                    .displayType.value.index +
+                                                1];
+                                      else
+                                        _reviewBloc.displayType.value =
+                                            DisplayType.values[0];
+                                    });
+                                  })),
                         ),
                         actions: <Widget>[
                           Container(
@@ -164,6 +192,22 @@ class _ReviewPageSheetState extends State<ReviewPageSheet> {
             }),
       ),
     );
+  }
+
+  IconData _getLeadingIcon() {
+    switch (_reviewBloc.displayType.value) {
+      case DisplayType.filler:
+        return Icons.table_chart;
+        break;
+      case DisplayType.barChart:
+        return Icons.insert_chart;
+        break;
+      case DisplayType.pieChart:
+        return Icons.pie_chart;
+        break;
+      default:
+        return Icons.table_chart;
+    }
   }
 }
 
