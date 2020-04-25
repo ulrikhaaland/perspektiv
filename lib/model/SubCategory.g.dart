@@ -14,7 +14,9 @@ SubCategory _$SubCategoryFromJson(Map json) {
     comments: (json['comments'] as List)
         ?.map((e) => e == null ? null : Comment.fromJson(e as Map))
         ?.toList(),
-  )..colorValue = json['colorValue'] as int;
+  )
+    ..colorValue = json['colorValue'] as int
+    ..unit = json['unit'] == null ? null : Unit.fromJson(json['unit'] as Map);
 }
 
 Map<String, dynamic> _$SubCategoryToJson(SubCategory instance) =>
@@ -22,5 +24,6 @@ Map<String, dynamic> _$SubCategoryToJson(SubCategory instance) =>
       'name': instance.name,
       'colorValue': instance.color.value,
       'percentage': instance.percentage,
+      'unit': instance.unit,
       'comments': instance.comments,
     };

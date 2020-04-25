@@ -1,3 +1,5 @@
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:perspektiv/bloc/ReviewBloc.dart';
 import 'package:perspektiv/model/Category.dart';
@@ -247,8 +249,8 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
         id: 'subCategories',
         domainFn: (SubCategory subCategory, _) => subCategory.name,
         measureFn: (SubCategory subCategory, _) => subCategory.percentage / 10,
-//        measureLowerBoundFn: (SubCategory subCategory, _) => 10,
-//        measureUpperBoundFn: (SubCategory subCategory, _) => 10,
+        measureLowerBoundFn: (SubCategory subCategory, _) => 10,
+        measureUpperBoundFn: (SubCategory subCategory, _) => 10,
         data: widget.subCategories,
         // Set a label accessor to control the text of the bar label.
         labelAccessorFn: (SubCategory subCategory, _) => '${subCategory.name}',
@@ -282,8 +284,9 @@ class PieChart extends StatefulWidget {
 class _PieChartState extends State<PieChart> {
   @override
   Widget build(BuildContext context) {
-    return new charts.PieChart(_createSeries(),
+    return charts.PieChart(_createSeries(),
         animate: false,
+
         // Add an [ArcLabelDecorator] configured to render labels outside of the
         // arc with a leader line.
         //
@@ -291,13 +294,14 @@ class _PieChartState extends State<PieChart> {
         // setting [insideLabelStyleSpec] and [outsideLabelStyleSpec].
         //
         // Example configuring different styles for inside/outside:
-        //       new charts.ArcLabelDecorator(
-        //          insideLabelStyleSpec: new charts.TextStyleSpec(...),
-        //          outsideLabelStyleSpec: new charts.TextStyleSpec(...)),
-        defaultRenderer: new charts.ArcRendererConfig(arcRendererDecorators: [
-          new charts.ArcLabelDecorator(
-              labelPosition: charts.ArcLabelPosition.outside)
-        ]));
+        //        charts.ArcLabelDecorator(
+        //          insideLabelStyleSpec:  charts.TextStyleSpec(...),
+        //          outsideLabelStyleSpec:  charts.TextStyleSpec(...)),
+        defaultRenderer: charts.ArcRendererConfig(
+            arcWidth: 30,
+            startAngle: 4 / 5 * pi,
+            arcLength: 7 / 5 * pi,
+            arcRendererDecorators: [charts.ArcLabelDecorator()]));
   }
 
   List<charts.Series<SubCategory, int>> _createSeries() {
@@ -309,8 +313,7 @@ class _PieChartState extends State<PieChart> {
         },
 
         id: 'subCategories',
-        domainFn: (SubCategory subCategory, _) =>
-            subCategory.hashCode,
+        domainFn: (SubCategory subCategory, _) => subCategory.hashCode,
         measureFn: (SubCategory subCategory, _) =>
             subCategory.percentage.toInt(),
         data: widget.subCategories,
