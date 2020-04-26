@@ -28,6 +28,8 @@ class Review {
   @JsonKey(ignore: true)
   ChangeNotifier onAddCategory = ChangeNotifier();
   @JsonKey(ignore: true)
+  ChangeNotifier onAddSubCategory = ChangeNotifier();
+  @JsonKey(ignore: true)
   ChangeNotifier onAddComment = ChangeNotifier();
   @JsonKey(ignore: true)
   ValueNotifier<SubCategory> onSubChanged = ValueNotifier(null);
@@ -72,6 +74,8 @@ class Review {
     Category checkCat = categories
         .firstWhere((cat) => cat.name == category.name, orElse: () => null);
 
+    bool addCategory = false;
+
     if (checkCat == null) {
       checkSubCat = SubCategory(
           name: subCategory.name,
@@ -84,6 +88,7 @@ class Review {
         comments: [],
       );
       categories.add(newCategory);
+      addCategory = true;
     } else {
       checkSubCat = checkCat.subCategories.firstWhere(
           (subCat) => subCat.name == subCategory.name,
@@ -102,6 +107,10 @@ class Review {
           checkSubCat.percentage += 10;
       } else if (checkSubCat.percentage == 100) {
         checkSubCat.percentage = 0;
+        categories
+            .firstWhere((cat) => cat.name == category.name, orElse: () => null)
+            .subCategories
+            .remove(checkSubCat);
       }
 
       onSubChanged.value = checkSubCat;
@@ -121,7 +130,10 @@ class Review {
       }
     });
 
-    onAddCategory.notifyListeners();
+    if (!addCategory)
+      onAddSubCategory.notifyListeners();
+    else
+      onAddCategory.notifyListeners();
   }
 
   factory Review.fromJson(Map json) => _$ReviewFromJson(json);

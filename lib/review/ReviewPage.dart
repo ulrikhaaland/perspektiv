@@ -35,31 +35,33 @@ class _ReviewPageState extends State<ReviewPage> {
   @override
   void initState() {
     widget.review.onAddCategory.addListener(() {
-      if (mounted)
-        setState(() {
-          //TODO: Add scrollfeedback on add comment
-        });
+      _rebuild();
+      _scrollToMaxExtent();
+    });
+
+    widget.review.onAddSubCategory.addListener(() {
+      _rebuild();
     });
     widget.review.onAddComment.addListener(() {
-      if (mounted) {
-        setState(() {
-          //TODO: Add scrollfeedback on add comment
-        });
-        Timer(
-          Duration(milliseconds: 200),
-          () => _scrollController.animateTo(
-              _scrollController.position.maxScrollExtent,
-              duration: Duration(milliseconds: 250),
-              curve: Curves.linear),
-        );
-      }
+      _rebuild();
+      _scrollToMaxExtent();
     });
     super.initState();
   }
 
   @override
   void dispose() {
-    widget.review.onAddCategory.removeListener(null);
+    widget.review.onAddCategory.removeListener(() {
+      _rebuild();
+      _scrollToMaxExtent();
+    });
+    widget.review.onAddSubCategory.removeListener(() {
+      _rebuild();
+    });
+    widget.review.onAddComment.removeListener(() {
+      _rebuild();
+      _scrollToMaxExtent();
+    });
     super.dispose();
   }
 
@@ -187,7 +189,7 @@ class _ReviewPageState extends State<ReviewPage> {
                               .toList(),
                         ),
                         Container(
-                          height: 200,
+                          height: 50,
                         )
                       ],
                     ),
@@ -204,6 +206,18 @@ class _ReviewPageState extends State<ReviewPage> {
       ),
     );
   }
+
+  void _scrollToMaxExtent() {
+    Timer(Duration(milliseconds: 100), () {
+      double position = _scrollController.positions.first.maxScrollExtent - 50;
+      _scrollController.positions.first.animateTo(position,
+          duration: Duration(milliseconds: 500), curve: Curves.linear);
+    });
+  }
+
+  void _rebuild() {
+    if (mounted) setState(() {});
+  }
 }
 
 class _ReviewCategoryItem extends StatelessWidget {
@@ -219,7 +233,7 @@ class _ReviewCategoryItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.all(16.0),
+      padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,

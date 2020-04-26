@@ -32,6 +32,8 @@ class _ValueDisplayerState extends State<ValueDisplayer> {
   Widget build(BuildContext context) {
     Category category = widget.category;
 
+    final Size size = MediaQuery.of(context).size;
+
     switch (_reviewBloc.displayType.value) {
       case DisplayType.filler:
         return Column(
@@ -64,7 +66,7 @@ class _ValueDisplayerState extends State<ValueDisplayer> {
         break;
       case DisplayType.pieChart:
         return Container(
-          height: 400,
+          height: size.height - 400,
           child: PieChart(
             key: Key("pieChart"),
             subCategories: category.subCategories,
@@ -247,8 +249,8 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
         id: 'subCategories',
         domainFn: (SubCategory subCategory, _) => subCategory.name,
         measureFn: (SubCategory subCategory, _) => subCategory.percentage / 10,
-//        measureLowerBoundFn: (SubCategory subCategory, _) => 10,
-//        measureUpperBoundFn: (SubCategory subCategory, _) => 10,
+        measureLowerBoundFn: (SubCategory subCategory, _) => 10,
+        measureUpperBoundFn: (SubCategory subCategory, _) => 10,
         data: widget.subCategories,
         // Set a label accessor to control the text of the bar label.
         labelAccessorFn: (SubCategory subCategory, _) => '${subCategory.name}',
@@ -294,10 +296,9 @@ class _PieChartState extends State<PieChart> {
         //       new charts.ArcLabelDecorator(
         //          insideLabelStyleSpec: new charts.TextStyleSpec(...),
         //          outsideLabelStyleSpec: new charts.TextStyleSpec(...)),
-        defaultRenderer: new charts.ArcRendererConfig(arcRendererDecorators: [
-          new charts.ArcLabelDecorator(
-              labelPosition: charts.ArcLabelPosition.outside)
-        ]));
+        defaultRenderer: new charts.ArcRendererConfig(
+//            arcWidth: 60,
+            arcRendererDecorators: [new charts.ArcLabelDecorator()]));
   }
 
   List<charts.Series<SubCategory, int>> _createSeries() {
@@ -309,8 +310,7 @@ class _PieChartState extends State<PieChart> {
         },
 
         id: 'subCategories',
-        domainFn: (SubCategory subCategory, _) =>
-            subCategory.hashCode,
+        domainFn: (SubCategory subCategory, _) => subCategory.hashCode,
         measureFn: (SubCategory subCategory, _) =>
             subCategory.percentage.toInt(),
         data: widget.subCategories,
