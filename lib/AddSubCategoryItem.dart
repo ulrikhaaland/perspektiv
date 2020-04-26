@@ -181,24 +181,93 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
                     ),
                   ),
                 ),
-                Divider(),
-                Padding(
-                  padding: const EdgeInsets.symmetric(vertical: 16.0),
-                  child: UnitMeasurement(
-                    currentSubTitle: _textController.text,
-                    unit: widget.subCategory.unit ?? Unit(),
-                  ),
+                Container(
+                  height: 16,
                 ),
                 Divider(),
-                ColorPicker(
-                  color: color,
-                  onChanged: (val) => setState(() => tempColor = val),
+                UnitMeasurement(
+                  currentSubTitle: _textController.text,
+                  unit: widget.subCategory.unit ?? Unit(),
                 ),
+                Divider(),
+                _buildColorListTile(),
+                Divider(),
               ],
             ),
           ),
         ),
       ),
     );
+  }
+
+  Widget _buildColorListTile() {
+    return InkWell(
+      onTap: () => _showBottomSheet(context),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 32.0),
+        child: Row(
+          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+          children: <Widget>[
+            Expanded(
+              child: Wrap(
+                crossAxisAlignment: WrapCrossAlignment.start,
+                children: <Widget>[
+                  Container(
+                    padding: EdgeInsets.symmetric(vertical: 4),
+                    child: RichText(
+                      overflow: TextOverflow.clip,
+                      text: TextSpan(
+                        style: TextStyle(
+                          color: colorTextGrey,
+                          fontSize: 20,
+                        ),
+                        children: [
+                          TextSpan(text: "Jeg forbinder "),
+                          TextSpan(
+                              text: _textController.text != ""
+                                  ? _textController.text
+                                  : "Udefinert",
+                              style: TextStyle(fontWeight: FontWeight.w500)),
+                          TextSpan(text: " med fargen")
+                        ],
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            Expanded(
+              child: CircleAvatar(
+                radius: 40,
+                backgroundColor: tempColor,
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+
+  void _showBottomSheet(BuildContext context) {
+    showModalBottomSheet(
+        backgroundColor: colorBackGround,
+        isScrollControlled: true,
+        isDismissible: true, // <--- this line
+        shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8), topRight: Radius.circular(8))),
+        context: context,
+        builder: (builder) {
+          return SingleChildScrollView(
+            child: Padding(
+              padding:
+                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+              child: ColorPicker(
+                color: tempColor,
+                onChanged: (val) => setState(() => tempColor = val),
+              ),
+            ),
+          );
+        });
   }
 }

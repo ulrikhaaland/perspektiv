@@ -230,8 +230,6 @@ class _ReviewSheetCollection extends StatefulWidget {
 class __ReviewSheetCollectionState extends State<_ReviewSheetCollection> {
   @override
   Widget build(BuildContext context) {
-    //TODO: Add gridviewbuilder
-
     return GridView.builder(
         controller: widget.scrollController,
         itemCount: widget.category.subCategories.length,

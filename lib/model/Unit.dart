@@ -2,7 +2,7 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'Unit.g.dart';
 
-enum UnitType { duration, weight, custom, binary }
+enum UnitType { duration, weight, binary, custom,  }
 
 @JsonSerializable(anyMap: true)
 class Unit {
