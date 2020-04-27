@@ -44,7 +44,7 @@ class _ValueDisplayerState extends State<ValueDisplayer> {
                 widget.onSubCategoryRemoved(subCat);
               },
               key: Key(subCat.hashCode.toString()),
-              child: _ReviewSubCategoryItem(
+              child: ReviewSubCategoryItem(
                 key: Key(subCat.name),
                 subCategory: subCat,
               ),
@@ -80,19 +80,21 @@ class _ValueDisplayerState extends State<ValueDisplayer> {
   }
 }
 
-class _ReviewSubCategoryItem extends StatefulWidget {
+class ReviewSubCategoryItem extends StatefulWidget {
   final SubCategory subCategory;
+  final Color borderColor;
 
-  const _ReviewSubCategoryItem({
+  const ReviewSubCategoryItem({
     Key key,
     this.subCategory,
+    this.borderColor,
   }) : super(key: key);
 
   @override
-  __ReviewSubCategoryItemState createState() => __ReviewSubCategoryItemState();
+  _ReviewSubCategoryItemState createState() => _ReviewSubCategoryItemState();
 }
 
-class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
+class _ReviewSubCategoryItemState extends State<ReviewSubCategoryItem> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
@@ -107,7 +109,8 @@ class __ReviewSubCategoryItemState extends State<_ReviewSubCategoryItem> {
           padding: const EdgeInsets.symmetric(vertical: 8.0),
           child: Container(
               decoration: BoxDecoration(
-                border: Border.all(color: colorBackGround, width: 1),
+                border: Border.all(
+                    color: widget.borderColor ?? colorBackGround, width: 1),
                 borderRadius: BorderRadius.all(Radius.elliptical(20, 30)),
               ),
               width: size.width,
@@ -225,23 +228,22 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
 
   @override
   Widget build(BuildContext context) {
-    return new charts.BarChart(
+    return charts.BarChart(
       _createSeries(),
       animate: true,
       vertical: true,
-      barRendererDecorator: new charts.BarLabelDecorator<String>(
+      barRendererDecorator: charts.BarLabelDecorator<String>(
         labelPosition: charts.BarLabelPosition.inside,
         labelAnchor: charts.BarLabelAnchor.middle,
       ),
       // Hide domain axis.
-      domainAxis:
-          new charts.OrdinalAxisSpec(renderSpec: new charts.NoneRenderSpec()),
+      domainAxis: charts.OrdinalAxisSpec(renderSpec: charts.NoneRenderSpec()),
     );
   }
 
   List<charts.Series<SubCategory, String>> _createSeries() {
     return [
-      new charts.Series<SubCategory, String>(
+      charts.Series<SubCategory, String>(
         fillColorFn: (SubCategory subCategory, _) {
           final color = subCategory.color;
           return charts.ColorUtil.fromDartColor(color);
@@ -255,13 +257,13 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
         // Set a label accessor to control the text of the bar label.
         labelAccessorFn: (SubCategory subCategory, _) => '${subCategory.name}',
         insideLabelStyleAccessorFn: (SubCategory subCategory, _) {
-          return new charts.TextStyleSpec(
+          return charts.TextStyleSpec(
               fontSize: 16,
               color: charts.ColorUtil.fromDartColor(
                   isColorDark(subCategory.color)));
         },
         outsideLabelStyleAccessorFn: (SubCategory subCategory, _) {
-          return new charts.TextStyleSpec(
+          return charts.TextStyleSpec(
               fontSize: 16,
               color: charts.ColorUtil.fromDartColor(colorTextGrey));
         },
@@ -284,7 +286,7 @@ class PieChart extends StatefulWidget {
 class _PieChartState extends State<PieChart> {
   @override
   Widget build(BuildContext context) {
-    return new charts.PieChart(_createSeries(),
+    return charts.PieChart(_createSeries(),
         animate: false,
         // Add an [ArcLabelDecorator] configured to render labels outside of the
         // arc with a leader line.
@@ -293,17 +295,17 @@ class _PieChartState extends State<PieChart> {
         // setting [insideLabelStyleSpec] and [outsideLabelStyleSpec].
         //
         // Example configuring different styles for inside/outside:
-        //       new charts.ArcLabelDecorator(
-        //          insideLabelStyleSpec: new charts.TextStyleSpec(...),
-        //          outsideLabelStyleSpec: new charts.TextStyleSpec(...)),
-        defaultRenderer: new charts.ArcRendererConfig(
+        //        charts.ArcLabelDecorator(
+        //          insideLabelStyleSpec:  charts.TextStyleSpec(...),
+        //          outsideLabelStyleSpec:  charts.TextStyleSpec(...)),
+        defaultRenderer: charts.ArcRendererConfig(
 //            arcWidth: 60,
-            arcRendererDecorators: [new charts.ArcLabelDecorator()]));
+            arcRendererDecorators: [charts.ArcLabelDecorator()]));
   }
 
   List<charts.Series<SubCategory, int>> _createSeries() {
     return [
-      new charts.Series<SubCategory, int>(
+      charts.Series<SubCategory, int>(
         colorFn: (SubCategory subCategory, _) {
           final color = subCategory.color;
           return charts.ColorUtil.fromDartColor(color);
@@ -319,13 +321,13 @@ class _PieChartState extends State<PieChart> {
         measureLowerBoundFn: (SubCategory subCategory, _) => 10,
         measureUpperBoundFn: (SubCategory subCategory, _) => 10,
         insideLabelStyleAccessorFn: (SubCategory subCategory, _) {
-          return new charts.TextStyleSpec(
+          return charts.TextStyleSpec(
               fontSize: 16,
               color: charts.ColorUtil.fromDartColor(
                   isColorDark(subCategory.color)));
         },
         outsideLabelStyleAccessorFn: (SubCategory subCategory, _) {
-          return new charts.TextStyleSpec(
+          return charts.TextStyleSpec(
               fontSize: 16,
               color: charts.ColorUtil.fromDartColor(colorTextGrey));
         },

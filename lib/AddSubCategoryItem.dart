@@ -186,7 +186,7 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
                 ),
                 Divider(),
                 UnitMeasurement(
-                  currentSubTitle: _textController.text,
+                  subCategory: widget.subCategory,
                   unit: widget.subCategory.unit ?? Unit(),
                 ),
                 Divider(),
@@ -252,7 +252,8 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
     showModalBottomSheet(
         backgroundColor: colorBackGround,
         isScrollControlled: true,
-        isDismissible: true, // <--- this line
+        isDismissible: true,
+        // <--- this line
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(8), topRight: Radius.circular(8))),
