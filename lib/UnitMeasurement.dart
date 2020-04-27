@@ -56,6 +56,9 @@ class UnitMeasurement extends StatelessWidget {
                 ],
               ),
             ),
+            Container(
+              width: 32,
+            ),
             Expanded(
               child: Container(
                   alignment: Alignment.center,
@@ -109,6 +112,8 @@ class UnitMeasurement extends StatelessWidget {
           TabBar(
             indicatorPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
             indicatorColor: colorLeBleu,
+            labelPadding: EdgeInsets.zero,
+//            isScrollable: true,
             labelColor: colorTextGrey,
             labelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
             unselectedLabelStyle: TextStyle(color: colorTextGrey),
@@ -199,14 +204,10 @@ class __BinaryViewState extends State<_BinaryView> {
             borderColor: colorTextGrey,
           ),
           Container(
-            height: 12,
+            height: 32,
           ),
-          Spacer(),
           SubCategoryItem(
             subCategory: subCategory,
-          ),
-          Container(
-            height: 12,
           ),
         ],
       ),
