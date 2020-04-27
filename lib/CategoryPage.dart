@@ -34,21 +34,18 @@ class _CategoryPageState extends State<CategoryPage> with ChangeNotifier {
     providers = [
       Provider<CategoriesBloc>.value(value: _categoriesBloc),
     ];
-    _categoriesBloc.categoryList.addListener(() {
-      if (mounted) setState(() {});
-    });
-    _categoriesBloc.onRemoveCategory.addListener(() {
-      if (mounted) setState(() {});
-    });
+    _categoriesBloc.categoryList.addListener(() => _reBuild());
+    _categoriesBloc.onRemoveCategory.addListener(() => _reBuild());
 
     super.initState();
   }
 
   @override
   void dispose() {
-    _categoriesBloc.categoryList.removeListener(null);
-    _categoriesBloc.onRemoveCategory.removeListener(null);
     super.dispose();
+
+    _categoriesBloc.categoryList.removeListener(() => _reBuild());
+    _categoriesBloc.onRemoveCategory.removeListener(() => _reBuild());
   }
 
   @override
@@ -92,7 +89,7 @@ class _CategoryPageState extends State<CategoryPage> with ChangeNotifier {
               ],
             ),
             backgroundColor: Colors.white,
-//        const Color(0xFFF6F6F6),
+            //        const Color(0xFFF6F6F6),
             body: isLoading == true
                 ? Center(
                     child: CircularProgressIndicator(),
@@ -109,5 +106,9 @@ class _CategoryPageState extends State<CategoryPage> with ChangeNotifier {
                     })),
       ),
     );
+  }
+
+  void _reBuild() {
+    if (mounted) setState(() {});
   }
 }

@@ -80,14 +80,18 @@ class _ValueDisplayerState extends State<ValueDisplayer> {
   }
 }
 
+enum ReviewSubType { normal, binary }
+
 class ReviewSubCategoryItem extends StatefulWidget {
   final SubCategory subCategory;
   final Color borderColor;
+  final ReviewSubType type;
 
   const ReviewSubCategoryItem({
     Key key,
     this.subCategory,
     this.borderColor,
+    this.type = ReviewSubType.normal,
   }) : super(key: key);
 
   @override
@@ -98,7 +102,13 @@ class _ReviewSubCategoryItemState extends State<ReviewSubCategoryItem> {
   @override
   Widget build(BuildContext context) {
     Size size = MediaQuery.of(context).size;
-    double itemHeight = size.height / 14;
+
+    Orientation orientation = MediaQuery.of(context).orientation;
+    double itemHeight;
+    if (orientation == Orientation.portrait)
+      itemHeight = size.height / 14;
+    else
+      itemHeight = size.height / 8;
 
     SubCategory subCategory = widget.subCategory;
 
@@ -138,27 +148,28 @@ class _ReviewSubCategoryItemState extends State<ReviewSubCategoryItem> {
                           ),
                         ),
                       ),
-                      Row(
-                        children: <Widget>[
-                          for (var i = 0; i < 9; i++)
-                            Container(
-                              width: constraints.maxWidth / 10,
-                              height: itemHeight,
-                              decoration: BoxDecoration(
-                                  border: Border(
-                                      right: BorderSide(
-                                          color:
-                                              isDark(color: subCategory.color)
-                                                  ? colorBackGround
-                                                  : Colors.grey,
-                                          width: 1))),
-                            ),
-                        ],
-                      ),
+                      if (widget.type == ReviewSubType.normal)
+                        Row(
+                          children: <Widget>[
+                            for (var i = 0; i < 9; i++)
+                              Container(
+                                width: constraints.maxWidth / 10,
+                                height: itemHeight,
+                                decoration: BoxDecoration(
+                                    border: Border(
+                                        right: BorderSide(
+                                            color:
+                                                isDark(color: subCategory.color)
+                                                    ? colorBackGround
+                                                    : Colors.grey,
+                                            width: 1))),
+                              ),
+                          ],
+                        ),
                       Align(
                         alignment: Alignment.center,
                         child: Container(
-                          padding: EdgeInsets.all(4),
+                          padding: EdgeInsets.all(0),
                           decoration: BoxDecoration(
                             border: Border.all(
                               color: colorBackGround,
@@ -173,12 +184,35 @@ class _ReviewSubCategoryItemState extends State<ReviewSubCategoryItem> {
                                 ? Colors.white
                                 : Colors.black.withOpacity(0.3),
                           ),
-                          child: Text(
-                            subCategory.name,
-                            textWidthBasis: TextWidthBasis.parent,
-                            textAlign: TextAlign.start,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: subCategory.color),
+                          child: Wrap(
+                            crossAxisAlignment: WrapCrossAlignment.center,
+                            children: <Widget>[
+                              Padding(
+                                padding: const EdgeInsets.all(4.0),
+                                child: Text(
+                                  subCategory.name,
+                                  textWidthBasis: TextWidthBasis.parent,
+                                  textAlign: TextAlign.start,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: TextStyle(color: subCategory.color),
+                                ),
+                              ),
+                              if (widget.type == ReviewSubType.binary &&
+                                  subCategory.percentage == 100)
+                                Container(
+                                  decoration: BoxDecoration(
+                                    color: isColorDark(subCategory.color),
+                                    borderRadius: BorderRadius.only(
+                                      bottomRight: Radius.elliptical(20, 30),
+                                      topRight: Radius.elliptical(20, 30),
+                                    ),
+                                  ),
+                                  child: Icon(
+                                    Icons.check,
+                                    color: subCategory.color,
+                                  ),
+                                )
+                            ],
                           ),
                         ),
                       )

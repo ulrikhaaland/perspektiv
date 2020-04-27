@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_duration_picker/flutter_duration_picker.dart';
@@ -87,9 +89,7 @@ class UnitMeasurement extends StatelessWidget {
   void _showBottomSheet(BuildContext context) {
     showModalBottomSheet(
         backgroundColor: colorBackGround,
-        // isScrollControlled: true,
         isDismissible: true,
-        // <--- this line
         shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.only(
                 topLeft: Radius.circular(8), topRight: Radius.circular(8))),
@@ -113,7 +113,6 @@ class UnitMeasurement extends StatelessWidget {
             indicatorPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
             indicatorColor: colorLeBleu,
             labelPadding: EdgeInsets.zero,
-//            isScrollable: true,
             labelColor: colorTextGrey,
             labelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
             unselectedLabelStyle: TextStyle(color: colorTextGrey),
@@ -128,7 +127,7 @@ class UnitMeasurement extends StatelessWidget {
                 text: "Vekt",
               ),
               Tab(
-                text: "Egentilpasset",
+                text: "Egendefinert",
               ),
             ],
           ),
@@ -144,8 +143,14 @@ class UnitMeasurement extends StatelessWidget {
                         currentSubTitle: subCategory.name,
                       ),
                       _BinaryView(unit: unit, subCategory: subCategory),
-                      Container(),
-                      Container(),
+                      _WeightView(
+                        unit: unit,
+                        currentSubTitle: subCategory.name,
+                      ),
+                      _CustomView(
+                        unit: unit,
+                        currentSubTitle: subCategory.name,
+                      ),
                     ],
                   ),
                 ),
@@ -171,6 +176,8 @@ class _BinaryView extends StatefulWidget {
 class __BinaryViewState extends State<_BinaryView> {
   SubCategory subCategory;
 
+  bool init = true;
+
   @override
   void initState() {
     subCategory = SubCategory(
@@ -183,33 +190,59 @@ class __BinaryViewState extends State<_BinaryView> {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32.0),
-      child: Column(
-        children: <Widget>[
-          Text(
-            "Gjøremål",
-            style: style,
-          ),
-          Container(
-            height: 12,
-          ),
-          Text(
-              "Et gjøremål beskriver noe som enten har blitt utført eller ikke. Det vil si at det kun ka ha 1 verdi. Det er binært."),
-          Container(
-            height: 32,
-          ),
-          ReviewSubCategoryItem(
-            subCategory: subCategory,
-            borderColor: colorTextGrey,
-          ),
-          Container(
-            height: 32,
-          ),
-          SubCategoryItem(
-            subCategory: subCategory,
-          ),
-        ],
+    if (init)
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        Timer(Duration(milliseconds: 150), () {
+          setState(() => subCategory.percentage = 100);
+          init = false;
+        });
+      });
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Text(
+              "Gjøremål",
+              style: style,
+            ),
+            Container(
+              height: 12,
+            ),
+            Text(
+              "Et gjøremål beskriver noe som enten har blitt utført eller ikke. Det vil si at det kun ka ha 1 verdi. Det er binært.",
+              style: TextStyle(fontSize: 16),
+            ),
+            Container(
+              height: 16,
+            ),
+            Divider(),
+            Container(
+              height: 16,
+            ),
+            ReviewSubCategoryItem(
+              type: ReviewSubType.binary,
+              subCategory: subCategory,
+              borderColor: colorTextGrey,
+            ),
+            Container(
+              height: 32,
+            ),
+            InkWell(
+              onTap: () {
+                if (subCategory.percentage > 0)
+                  subCategory.percentage = 0;
+                else
+                  subCategory.percentage = 100;
+                setState(() {});
+              },
+              child: SubCategoryItem(
+                subCategory: subCategory,
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -240,99 +273,102 @@ Duration duration = Duration(hours: 0);
 class _DurationViewState extends State<_DurationView> {
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.only(top: 32.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          Wrap(
-            children: <Widget>[
-              RichText(
-                overflow: TextOverflow.clip,
-                text: TextSpan(
-                  style: TextStyle(
-                    color: colorTextGrey,
-                    fontSize: 20,
-                  ),
-                  children: [
-                    TextSpan(text: "1 verdi av "),
-                    TextSpan(
-                        text: widget.currentSubTitle,
-                        style: TextStyle(fontWeight: FontWeight.w500)),
-                    TextSpan(text: " er lik")
-                  ],
-                ),
-              ),
-            ],
-          ),
-          Container(
-            height: 12,
-          ),
-          Wrap(
-            spacing: 8,
-            children: <Widget>[
-              if (countHours > 0)
+    return SingleChildScrollView(
+      child: Padding(
+        padding: const EdgeInsets.only(top: 32.0),
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Wrap(
+              children: <Widget>[
                 RichText(
                   overflow: TextOverflow.clip,
-                  text: TextSpan(style: style, children: [
-                    TextSpan(text: countHours.toString()),
-                    if (countHours > 1)
-                      TextSpan(text: " timer")
-                    else
-                      TextSpan(text: " time")
-                  ]),
-                )
-              else
-                Text(
-                  " ",
-                  style: style,
-                ),
-              if (countMinutes > 0)
-                RichText(
                   text: TextSpan(
-                      style: style.copyWith(fontWeight: FontWeight.w600),
-                      children: [
-                        TextSpan(text: countMinutes.toString()),
-                        if (countMinutes > 1)
-                          TextSpan(text: " Minutter")
-                        else
-                          TextSpan(text: " minutt")
-                      ]),
+                    style: TextStyle(
+                      color: colorTextGrey,
+                      fontSize: 20,
+                    ),
+                    children: [
+                      TextSpan(text: "1 verdi av "),
+                      TextSpan(
+                          text: widget.currentSubTitle,
+                          style: TextStyle(fontWeight: FontWeight.bold)),
+                      TextSpan(text: " er lik")
+                    ],
+                  ),
                 ),
-              if (countSeconds > 0)
-                RichText(
-                  text: TextSpan(
-                      style: style.copyWith(fontWeight: FontWeight.w400),
-                      children: [
-                        TextSpan(text: countSeconds.toString()),
-                        if (countSeconds > 1)
-                          TextSpan(text: " sekunder")
-                        else
-                          TextSpan(text: " sekund")
-                      ]),
-                ),
-            ],
-          ),
-          Container(
-            height: 32,
-          ),
-          Divider(),
-          Expanded(
-            child: CupertinoTimerPicker(
-              backgroundColor: colorBackGround,
-              mode: CupertinoTimerPickerMode.hms,
-              minuteInterval: 1,
-              secondInterval: 1,
-              initialTimerDuration: duration,
-              onTimerDurationChanged: (Duration changedtimer) {
-                setState(() {
-                  duration = changedtimer;
-                  _formatDurations();
-                });
-              },
+              ],
             ),
-          )
-        ],
+            Container(
+              height: 12,
+            ),
+            Wrap(
+              spacing: 8,
+              children: <Widget>[
+                if (countHours > 0)
+                  RichText(
+                    overflow: TextOverflow.clip,
+                    text: TextSpan(style: style, children: [
+                      TextSpan(text: countHours.toString()),
+                      if (countHours > 1)
+                        TextSpan(text: " timer")
+                      else
+                        TextSpan(text: " time")
+                    ]),
+                  )
+                else
+                  Text(
+                    " ",
+                    style: style,
+                  ),
+                if (countMinutes > 0)
+                  RichText(
+                    text: TextSpan(
+                        style: style.copyWith(fontWeight: FontWeight.w600),
+                        children: [
+                          TextSpan(text: countMinutes.toString()),
+                          if (countMinutes > 1)
+                            TextSpan(text: " Minutter")
+                          else
+                            TextSpan(text: " minutt")
+                        ]),
+                  ),
+                if (countSeconds > 0)
+                  RichText(
+                    text: TextSpan(
+                        style: style.copyWith(fontWeight: FontWeight.w400),
+                        children: [
+                          TextSpan(text: countSeconds.toString()),
+                          if (countSeconds > 1)
+                            TextSpan(text: " sekunder")
+                          else
+                            TextSpan(text: " sekund")
+                        ]),
+                  ),
+              ],
+            ),
+            Container(
+              height: 16,
+            ),
+            Divider(),
+            Container(
+              height: 300,
+              child: CupertinoTimerPicker(
+                backgroundColor: colorBackGround,
+                mode: CupertinoTimerPickerMode.hms,
+                minuteInterval: 1,
+                secondInterval: 1,
+                initialTimerDuration: duration,
+                onTimerDurationChanged: (Duration changedtimer) {
+                  setState(() {
+                    duration = changedtimer;
+                    _formatDurations();
+                  });
+                },
+              ),
+            )
+          ],
+        ),
       ),
     );
   }
@@ -341,5 +377,282 @@ class _DurationViewState extends State<_DurationView> {
     countHours = duration.inHours;
     countMinutes = duration.inMinutes % 60;
     countSeconds = duration.inSeconds % 60;
+  }
+}
+
+class _WeightView extends StatefulWidget {
+  final String currentSubTitle;
+  final Unit unit;
+  _WeightView({Key key, this.currentSubTitle, this.unit}) : super(key: key);
+
+  @override
+  __WeightViewState createState() => __WeightViewState();
+}
+
+class __WeightViewState extends State<_WeightView> {
+  TextEditingController _textController = TextEditingController();
+
+  bool kilo = true;
+  bool grams = false;
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(top: 32),
+          child: Column(
+            children: <Widget>[
+              Wrap(
+                children: <Widget>[
+                  RichText(
+                    overflow: TextOverflow.clip,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: colorTextGrey,
+                        fontSize: 20,
+                      ),
+                      children: [
+                        TextSpan(text: "1 verdi av "),
+                        TextSpan(
+                            text: widget.currentSubTitle,
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: " er lik")
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                height: 12,
+              ),
+              if (_textController.text.isNotEmpty)
+                Text(
+                  _textController.text + " " + (kilo ? "Kilo " : "Gram"),
+                  style: style,
+                )
+              else
+                Text(
+                  " ",
+                  style: style,
+                ),
+              Container(
+                height: 16,
+              ),
+              Divider(),
+              Container(
+                height: 16,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children: <Widget>[
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Checkbox(
+                        value: kilo,
+                        activeColor: colorGreen,
+                        onChanged: (_) {
+                          if (kilo == false) {
+                            setState(() {
+                              kilo = true;
+                              grams = false;
+                            });
+                          }
+                        },
+                      ),
+                      Text(
+                        "Kilo",
+                        style: style,
+                      )
+                    ],
+                  ),
+                  Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: <Widget>[
+                      Checkbox(
+                        value: grams,
+                        activeColor: colorGreen,
+                        onChanged: (_) {
+                          if (grams == false) {
+                            setState(() {
+                              grams = true;
+                              kilo = false;
+                            });
+                          }
+                        },
+                      ),
+                      Text(
+                        "Gram",
+                        style: style,
+                      )
+                    ],
+                  )
+                ],
+              ),
+              Padding(
+                padding: const EdgeInsets.only(top: 32.0),
+                child: TextField(
+                  controller: _textController,
+                  onChanged: (val) => setState(() {}),
+                  style: TextStyle(
+                    color: colorTextGrey,
+                    fontFamily: "Apercu",
+                  ),
+                  autocorrect: false,
+                  keyboardType: TextInputType.number,
+                  textCapitalization: TextCapitalization.words,
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(color: Colors.black),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                      color: colorTextGrey,
+                    )),
+                    counterStyle: TextStyle(color: colorLeBleu),
+                    labelText: "Antall",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _CustomView extends StatefulWidget {
+  final Unit unit;
+  final String currentSubTitle;
+  _CustomView({Key key, this.unit, this.currentSubTitle}) : super(key: key);
+
+  @override
+  __CustomViewState createState() => __CustomViewState();
+}
+
+class __CustomViewState extends State<_CustomView> {
+  TextEditingController _controllerType = TextEditingController();
+  TextEditingController _controllerValue = TextEditingController();
+
+  @override
+  Widget build(BuildContext context) {
+    return GestureDetector(
+      onTap: () => FocusScope.of(context).unfocus(),
+      child: SingleChildScrollView(
+        child: Padding(
+          padding: EdgeInsets.only(top: 32),
+          child: Column(
+            children: <Widget>[
+              Wrap(
+                children: <Widget>[
+                  RichText(
+                    overflow: TextOverflow.clip,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: colorTextGrey,
+                        fontSize: 20,
+                      ),
+                      children: [
+                        TextSpan(text: "1 verdi av "),
+                        TextSpan(
+                            text: widget.currentSubTitle,
+                            style: TextStyle(fontWeight: FontWeight.bold)),
+                        TextSpan(text: " er lik")
+                      ],
+                    ),
+                  ),
+                ],
+              ),
+              Container(
+                height: 12,
+              ),
+              Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  if (_controllerValue.text.isNotEmpty)
+                    Text(
+                      _controllerValue.text + " ",
+                      style: style,
+                    )
+                  else
+                    Text(
+                      " ",
+                      style: style,
+                    ),
+                  if (_controllerType.text.isNotEmpty)
+                    Text(
+                      _controllerType.text + " ",
+                      style: style,
+                    )
+                  else
+                    Text(
+                      " ",
+                      style: style,
+                    ),
+                ],
+              ),
+              Container(
+                height: 16,
+              ),
+              Divider(),
+              Container(
+                height: 32,
+              ),
+              TextField(
+                controller: _controllerType,
+                onChanged: (val) => setState(() {}),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: "Apercu",
+                ),
+                autocorrect: false,
+                keyboardType: TextInputType.number,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                    color: colorTextGrey,
+                  )),
+                  counterStyle: TextStyle(color: colorLeBleu),
+                  labelText: "Måleenhet",
+                  hintText: "For eksempel: Meter",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+              Container(
+                height: 32,
+              ),
+              TextField(
+                controller: _controllerValue,
+                onChanged: (val) => setState(() {}),
+                style: TextStyle(
+                  color: Colors.black,
+                  fontFamily: "Apercu",
+                ),
+                autocorrect: false,
+                keyboardType: TextInputType.number,
+                textCapitalization: TextCapitalization.words,
+                decoration: InputDecoration(
+                  labelStyle: TextStyle(color: Colors.black),
+                  focusedBorder: OutlineInputBorder(
+                      borderSide: BorderSide(
+                    color: colorTextGrey,
+                  )),
+                  counterStyle: TextStyle(color: colorLeBleu),
+                  labelText: "Verdi",
+                  hintText: "For eksempel: 100",
+                  border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12)),
+                ),
+              ),
+            ],
+          ),
+        ),
+      ),
+    );
   }
 }

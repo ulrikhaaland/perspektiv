@@ -2,7 +2,12 @@ import 'package:json_annotation/json_annotation.dart';
 
 part 'Unit.g.dart';
 
-enum UnitType { duration, weight, binary, custom,  }
+enum UnitType {
+  duration,
+  weight,
+  binary,
+  custom,
+}
 
 @JsonSerializable(anyMap: true)
 class Unit {
@@ -11,7 +16,8 @@ class Unit {
   double weight;
   String custom;
   bool binary;
-  String title;
+  String nameOfUnit;
+  String value;
 
   Unit({this.type, this.duration, this.weight, this.custom, this.binary});
 
@@ -20,6 +26,6 @@ class Unit {
   Map<String, dynamic> toJson() => _$UnitToJson(this);
 
   String getTitle() {
-    return this.title ?? "Ikke valgt";
+    return this.nameOfUnit ?? "Ikke valgt";
   }
 }
