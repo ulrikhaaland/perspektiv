@@ -12,8 +12,11 @@ Unit _$UnitFromJson(Map json) {
     duration: json['duration'] == null
         ? null
         : Duration(microseconds: json['duration'] as int),
-    weight: (json['weight'] as num)?.toDouble(),
-    custom: json['custom'] as String,
+    weight:
+        json['weight'] == null ? null : Weight.fromJson(json['weight'] as Map),
+    customUnit: json['customUnit'] == null
+        ? null
+        : CustomUnit.fromJson(json['customUnit'] as Map),
     binary: json['binary'] as bool,
   );
 }
@@ -22,7 +25,7 @@ Map<String, dynamic> _$UnitToJson(Unit instance) => <String, dynamic>{
       'type': _$UnitTypeEnumMap[instance.type],
       'duration': instance.duration?.inMicroseconds,
       'weight': instance.weight,
-      'custom': instance.custom,
+      'customUnit': instance.customUnit,
       'binary': instance.binary,
     };
 
@@ -59,8 +62,8 @@ T _$enumDecodeNullable<T>(
 }
 
 const _$UnitTypeEnumMap = {
-  UnitType.duration: 'duration',
-  UnitType.weight: 'weight',
   UnitType.custom: 'custom',
   UnitType.binary: 'binary',
+  UnitType.duration: 'duration',
+  UnitType.weight: 'weight',
 };

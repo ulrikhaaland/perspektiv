@@ -14,7 +14,7 @@ class SubCategory {
   Color color;
   int colorValue;
   double percentage;
-  Unit unit;
+  List<Unit> units;
   List<Comment> comments;
 
   SubCategory({

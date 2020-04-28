@@ -29,7 +29,7 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
   void initState() {
     tempColor = widget.subCategory.color;
     _textController.text = widget.subCategory.name ?? "";
-
+    if (widget.subCategory.units == null) widget.subCategory.units = [];
     super.initState();
   }
 
@@ -43,6 +43,7 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
         resizeToAvoidBottomPadding: false,
+        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           iconTheme: IconThemeData(color: isColorDark(color)),
           backgroundColor: color,
@@ -187,7 +188,7 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
                 Divider(),
                 UnitMeasurement(
                   subCategory: widget.subCategory,
-                  unit: widget.subCategory.unit ?? Unit(),
+                  units: widget.subCategory.units,
                 ),
                 Divider(),
                 _buildColorListTile(),

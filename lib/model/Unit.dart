@@ -1,31 +1,53 @@
 import 'package:json_annotation/json_annotation.dart';
 
+import 'CustomUnit.dart';
+import 'Weight.dart';
+
 part 'Unit.g.dart';
 
 enum UnitType {
+  custom,
+  binary,
   duration,
   weight,
-  binary,
-  custom,
 }
 
 @JsonSerializable(anyMap: true)
 class Unit {
   UnitType type;
   Duration duration;
-  double weight;
-  String custom;
+  Weight weight;
+  CustomUnit customUnit;
   bool binary;
-  String nameOfUnit;
-  String value;
 
-  Unit({this.type, this.duration, this.weight, this.custom, this.binary});
+  Unit({
+    this.type,
+    this.duration,
+    this.weight,
+    this.customUnit,
+    this.binary,
+  });
 
   factory Unit.fromJson(Map json) => _$UnitFromJson(json);
 
   Map<String, dynamic> toJson() => _$UnitToJson(this);
 
   String getTitle() {
-    return this.nameOfUnit ?? "Ikke valgt";
+    switch (this.type) {
+      case UnitType.custom:
+        return customUnit == null ? "" : this.customUnit.unitName;
+        break;
+      case UnitType.binary:
+        // TODO: Handle this case.
+        break;
+      case UnitType.duration:
+        // TODO: Handle this case.
+        break;
+      case UnitType.weight:
+        // TODO: Handle this case.
+        break;
+      default:
+        return "Udefinert";
+    }
   }
 }
