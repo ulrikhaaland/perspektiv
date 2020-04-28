@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:perspektiv/ColorPicker.dart';
-import 'package:perspektiv/model/Unit.dart';
 import 'UnitMeasurement.dart';
 import 'main.dart';
 import 'model/Category.dart';
@@ -21,16 +20,26 @@ class AddSubCategoryItem extends StatefulWidget {
 }
 
 class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
-  final TextEditingController _textController = TextEditingController();
+  final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _descriptionController = TextEditingController();
 
   Color tempColor;
 
   @override
   void initState() {
     tempColor = widget.subCategory.color;
-    _textController.text = widget.subCategory.name ?? "";
+    _nameController.text = widget.subCategory.name ?? "";
+    _descriptionController.text = widget.subCategory.description ?? "";
+
     if (widget.subCategory.units == null) widget.subCategory.units = [];
     super.initState();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    _descriptionController.dispose();
+    super.dispose();
   }
 
   @override
@@ -42,8 +51,6 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
     return GestureDetector(
       onTap: () => FocusScope.of(context).unfocus(),
       child: Scaffold(
-        resizeToAvoidBottomPadding: false,
-        resizeToAvoidBottomInset: false,
         appBar: AppBar(
           iconTheme: IconThemeData(color: isColorDark(color)),
           backgroundColor: color,
@@ -52,13 +59,7 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
             InkWell(
               borderRadius: BorderRadius.circular(12),
               onTap: () {
-                widget.subCategory
-                  ..name = _textController.text
-                  ..color = tempColor;
-                if (widget.isCreate) {
-                  widget.category.subCategories.add(widget.subCategory);
-                }
-                Navigator.pop(context);
+                _onSaved();
               },
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
@@ -135,7 +136,7 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
                               BorderRadius.all(Radius.elliptical(20, 30)),
                         ),
                         child: Text(
-                          _textController.text,
+                          _nameController.text,
                           style: TextStyle(
                             color: isColorDark(color),
                           ),
@@ -160,17 +161,17 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
                 Padding(
                   padding: const EdgeInsets.symmetric(vertical: 16.0),
                   child: TextField(
-                    controller: _textController,
+                    controller: _nameController,
                     onChanged: (val) => setState(() {}),
-//                  autofocus: true,
+                    //                  autofocus: true,
                     style: TextStyle(
-                      color: colorTextGrey,
+                      color: Colors.black,
                       fontFamily: "Apercu",
                     ),
                     autocorrect: false,
                     textCapitalization: TextCapitalization.words,
                     decoration: InputDecoration(
-                      labelStyle: TextStyle(color: Colors.black),
+                      labelStyle: TextStyle(color: colorTextGrey),
                       focusedBorder: OutlineInputBorder(
                           borderSide: BorderSide(
                         color: colorTextGrey,
@@ -189,10 +190,41 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
                 UnitMeasurement(
                   subCategory: widget.subCategory,
                   units: widget.subCategory.units,
+                  subTitle: _nameController.text,
                 ),
                 Divider(),
                 _buildColorListTile(),
                 Divider(),
+                Padding(
+                  padding: EdgeInsets.only(
+                      top: 16,
+                      bottom: MediaQuery.of(context).viewInsets.bottom),
+                  child: TextField(
+                    controller: _descriptionController,
+                    onChanged: (val) => setState(() {}),
+                    style: TextStyle(
+                      color: Colors.black,
+                      fontFamily: "Apercu",
+                    ),
+                    maxLines: 5,
+                    autocorrect: false,
+                    textCapitalization: TextCapitalization.sentences,
+                    decoration: InputDecoration(
+                      alignLabelWithHint: true,
+                      labelStyle: TextStyle(
+                        color: colorTextGrey,
+                      ),
+                      focusedBorder: OutlineInputBorder(
+                          borderSide: BorderSide(
+                        color: colorTextGrey,
+                      )),
+                      counterStyle: TextStyle(color: colorLeBleu),
+                      labelText: "Beskrivelse",
+                      border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(12)),
+                    ),
+                  ),
+                ),
               ],
             ),
           ),
@@ -202,49 +234,47 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
   }
 
   Widget _buildColorListTile() {
-    return InkWell(
-      onTap: () => _showBottomSheet(context),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 32.0),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-          children: <Widget>[
-            Expanded(
-              child: Wrap(
-                crossAxisAlignment: WrapCrossAlignment.start,
-                children: <Widget>[
-                  Container(
-                    padding: EdgeInsets.symmetric(vertical: 4),
-                    child: RichText(
-                      overflow: TextOverflow.clip,
-                      text: TextSpan(
-                        style: TextStyle(
-                          color: colorTextGrey,
-                          fontSize: 20,
-                        ),
-                        children: [
-                          TextSpan(text: "Jeg forbinder "),
-                          TextSpan(
-                              text: _textController.text != ""
-                                  ? _textController.text
-                                  : "Udefinert",
-                              style: TextStyle(fontWeight: FontWeight.w500)),
-                          TextSpan(text: " med fargen")
-                        ],
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 32.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+        children: <Widget>[
+          Expanded(
+            child: Wrap(
+              crossAxisAlignment: WrapCrossAlignment.start,
+              children: <Widget>[
+                Container(
+                  padding: EdgeInsets.symmetric(vertical: 4),
+                  child: RichText(
+                    overflow: TextOverflow.clip,
+                    text: TextSpan(
+                      style: TextStyle(
+                        color: colorTextGrey,
+                        fontSize: 20,
                       ),
+                      children: [
+                        TextSpan(text: "Jeg forbinder "),
+                        TextSpan(
+                            text: _nameController.text,
+                            style: TextStyle(fontWeight: FontWeight.w500)),
+                        TextSpan(text: " med fargen")
+                      ],
                     ),
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-            Expanded(
+          ),
+          Expanded(
+            child: InkWell(
+              onTap: () => _showBottomSheet(context),
               child: CircleAvatar(
                 radius: 40,
                 backgroundColor: tempColor,
               ),
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -271,5 +301,16 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
             ),
           );
         });
+  }
+
+  void _onSaved() {
+    widget.subCategory
+      ..name = _nameController.text
+      ..color = tempColor
+      ..description = _descriptionController.text;
+    if (widget.isCreate) {
+      widget.category.subCategories.add(widget.subCategory);
+    }
+    Navigator.pop(context);
   }
 }

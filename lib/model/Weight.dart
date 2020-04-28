@@ -5,7 +5,7 @@ part 'Weight.g.dart';
 @JsonSerializable(anyMap: true)
 class Weight {
   String type;
-  double weight;
+  int weight;
 
   Weight({this.type, this.weight});
 

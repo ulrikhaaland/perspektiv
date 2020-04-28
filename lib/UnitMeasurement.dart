@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:perspektiv/main.dart';
 import 'package:perspektiv/model/CustomUnit.dart';
 import 'package:perspektiv/model/SubCategory.dart';
+import 'package:perspektiv/model/Weight.dart';
 import 'package:perspektiv/review/ValueDisplayer.dart';
 
 import 'CategoryItem.dart';
@@ -16,8 +17,9 @@ const style =
 class UnitMeasurement extends StatefulWidget {
   final List<Unit> units;
   final SubCategory subCategory;
+  final String subTitle;
 
-  const UnitMeasurement({Key key, this.units, this.subCategory})
+  const UnitMeasurement({Key key, this.units, this.subCategory, this.subTitle})
       : assert(units != null),
         super(key: key);
 
@@ -25,7 +27,28 @@ class UnitMeasurement extends StatefulWidget {
   _UnitMeasurementState createState() => _UnitMeasurementState();
 }
 
-class _UnitMeasurementState extends State<UnitMeasurement> {
+class _UnitMeasurementState extends State<UnitMeasurement>
+    with TickerProviderStateMixin {
+  TabController _tabController;
+
+  Unit currentUnit;
+
+  @override
+  void initState() {
+    _tabController = TabController(initialIndex: 0, length: 4, vsync: this);
+    _tabController.addListener(
+      () => _onTabChanged(),
+    );
+    super.initState();
+  }
+
+  @override
+  void dispose() {
+    _tabController.removeListener(() => _onTabChanged());
+    _tabController.dispose();
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Padding(
@@ -50,7 +73,7 @@ class _UnitMeasurementState extends State<UnitMeasurement> {
                       children: [
                         TextSpan(text: "1 verdi av "),
                         TextSpan(
-                            text: widget.subCategory.name,
+                            text: widget.subTitle,
                             style: TextStyle(fontWeight: FontWeight.w500)),
                         TextSpan(text: " er lik")
                       ],
@@ -87,8 +110,10 @@ class _UnitMeasurementState extends State<UnitMeasurement> {
     );
   }
 
-  void _showBottomSheet(BuildContext context, Unit unit) {
-    showModalBottomSheet(
+  Future<void> _showBottomSheet(BuildContext context, Unit unit) async {
+    assert(unit != null);
+    currentUnit = unit;
+    await showModalBottomSheet(
         backgroundColor: colorBackGround,
         isDismissible: true,
         isScrollControlled: true,
@@ -107,66 +132,67 @@ class _UnitMeasurementState extends State<UnitMeasurement> {
                   child: _buildUnitSelector(unit)),
             ),
           );
-        });
+        }).whenComplete(() {
+      if (mounted) setState(() {});
+    });
   }
 
   Widget _buildUnitSelector(Unit unit) {
-    return DefaultTabController(
-      initialIndex: unit.type?.index ?? 0,
-      length: 4,
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-          TabBar(
-            indicatorPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
-            indicatorColor: colorLeBleu,
-            labelPadding: EdgeInsets.zero,
-            labelColor: colorTextGrey,
-            labelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
-            unselectedLabelStyle: TextStyle(color: colorTextGrey),
-            tabs: <Widget>[
-              Tab(
-                text: "Egendefinert",
-              ),
-              Tab(
-                text: "Gjøremål",
-              ),
-              Tab(
-                text: "Varighet",
-              ),
-              Tab(
-                text: "Vekt",
+    _tabController.index = unit.type.index ?? 0;
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        TabBar(
+          controller: _tabController,
+          indicatorPadding: EdgeInsets.only(left: 8, right: 8, bottom: 8),
+          indicatorColor: colorLeBleu,
+          labelPadding: EdgeInsets.zero,
+          labelColor: colorTextGrey,
+          labelStyle: TextStyle(fontWeight: FontWeight.w500, fontSize: 16),
+          unselectedLabelStyle: TextStyle(color: colorTextGrey),
+          tabs: <Widget>[
+            Tab(
+              text: "Egendefinert",
+            ),
+            Tab(
+              text: "Gjøremål",
+            ),
+            Tab(
+              text: "Varighet",
+            ),
+            Tab(
+              text: "Vekt",
+            ),
+          ],
+        ),
+        Expanded(
+          child: Column(
+            children: <Widget>[
+              Divider(),
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children: <Widget>[
+                    _CustomView(
+                      unit: unit,
+                      currentSubTitle: widget.subCategory.name,
+                    ),
+                    _BinaryView(unit: unit, subCategory: widget.subCategory),
+                    _DurationView(
+                      unit: unit,
+                      currentSubTitle: widget.subCategory.name,
+                    ),
+                    _WeightView(
+                      unit: unit,
+                      currentSubTitle: widget.subCategory.name,
+                    ),
+                  ],
+                ),
               ),
             ],
           ),
-          Expanded(
-            child: Column(
-              children: <Widget>[
-                Divider(),
-                Expanded(
-                  child: TabBarView(
-                    children: <Widget>[
-                      _CustomView(
-                        unit: unit,
-                        currentSubTitle: widget.subCategory.name,
-                      ),
-                      _BinaryView(unit: unit, subCategory: widget.subCategory),
-                      _DurationView(
-                        unit: unit,
-                        currentSubTitle: widget.subCategory.name,
-                      ),
-                      _WeightView(
-                        unit: unit,
-                        currentSubTitle: widget.subCategory.name,
-                      ),
-                    ],
-                  ),
-                ),
-              ],
-            ),
-          )
-        ],
-      ),
+        )
+      ],
     );
   }
 
@@ -211,6 +237,27 @@ class _UnitMeasurementState extends State<UnitMeasurement> {
       ),
     );
   }
+
+  void _onTabChanged() {
+    switch (_tabController.index) {
+      case 0:
+        currentUnit.type = UnitType.custom;
+
+        break;
+      case 1:
+        currentUnit.type = UnitType.binary;
+
+        break;
+      case 2:
+        currentUnit.type = UnitType.duration;
+
+        break;
+      case 3:
+        currentUnit.type = UnitType.weight;
+
+        break;
+    }
+  }
 }
 
 class _BinaryView extends StatefulWidget {
@@ -228,6 +275,8 @@ class __BinaryViewState extends State<_BinaryView> {
 
   bool init = true;
 
+  Unit unit;
+
   @override
   void initState() {
     subCategory = SubCategory(
@@ -235,6 +284,7 @@ class __BinaryViewState extends State<_BinaryView> {
         percentage: 0,
         color: widget.subCategory.color,
         comments: []);
+    unit = widget.unit;
     super.initState();
   }
 
@@ -243,8 +293,10 @@ class __BinaryViewState extends State<_BinaryView> {
     if (init)
       WidgetsBinding.instance.addPostFrameCallback((_) {
         Timer(Duration(milliseconds: 150), () {
-          setState(() => subCategory.percentage = 100);
-          init = false;
+          if (mounted) {
+            setState(() => subCategory.percentage = 100);
+            init = false;
+          }
         });
       });
     return SingleChildScrollView(
@@ -308,19 +360,27 @@ class _DurationView extends StatefulWidget {
   _DurationViewState createState() => _DurationViewState();
 }
 
-bool minute = true;
-bool hour = false;
-bool seconds = false;
-
-String durationName = "Minutt";
-
-int countMinutes = 0;
-int countHours = 0;
-int countSeconds = 0;
-
-Duration duration = Duration(hours: 0);
-
 class _DurationViewState extends State<_DurationView> {
+  bool minute = true;
+  bool hour = false;
+  bool seconds = false;
+
+  String durationName = "Minutt";
+
+  int countMinutes = 0;
+  int countHours = 0;
+  int countSeconds = 0;
+
+  Unit unit;
+
+  @override
+  void initState() {
+    unit = widget.unit;
+    if (unit.duration == null) unit.duration = Duration(hours: 0);
+    _formatDurations();
+    super.initState();
+  }
+
   @override
   Widget build(BuildContext context) {
     return SingleChildScrollView(
@@ -408,10 +468,10 @@ class _DurationViewState extends State<_DurationView> {
                 mode: CupertinoTimerPickerMode.hms,
                 minuteInterval: 1,
                 secondInterval: 1,
-                initialTimerDuration: duration,
+                initialTimerDuration: unit.duration,
                 onTimerDurationChanged: (Duration changedtimer) {
                   setState(() {
-                    duration = changedtimer;
+                    unit.duration = changedtimer;
                     _formatDurations();
                   });
                 },
@@ -424,9 +484,9 @@ class _DurationViewState extends State<_DurationView> {
   }
 
   void _formatDurations() {
-    countHours = duration.inHours;
-    countMinutes = duration.inMinutes % 60;
-    countSeconds = duration.inSeconds % 60;
+    countHours = unit.duration.inHours;
+    countMinutes = unit.duration.inMinutes % 60;
+    countSeconds = unit.duration.inSeconds % 60;
   }
 }
 
@@ -447,12 +507,28 @@ class __WeightViewState extends State<_WeightView> {
 
   ScrollController _scrollController = ScrollController();
 
-  bool kilo = true;
-  bool grams = false;
+  bool kilo;
+  bool grams;
+
+  Unit unit;
 
   @override
   void initState() {
     _focusNode.addListener(() => _scroll());
+    unit = widget.unit;
+    if (widget.unit.weight == null) {
+      widget.unit.weight = Weight(type: "kilo", weight: 0);
+    }
+    if (unit.weight.type == "kilo") {
+      kilo = true;
+      grams = false;
+    } else {
+      kilo = false;
+      grams = true;
+    }
+    _textController.text = widget.unit.weight.weight == 0
+        ? ""
+        : widget.unit.weight.weight.toString();
     super.initState();
   }
 
@@ -524,6 +600,7 @@ class __WeightViewState extends State<_WeightView> {
                         onChanged: (_) {
                           if (kilo == false) {
                             setState(() {
+                              unit.weight.type = "kilo";
                               kilo = true;
                               grams = false;
                             });
@@ -545,6 +622,7 @@ class __WeightViewState extends State<_WeightView> {
                         onChanged: (_) {
                           if (grams == false) {
                             setState(() {
+                              unit.weight.type = "gram";
                               grams = true;
                               kilo = false;
                             });
@@ -566,12 +644,15 @@ class __WeightViewState extends State<_WeightView> {
                 child: TextField(
                   focusNode: _focusNode,
                   controller: _textController,
-                  onChanged: (val) => setState(() {}),
+                  onChanged: (val) => setState(() {
+                    unit.weight.weight = int.parse(val) ?? 0;
+                  }),
                   style: TextStyle(
                     color: colorTextGrey,
                     fontFamily: "Apercu",
                   ),
                   autocorrect: false,
+                  textInputAction: TextInputAction.done,
                   keyboardType: TextInputType.number,
                   textCapitalization: TextCapitalization.words,
                   decoration: InputDecoration(
@@ -644,7 +725,10 @@ class __CustomViewState extends State<_CustomView> {
   void dispose() {
     _focusNodeType.removeListener(() => _scroll());
     _focusNodeValue.removeListener(() => _scroll());
-
+    _focusNodeType.dispose();
+    _focusNodeValue.dispose();
+    _controllerName.dispose();
+    _controllerValue.dispose();
     super.dispose();
   }
 
@@ -723,30 +807,35 @@ class __CustomViewState extends State<_CustomView> {
               Container(
                 height: 32,
               ),
-              TextField(
-                focusNode: _focusNodeType,
-                controller: _controllerName,
-                onChanged: (val) => setState(() {
-                  customUnit.unitName = val;
-                }),
-                style: TextStyle(
-                  color: Colors.black,
-                  fontFamily: "Apercu",
-                ),
-                autocorrect: false,
-                keyboardType: TextInputType.number,
-                textCapitalization: TextCapitalization.words,
-                decoration: InputDecoration(
-                  labelStyle: TextStyle(color: Colors.black),
-                  focusedBorder: OutlineInputBorder(
-                      borderSide: BorderSide(
-                    color: colorTextGrey,
-                  )),
-                  counterStyle: TextStyle(color: colorLeBleu),
-                  labelText: "Måleenhet",
-                  hintText: "For eksempel: Meter",
-                  border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(12)),
+              Padding(
+                padding: EdgeInsets.only(
+                    bottom: _focusNodeType.hasFocus
+                        ? MediaQuery.of(context).viewInsets.bottom
+                        : 0),
+                child: TextField(
+                  focusNode: _focusNodeType,
+                  controller: _controllerName,
+                  onChanged: (val) => setState(() {
+                    customUnit.unitName = val;
+                  }),
+                  style: TextStyle(
+                    color: Colors.black,
+                    fontFamily: "Apercu",
+                  ),
+                  autocorrect: false,
+                  textCapitalization: TextCapitalization.sentences,
+                  decoration: InputDecoration(
+                    labelStyle: TextStyle(color: Colors.black),
+                    focusedBorder: OutlineInputBorder(
+                        borderSide: BorderSide(
+                      color: colorTextGrey,
+                    )),
+                    counterStyle: TextStyle(color: colorLeBleu),
+                    labelText: "Måleenhet",
+                    hintText: "For eksempel: Meter",
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(12)),
+                  ),
                 ),
               ),
               Container(
@@ -754,7 +843,9 @@ class __CustomViewState extends State<_CustomView> {
               ),
               Padding(
                 padding: EdgeInsets.only(
-                    bottom: MediaQuery.of(context).viewInsets.bottom),
+                    bottom: _focusNodeValue.hasFocus
+                        ? MediaQuery.of(context).viewInsets.bottom
+                        : 0),
                 child: TextField(
                   focusNode: _focusNodeValue,
                   controller: _controllerValue,
@@ -766,8 +857,7 @@ class __CustomViewState extends State<_CustomView> {
                     fontFamily: "Apercu",
                   ),
                   autocorrect: false,
-                  keyboardType: TextInputType.number,
-                  textCapitalization: TextCapitalization.words,
+                  textCapitalization: TextCapitalization.sentences,
                   decoration: InputDecoration(
                     labelStyle: TextStyle(color: Colors.black),
                     focusedBorder: OutlineInputBorder(

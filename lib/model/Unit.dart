@@ -32,19 +32,33 @@ class Unit {
 
   Map<String, dynamic> toJson() => _$UnitToJson(this);
 
+  String get formattedDuration {
+    String countHours =
+        duration.inHours > 0 ? (duration.inHours.toString() + "t") : "";
+    String countMinutes = (duration.inMinutes % 60) > 0
+        ? ((duration.inMinutes % 60).toString() + "m")
+        : "";
+    String countSeconds = (duration.inSeconds % 60) > 0
+        ? ((duration.inSeconds % 60).toString() + "s")
+        : "";
+    return countHours + countMinutes + countSeconds;
+  }
+
   String getTitle() {
     switch (this.type) {
       case UnitType.custom:
-        return customUnit == null ? "" : this.customUnit.unitName;
+        return customUnit == null
+            ? ""
+            : (this.customUnit.unitValue + this.customUnit.unitName);
         break;
       case UnitType.binary:
-        // TODO: Handle this case.
+        return "Gjøremål";
         break;
       case UnitType.duration:
-        // TODO: Handle this case.
+        return formattedDuration;
         break;
       case UnitType.weight:
-        // TODO: Handle this case.
+        return weight.weight.toString() + " " + weight.type;
         break;
       default:
         return "Udefinert";

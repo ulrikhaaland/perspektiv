@@ -9,7 +9,7 @@ part of 'Weight.dart';
 Weight _$WeightFromJson(Map json) {
   return Weight(
     type: json['type'] as String,
-    weight: (json['weight'] as num)?.toDouble(),
+    weight: json['weight'] as int,
   );
 }
 

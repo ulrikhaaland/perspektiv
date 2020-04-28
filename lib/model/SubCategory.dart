@@ -10,6 +10,7 @@ part 'SubCategory.g.dart';
 @JsonSerializable(anyMap: true)
 class SubCategory {
   String name;
+  String description;
   @JsonKey(ignore: true)
   Color color;
   int colorValue;
@@ -22,6 +23,8 @@ class SubCategory {
     this.color,
     this.percentage = 0,
     this.comments,
+    this.description,
+    this.units,
   });
 
   factory SubCategory.fromJson(Map json) => _$SubCategoryFromJson(json);
