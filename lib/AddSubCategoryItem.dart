@@ -291,12 +291,15 @@ class _AddSubCategoryItemState extends State<AddSubCategoryItem> {
         context: context,
         builder: (builder) {
           return SingleChildScrollView(
-            child: Padding(
-              padding:
-                  const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
-              child: ColorPicker(
-                color: tempColor,
-                onChanged: (val) => setState(() => tempColor = val),
+            child: Container(
+//              height: 550,
+              child: Padding(
+                padding:
+                    const EdgeInsets.symmetric(vertical: 16.0, horizontal: 16),
+                child: ColorPicker(
+                  color: tempColor,
+                  onChanged: (val) => setState(() => tempColor = val),
+                ),
               ),
             ),
           );

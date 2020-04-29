@@ -113,6 +113,8 @@ class _UnitMeasurementState extends State<UnitMeasurement>
   Future<void> _showBottomSheet(BuildContext context, Unit unit) async {
     assert(unit != null);
     currentUnit = unit;
+
+    Orientation orientation = MediaQuery.of(context).orientation;
     await showModalBottomSheet(
         backgroundColor: colorBackGround,
         isDismissible: true,
@@ -125,7 +127,7 @@ class _UnitMeasurementState extends State<UnitMeasurement>
         builder: (builder) {
           return SingleChildScrollView(
             child: Container(
-              height: 500,
+              height: orientation == Orientation.portrait ? 500: 400,
               child: Padding(
                   padding: const EdgeInsets.symmetric(
                       vertical: 16.0, horizontal: 16),

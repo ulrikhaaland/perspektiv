@@ -18,7 +18,6 @@
 /// [ColorPicker]
 ///
 
-
 import "package:flutter/cupertino.dart";
 import "package:flutter/foundation.dart";
 import "package:flutter/gestures.dart";
@@ -28,7 +27,7 @@ import "package:flutter/rendering.dart";
 import "package:flutter/widgets.dart";
 import "dart:math" as Math;
 
-
+import 'package:perspektiv/main.dart';
 
 //---------------------------SliderPicker.dart-------------------------------
 //
@@ -36,9 +35,7 @@ import "dart:math" as Math;
 
 //import "package:flutter/material.dart";
 
-
 class SliderPicker extends StatefulWidget {
-
   final double min;
   final double max;
   final double value;
@@ -54,7 +51,7 @@ class SliderPicker extends StatefulWidget {
     @required this.onChanged,
     this.colors,
     this.child,
-  }) : assert(value != null),
+  })  : assert(value != null),
         assert(value >= min && value <= max),
         super(key: key);
 
@@ -63,21 +60,23 @@ class SliderPicker extends StatefulWidget {
 }
 
 class _SliderPickerState extends State<SliderPicker> {
+  double get value => super.widget.value;
 
-  double get value=> super.widget.value;
-  double get min=> super.widget.min;
-  double get max=> super.widget.max;
+  double get min => super.widget.min;
+
+  double get max => super.widget.max;
 
   double getRatio() => ((value - min) / (max - min)).clamp(0.0, 1.0);
-  void setRatio(double ratio) => super.widget.onChanged((ratio * (max - min) + min).clamp(min, max));
 
-  void onPanUpdate (DragUpdateDetails details, BoxConstraints box) {
+  void setRatio(double ratio) =>
+      super.widget.onChanged((ratio * (max - min) + min).clamp(min, max));
+
+  void onPanUpdate(DragUpdateDetails details, BoxConstraints box) {
     RenderBox renderBox = super.context.findRenderObject();
     Offset offset = renderBox.globalToLocal(details.globalPosition);
-    double ratio=offset.dx/box.maxWidth;
-    super.setState(() =>this.setRatio(ratio));
+    double ratio = offset.dx / box.maxWidth;
+    super.setState(() => this.setRatio(ratio));
   }
-
 
   BorderRadius radius = const BorderRadius.all(const Radius.circular(20.0));
 
@@ -87,66 +86,53 @@ class _SliderPickerState extends State<SliderPicker> {
         child: new CustomMultiChildLayout(
             delegate: new _SliderLayout(),
             children: <Widget>[
-
               //Track
               new LayoutId(
                   id: _SliderLayout.track,
-                  child: (super.widget.colors==null)?
+                  child: (super.widget.colors == null)
+                      ?
 
-                  //child
-                  new DecoratedBox(
-                      decoration: BoxDecoration(
-                          borderRadius: this.radius,
-                          border: new Border.all(color: Colors.grey, width: 1)
-                      ),
-                      child: new ClipRRect(
-                          borderRadius: this.radius,
-                          child: super.widget.child
-                      )
-                  ):
+                      //child
+                      new DecoratedBox(
+                          decoration: BoxDecoration(
+                              borderRadius: this.radius,
+                              border:
+                                  new Border.all(color: Colors.grey, width: 1)),
+                          child: new ClipRRect(
+                              borderRadius: this.radius,
+                              child: super.widget.child))
+                      :
 
-                  //Color
-                  new DecoratedBox(
-                      decoration: BoxDecoration(
-                          borderRadius: this.radius,
-                          border: new Border.all(color: Colors.grey, width: 1),
-                          gradient: new LinearGradient(
-                              colors: super.widget.colors
-                          )
-                      )
-                  )
-
-              ),
+                      //Color
+                      new DecoratedBox(
+                          decoration: BoxDecoration(
+                              borderRadius: this.radius,
+                              border:
+                                  new Border.all(color: Colors.grey, width: 1),
+                              gradient: new LinearGradient(
+                                  colors: super.widget.colors)))),
 
               //Thumb
               new LayoutId(
                   id: _SliderLayout.thumb,
                   child: new Transform(
-                    transform: new Matrix4.identity()..translate(
-                        _ThumbPainter.getWidth(this.getRatio(), maxWidth)
-                    ),
+                    transform: new Matrix4.identity()
+                      ..translate(
+                          _ThumbPainter.getWidth(this.getRatio(), maxWidth)),
                     child: new CustomPaint(painter: new _ThumbPainter()),
-                  )
-              ),
+                  )),
 
               //GestureContainer
               new LayoutId(
                   id: _SliderLayout.gestureContainer,
-                  child: new LayoutBuilder(
-                      builder: this.buildGestureDetector
-                  )
-              )
-
-            ]
-        )
-    );
+                  child: new LayoutBuilder(builder: this.buildGestureDetector))
+            ]));
   }
 
-  Widget buildGestureDetector(BuildContext context, BoxConstraints box){
+  Widget buildGestureDetector(BuildContext context, BoxConstraints box) {
     return new GestureDetector(
         child: new Container(color: const Color(0)),
-        onPanUpdate: (detail) => this.onPanUpdate(detail, box)
-    );
+        onPanUpdate: (detail) => this.onPanUpdate(detail, box));
   }
 
   @override
@@ -154,34 +140,34 @@ class _SliderPickerState extends State<SliderPicker> {
     return new SizedBox(
         height: 40.0,
         child: new LayoutBuilder(
-            builder: (context, box) => this.buildSlider(box.maxWidth)
-        )
-    );
+            builder: (context, box) => this.buildSlider(box.maxWidth)));
   }
 }
 
-
 /// Slider
 class _SliderLayout extends MultiChildLayoutDelegate {
-
   static final String track = "track";
   static final String thumb = "thumb";
   static final String gestureContainer = "gesturecontainer";
 
-
   @override
   void performLayout(Size size) {
-
     //Track
-    layoutChild(track, BoxConstraints.tightFor(width: size.width, height: _ThumbPainter.doubleTrackWidth));
-    positionChild(track, Offset(0.0, size.height / 2 - _ThumbPainter.trackWidth));
+    layoutChild(
+        track,
+        BoxConstraints.tightFor(
+            width: size.width, height: _ThumbPainter.doubleTrackWidth));
+    positionChild(
+        track, Offset(0.0, size.height / 2 - _ThumbPainter.trackWidth));
 
     //Thumb
-    layoutChild(thumb, BoxConstraints.tightFor(width: 10.0, height: size.height / 2));
+    layoutChild(
+        thumb, BoxConstraints.tightFor(width: 10.0, height: size.height / 2));
     positionChild(thumb, Offset(0.0, size.height * 0.5));
 
     //GestureContainer
-    layoutChild(gestureContainer, BoxConstraints.tightFor(width: size.width, height: size.height));
+    layoutChild(gestureContainer,
+        BoxConstraints.tightFor(width: size.width, height: size.height));
     positionChild(gestureContainer, Offset.zero);
   }
 
@@ -191,17 +177,23 @@ class _SliderLayout extends MultiChildLayoutDelegate {
 
 /// Thumb
 class _ThumbPainter extends CustomPainter {
-
   static double width = 12;
   static double trackWidth = 14;
   static double doubleTrackWidth = 28;
+
   static double getWidth(double value, double maxWidth) =>
-      (maxWidth - trackWidth- trackWidth) * value + trackWidth;
+      (maxWidth - trackWidth - trackWidth) * value + trackWidth;
 
   @override
   void paint(Canvas canvas, Size size) {
-    final Paint paintWhite = new Paint()..color=Colors.white..strokeWidth=4..style=PaintingStyle.stroke;
-    final Paint paintBlack = new Paint()..color=Colors.black..strokeWidth=6..style=PaintingStyle.stroke;
+    final Paint paintWhite = new Paint()
+      ..color = Colors.white
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
+    final Paint paintBlack = new Paint()
+      ..color = Colors.black
+      ..strokeWidth = 6
+      ..style = PaintingStyle.stroke;
 
     canvas.drawCircle(Offset.zero, _ThumbPainter.width, paintBlack);
     canvas.drawCircle(Offset.zero, _ThumbPainter.width, paintWhite);
@@ -211,19 +203,9 @@ class _ThumbPainter extends CustomPainter {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-
 //
 //
 //---------------------------SliderPicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------PalettePicker.dart-------------------------------
 //
@@ -237,9 +219,7 @@ class _ThumbPainter extends CustomPainter {
 //import "package:flutter/cupertino.dart";
 //import "package:flutter/painting.dart";
 
-
 class PalettePicker extends StatefulWidget {
-
   final Offset position;
   final ValueChanged<Offset> onChanged;
 
@@ -251,20 +231,17 @@ class PalettePicker extends StatefulWidget {
   final double bottomPosition;
   final List<Color> topBottomColors;
 
-
-  PalettePicker({
-    Key key,
-    @required this.position,
-    @required this.onChanged,
-
-    this.leftPosition=0.0,
-    this.rightPosition=1.0,
-    @required this.leftRightColors,
-
-    this.topPosition=0.0,
-    this.bottomPosition=1.0,
-    @required this.topBottomColors
-  }) : assert(position != null),
+  PalettePicker(
+      {Key key,
+      @required this.position,
+      @required this.onChanged,
+      this.leftPosition = 0.0,
+      this.rightPosition = 1.0,
+      @required this.leftRightColors,
+      this.topPosition = 0.0,
+      this.bottomPosition = 1.0,
+      @required this.topBottomColors})
+      : assert(position != null),
         super(key: key);
 
   @override
@@ -272,61 +249,74 @@ class PalettePicker extends StatefulWidget {
 }
 
 class _PalettePickerState extends State<PalettePicker> {
-
   final GlobalKey paletteKey = GlobalKey();
 
-  Offset get position=> super.widget.position;
-  double get leftPosition=> super.widget.leftPosition;
-  double get rightPosition=> super.widget.rightPosition;
-  double get topPosition=> super.widget.topPosition;
-  double get bottomPosition=> super.widget.bottomPosition;
+  Offset get position => super.widget.position;
 
+  double get leftPosition => super.widget.leftPosition;
+
+  double get rightPosition => super.widget.rightPosition;
+
+  double get topPosition => super.widget.topPosition;
+
+  double get bottomPosition => super.widget.bottomPosition;
 
   /// Position(min, max) > Ratio(0, 1)
-  Offset positionToRatio(){
-    double ratioX = this.leftPosition < this.rightPosition?
-    this.positionToRatio2(this.position.dx, this.leftPosition, this.rightPosition):
-    1.0 - this.positionToRatio2(this.position.dx, this.rightPosition, this.leftPosition);
+  Offset positionToRatio() {
+    double ratioX = this.leftPosition < this.rightPosition
+        ? this.positionToRatio2(
+            this.position.dx, this.leftPosition, this.rightPosition)
+        : 1.0 -
+            this.positionToRatio2(
+                this.position.dx, this.rightPosition, this.leftPosition);
 
-    double ratioY = this.topPosition < this.bottomPosition?
-    this.positionToRatio2(this.position.dy, this.topPosition, this.bottomPosition):
-    1.0 - this.positionToRatio2(this.position.dy, this.bottomPosition, this.topPosition);
+    double ratioY = this.topPosition < this.bottomPosition
+        ? this.positionToRatio2(
+            this.position.dy, this.topPosition, this.bottomPosition)
+        : 1.0 -
+            this.positionToRatio2(
+                this.position.dy, this.bottomPosition, this.topPosition);
 
     return new Offset(ratioX, ratioY);
   }
-  double positionToRatio2(double postiton, double minPostition, double maxPostition){
-    if(postiton < minPostition) return 0.0;
-    if(postiton > maxPostition) return 1.0;
+
+  double positionToRatio2(
+      double postiton, double minPostition, double maxPostition) {
+    if (postiton < minPostition) return 0.0;
+    if (postiton > maxPostition) return 1.0;
     return (postiton - minPostition) / (maxPostition - minPostition);
   }
 
   /// Ratio(0, 1) > Position(min, max)
-  void ratioToPosition(Offset ratio){
+  void ratioToPosition(Offset ratio) {
     RenderBox renderBox = this.paletteKey.currentContext.findRenderObject();
     Offset startposition = renderBox.localToGlobal(Offset.zero);
     Size size = renderBox.size;
-    Offset updateOffset= ratio-startposition;
+    Offset updateOffset = ratio - startposition;
 
     double ratioX = updateOffset.dx / size.width;
     double ratioY = updateOffset.dy / size.height;
 
-    double positionX = this.leftPosition < this.rightPosition?
-    this.ratioToPosition2(ratioX, this.leftPosition, this.rightPosition):
-    this.ratioToPosition2(1.0 - ratioX, this.rightPosition, this.leftPosition);
+    double positionX = this.leftPosition < this.rightPosition
+        ? this.ratioToPosition2(ratioX, this.leftPosition, this.rightPosition)
+        : this.ratioToPosition2(
+            1.0 - ratioX, this.rightPosition, this.leftPosition);
 
-    double positionY= this.topPosition < this.bottomPosition?
-    this.ratioToPosition2(ratioY, this.topPosition, this.bottomPosition):
-    this.ratioToPosition2(1.0 - ratioY, this.bottomPosition, this.topPosition);
+    double positionY = this.topPosition < this.bottomPosition
+        ? this.ratioToPosition2(ratioY, this.topPosition, this.bottomPosition)
+        : this.ratioToPosition2(
+            1.0 - ratioY, this.bottomPosition, this.topPosition);
 
     Offset position = new Offset(positionX, positionY);
     super.widget.onChanged(position);
   }
-  double ratioToPosition2(double ratio, double minposition, double maxposition){
-    if(ratio < 0.0) return minposition;
-    if(ratio > 1.0) return maxposition;
-    return  ratio * maxposition + (1.0 - ratio) * minposition;
-  }
 
+  double ratioToPosition2(
+      double ratio, double minposition, double maxposition) {
+    if (ratio < 0.0) return minposition;
+    if (ratio > 1.0) return maxposition;
+    return ratio * maxposition + (1.0 - ratio) * minposition;
+  }
 
   Widget buildLeftRightColors() {
     return new Container(
@@ -336,10 +326,7 @@ class _PalettePickerState extends State<PalettePicker> {
             gradient: LinearGradient(
                 begin: Alignment.centerLeft,
                 end: Alignment.centerRight,
-                colors: super.widget.leftRightColors
-            )
-        )
-    );
+                colors: super.widget.leftRightColors)));
   }
 
   Widget buildTopBottomColors() {
@@ -350,60 +337,55 @@ class _PalettePickerState extends State<PalettePicker> {
             gradient: LinearGradient(
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
-                colors: super.widget.topBottomColors
-            )
-        )
-    );
+                colors: super.widget.topBottomColors)));
   }
 
   Widget buildGestureDetector() {
     return new GestureDetector(
-        onPanStart: (details)=>this.ratioToPosition(details.globalPosition),
-        onPanUpdate: (details)=>this.ratioToPosition(details.globalPosition),
-        onPanDown: (details)=>this.ratioToPosition(details.globalPosition),
+        onPanStart: (details) => this.ratioToPosition(details.globalPosition),
+        onPanUpdate: (details) => this.ratioToPosition(details.globalPosition),
+        onPanDown: (details) => this.ratioToPosition(details.globalPosition),
         child: new SizedBox(
             key: this.paletteKey,
             width: double.infinity,
             height: double.infinity,
             child: new CustomPaint(
-                painter: new _PalettePainter(ratio: this.positionToRatio())
-            )
-        )
-    );
+                painter: new _PalettePainter(ratio: this.positionToRatio()))));
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Stack(
-        children: <Widget>[
+    return new Stack(children: <Widget>[
+      //LeftRightColors
+      this.buildLeftRightColors(),
 
-          //LeftRightColors
-          this.buildLeftRightColors(),
+      //TopBottomColors
+      this.buildTopBottomColors(),
 
-          //TopBottomColors
-          this.buildTopBottomColors(),
-
-          //GestureDetector
-          this.buildGestureDetector(),
-
-        ]
-    );
+      //GestureDetector
+      this.buildGestureDetector(),
+    ]);
   }
 }
 
-
-class _PalettePainter extends CustomPainter{
-
+class _PalettePainter extends CustomPainter {
   final Offset ratio;
-  _PalettePainter({Key key, this.ratio}):super();
+
+  _PalettePainter({Key key, this.ratio}) : super();
 
   @override
   void paint(Canvas canvas, Size size) {
+    final Paint paintWhite = new Paint()
+      ..color = Colors.white
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
+    final Paint paintBlack = new Paint()
+      ..color = Colors.black
+      ..strokeWidth = 6
+      ..style = PaintingStyle.stroke;
 
-    final Paint paintWhite = new Paint()..color=Colors.white..strokeWidth=4..style=PaintingStyle.stroke;
-    final Paint paintBlack = new Paint()..color=Colors.black..strokeWidth=6..style=PaintingStyle.stroke;
-
-    Offset offset=new Offset(size.width * this.ratio.dx, size.height * this.ratio.dy);
+    Offset offset =
+        new Offset(size.width * this.ratio.dx, size.height * this.ratio.dy);
     canvas.drawCircle(offset, 12, paintBlack);
     canvas.drawCircle(offset, 12, paintWhite);
   }
@@ -412,20 +394,9 @@ class _PalettePainter extends CustomPainter{
   bool shouldRepaint(_PalettePainter other) => true;
 }
 
-
-
 //
 //
 //---------------------------PalettePicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------RGBPicker.dart-------------------------------
 //
@@ -435,15 +406,11 @@ class _PalettePainter extends CustomPainter{
 //import "SliderPicker.dart";
 
 class RGBPicker extends StatefulWidget {
-
   final Color color;
   final ValueChanged<Color> onChanged;
 
-  RGBPicker({
-    Key key,
-    this.color,
-    @required this.onChanged
-  }) : assert(color != null),
+  RGBPicker({Key key, this.color, @required this.onChanged})
+      : assert(color != null),
         super(key: key);
 
   @override
@@ -451,117 +418,92 @@ class RGBPicker extends StatefulWidget {
 }
 
 class _RGBPickerState extends State<RGBPicker> {
-
-  Color get color=> super.widget.color;
+  Color get color => super.widget.color;
 
   //Red
-  void redOnChange(double value) => super.widget.onChanged(Color.fromARGB(this.color.alpha, value.toInt(), this.color.green, this.color.blue));
-  List<Color> get redColors =>[
-    this.color.withRed(0),
-    this.color.withRed(255)
-  ];
+  void redOnChange(double value) => super.widget.onChanged(Color.fromARGB(
+      this.color.alpha, value.toInt(), this.color.green, this.color.blue));
+
+  List<Color> get redColors => [this.color.withRed(0), this.color.withRed(255)];
 
   //Green
-  void greenOnChange(double value) => super.widget.onChanged(Color.fromARGB(this.color.alpha, this.color.red, value.toInt(), this.color.blue));
-  List<Color> get greenColors =>[
-    this.color.withGreen(0),
-    this.color.withGreen(255)
-  ];
+  void greenOnChange(double value) => super.widget.onChanged(Color.fromARGB(
+      this.color.alpha, this.color.red, value.toInt(), this.color.blue));
+
+  List<Color> get greenColors =>
+      [this.color.withGreen(0), this.color.withGreen(255)];
 
   //Blue
-  void blueOnChange(double value) => super.widget.onChanged(Color.fromARGB(this.color.alpha, this.color.red, this.color.green, value.toInt()));
-  List<Color> get blueColors =>[
-    this.color.withBlue(0),
-    this.color.withBlue(255)
-  ];
+  void blueOnChange(double value) => super.widget.onChanged(Color.fromARGB(
+      this.color.alpha, this.color.red, this.color.green, value.toInt()));
 
+  List<Color> get blueColors =>
+      [this.color.withBlue(0), this.color.withBlue(255)];
 
-  Widget buildTitle(String title, String text){
+  Widget buildTitle(String title, String text) {
     return new SizedBox(
         height: 34.0,
-        child: new Row(
-            children: <Widget>[
-              new Opacity(
-                  opacity: 0.5,
-                  child: new Text(
-                      title,
-                      style: Theme.of(context).textTheme.title.copyWith(fontSize: 18)
-                  )
-              ),
-              new Expanded(
-                  child: new Align(
-                      alignment: Alignment.centerRight,
-                      child: new Text(
-                          text,
-                          style: Theme.of(context).textTheme.headline.copyWith(fontSize: 18)
-                      )
-                  )
-              )
-            ]
-        )
-    );
+        child: new Row(children: <Widget>[
+          new Opacity(
+              opacity: 0.5,
+              child: new Text(title,
+                  style: Theme.of(context)
+                      .textTheme
+                      .title
+                      .copyWith(fontSize: 18))),
+          new Expanded(
+              child: new Align(
+                  alignment: Alignment.centerRight,
+                  child: new Text(text,
+                      style: Theme.of(context)
+                          .textTheme
+                          .headline
+                          .copyWith(fontSize: 18))))
+        ]));
   }
 
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+    return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      //Red
+      this.buildTitle("R", this.color.red.toInt().toString()),
+      new SliderPicker(
+        value: this.color.red.toDouble(),
+        min: 0.0,
+        max: 255.0,
+        onChanged: this.redOnChange,
+        colors: this.redColors,
+      ),
 
-          //Red
-          this.buildTitle("R", this.color.red.toInt().toString()),
-          new SliderPicker(
-            value: this.color.red.toDouble(),
-            min: 0.0,
-            max: 255.0,
-            onChanged: this.redOnChange,
-            colors: this.redColors,
-          ),
+      //Green
+      this.buildTitle("G", this.color.green.toInt().toString()),
+      new SliderPicker(
+          value: this.color.green.toDouble(),
+          min: 0.0,
+          max: 255.0,
+          onChanged: this.greenOnChange,
+          colors: this.greenColors),
 
-          //Green
-          this.buildTitle("G", this.color.green.toInt().toString()),
-          new SliderPicker(
-              value: this.color.green.toDouble(),
-              min: 0.0,
-              max: 255.0,
-              onChanged: this.greenOnChange,
-              colors: this.greenColors
-          ),
-
-          //Blue
-          this.buildTitle("B", this.color.blue.toInt().toString()),
-          new SliderPicker(
-              value: this.color.blue.toDouble(),
-              min: 0.0,
-              max: 255.0,
-              onChanged: this.blueOnChange,
-              colors: this.blueColors
-          )
-
-        ]
-    );
+      //Blue
+      this.buildTitle("B", this.color.blue.toInt().toString()),
+      new SliderPicker(
+          value: this.color.blue.toDouble(),
+          min: 0.0,
+          max: 255.0,
+          onChanged: this.blueOnChange,
+          colors: this.blueColors)
+    ]);
   }
 }
-
 
 //
 //
 //---------------------------RGBPicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------HSVPicker.dart-------------------------------
 //
@@ -571,15 +513,11 @@ class _RGBPickerState extends State<RGBPicker> {
 //import "SliderPicker.dart";
 
 class HSVPicker extends StatefulWidget {
-
   final HSVColor color;
   final ValueChanged<HSVColor> onChanged;
 
-  HSVPicker({
-    Key key,
-    @required this.color,
-    @required this.onChanged
-  }) : assert(color != null),
+  HSVPicker({Key key, @required this.color, @required this.onChanged})
+      : assert(color != null),
         super(key: key);
 
   @override
@@ -587,122 +525,102 @@ class HSVPicker extends StatefulWidget {
 }
 
 class _HSVPickerState extends State<HSVPicker> {
-
-  HSVColor get color=> super.widget.color;
+  HSVColor get color => super.widget.color;
 
   //Hue
-  void hueOnChange(double value) => super.widget.onChanged(this.color.withHue(value));
-  List<Color> get hueColors =>[
-    this.color.withHue(0.0).toColor(),
-    this.color.withHue(60.0).toColor(),
-    this.color.withHue(120.0).toColor(),
-    this.color.withHue(180.0).toColor(),
-    this.color.withHue(240.0).toColor(),
-    this.color.withHue(300.0).toColor(),
-    this.color.withHue(0.0).toColor()
-  ];
+  void hueOnChange(double value) =>
+      super.widget.onChanged(this.color.withHue(value));
+
+  List<Color> get hueColors => [
+        this.color.withHue(0.0).toColor(),
+        this.color.withHue(60.0).toColor(),
+        this.color.withHue(120.0).toColor(),
+        this.color.withHue(180.0).toColor(),
+        this.color.withHue(240.0).toColor(),
+        this.color.withHue(300.0).toColor(),
+        this.color.withHue(0.0).toColor()
+      ];
 
   //Saturation
-  void saturationOnChange(double value) => super.widget.onChanged(this.color.withSaturation(value));
-  List<Color> get saturationColors =>[
-    this.color.withSaturation(0.0).toColor(),
-    this.color.withSaturation(1.0).toColor()
-  ];
+  void saturationOnChange(double value) =>
+      super.widget.onChanged(this.color.withSaturation(value));
+
+  List<Color> get saturationColors => [
+        this.color.withSaturation(0.0).toColor(),
+        this.color.withSaturation(1.0).toColor()
+      ];
 
   //Value
-  void valueOnChange(double value) => super.widget.onChanged(this.color.withValue(value));
-  List<Color> get valueColors =>[
-    this.color.withValue(0.0).toColor(),
-    this.color.withValue(1.0).toColor()
-  ];
+  void valueOnChange(double value) =>
+      super.widget.onChanged(this.color.withValue(value));
 
+  List<Color> get valueColors => [
+        this.color.withValue(0.0).toColor(),
+        this.color.withValue(1.0).toColor()
+      ];
 
-  Widget buildTitle(String title, String text){
+  Widget buildTitle(String title, String text) {
     return new SizedBox(
         height: 34.0,
-        child: new Row(
-            children: <Widget>[
-              new Opacity(
-                  opacity: 0.5,
+        child: new Row(children: <Widget>[
+          new Opacity(
+              opacity: 0.5,
+              child: new Text(title, style: Theme.of(context).textTheme.title)),
+          new Expanded(
+              child: new Align(
+                  alignment: Alignment.centerRight,
                   child: new Text(
-                      title,
-                      style: Theme.of(context).textTheme.title
-                  )
-              ),
-              new Expanded(
-                  child: new Align(
-                      alignment: Alignment.centerRight,
-                      child: new Text(
-                        text,
-                        style: Theme.of(context).textTheme.headline.copyWith(fontSize: 18),
-                      )
-                  )
-              )
-            ]
-        )
-    );
+                    text,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline
+                        .copyWith(fontSize: 18),
+                  )))
+        ]));
   }
 
-
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+    return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      //Hue
+      this.buildTitle("H", this.color.hue.toInt().toString() + "º"),
+      new SliderPicker(
+          value: this.color.hue,
+          min: 0.0,
+          max: 360.0,
+          onChanged: this.hueOnChange,
+          colors: this.hueColors),
 
-          //Hue
-          this.buildTitle("H", this.color.hue.toInt().toString()+"º"),
-          new SliderPicker(
-              value: this.color.hue,
-              min: 0.0,
-              max: 360.0,
-              onChanged: this.hueOnChange,
-              colors: this.hueColors
-          ),
+      //Saturation
+      this.buildTitle(
+          "S", (this.color.saturation * 100).toInt().toString() + "º"),
+      new SliderPicker(
+          value: this.color.saturation,
+          min: 0.0,
+          max: 1.0,
+          onChanged: this.saturationOnChange,
+          colors: this.saturationColors),
 
-          //Saturation
-          this.buildTitle("S", (this.color.saturation * 100).toInt().toString()+"º"),
-          new SliderPicker(
-              value: this.color.saturation,
-              min: 0.0,
-              max: 1.0,
-              onChanged: this.saturationOnChange,
-              colors: this.saturationColors
-          ),
-
-          //Value
-          this.buildTitle("L", (this.color.value * 100).toInt().toString()+"º"),
-          new SliderPicker(
-              value: this.color.value,
-              min: 0.0,
-              max: 1.0,
-              onChanged: this.valueOnChange,
-              colors: this.valueColors
-          )
-
-        ]
-    );
+      //Value
+      this.buildTitle("L", (this.color.value * 100).toInt().toString() + "º"),
+      new SliderPicker(
+          value: this.color.value,
+          min: 0.0,
+          max: 1.0,
+          onChanged: this.valueOnChange,
+          colors: this.valueColors)
+    ]);
   }
 }
-
 
 //
 //
 //---------------------------HSVPicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------WheelPicker.dart-------------------------------
 //
@@ -712,19 +630,29 @@ class _HSVPickerState extends State<HSVPicker> {
 //import "package:flutter/cupertino.dart";
 //import "dart:math" as Math;
 
+class Wheel {
+  static double vectorToHue(Offset vector) =>
+      (((Math.atan2(vector.dy, vector.dx)) * 180.0 / Math.pi) + 360.0) % 360.0;
 
-class Wheel{
-  static double vectorToHue(Offset vector) => (((Math.atan2(vector.dy, vector.dx)) * 180.0 / Math.pi) + 360.0) % 360.0;
-  static double vectorToSaturation(double vectorX, double squareRadio) => vectorX * 0.5 / squareRadio + 0.5;
-  static double vectorToValue(double vectorY, double squareRadio) => 0.5 - vectorY * 0.5 / squareRadio;
+  static double vectorToSaturation(double vectorX, double squareRadio) =>
+      vectorX * 0.5 / squareRadio + 0.5;
 
-  static Offset hueToVector(double h, double radio, Offset center) => new Offset(Math.cos(h) * radio + center.dx, Math.sin(h) * radio + center.dy);
-  static double saturationToVector(double s, double squareRadio, double centerX) => (s - 0.5) * squareRadio / 0.5 + centerX;
-  static double valueToVector(double l, double squareRadio, double centerY) => (0.5 - l) * squareRadio / 0.5 + centerY;
+  static double vectorToValue(double vectorY, double squareRadio) =>
+      0.5 - vectorY * 0.5 / squareRadio;
+
+  static Offset hueToVector(double h, double radio, Offset center) =>
+      new Offset(
+          Math.cos(h) * radio + center.dx, Math.sin(h) * radio + center.dy);
+
+  static double saturationToVector(
+          double s, double squareRadio, double centerX) =>
+      (s - 0.5) * squareRadio / 0.5 + centerX;
+
+  static double valueToVector(double l, double squareRadio, double centerY) =>
+      (0.5 - l) * squareRadio / 0.5 + centerY;
 }
 
 class WheelPicker extends StatefulWidget {
-
   final HSVColor color;
   final ValueChanged<HSVColor> onChanged;
 
@@ -732,7 +660,7 @@ class WheelPicker extends StatefulWidget {
     Key key,
     @required this.color,
     @required this.onChanged,
-  }) : assert(color != null),
+  })  : assert(color != null),
         super(key: key);
 
   @override
@@ -740,161 +668,196 @@ class WheelPicker extends StatefulWidget {
 }
 
 class _WheelPickerState extends State<WheelPicker> {
-
-  HSVColor get color=> super.widget.color;
-
+  HSVColor get color => super.widget.color;
 
   final GlobalKey paletteKey = GlobalKey();
-  Offset getOffset(Offset ratio){
+
+  Offset getOffset(Offset ratio) {
     RenderBox renderBox = this.paletteKey.currentContext.findRenderObject();
     Offset startPosition = renderBox.localToGlobal(Offset.zero);
-    return ratio-startPosition;
+    return ratio - startPosition;
   }
-  Size getSize(){
+
+  Size getSize() {
     RenderBox renderBox = this.paletteKey.currentContext.findRenderObject();
     return renderBox.size;
   }
 
-
-
   bool isWheel = false;
   bool isPalette = false;
-  void onPanStart(Offset offset){
+
+  void onPanStart(Offset offset) {
     RenderBox renderBox = this.paletteKey.currentContext.findRenderObject();
     Size size = renderBox.size;
 
-    double radio =_WheelPainter.radio(size);
-    double squareRadio =_WheelPainter.squareRadio(radio);
+    double radio = _WheelPainter.radio(size);
+    double squareRadio = _WheelPainter.squareRadio(radio);
 
     Offset startPosition = renderBox.localToGlobal(Offset.zero);
-    Offset center = Offset(size.width/2, size.height/2);
-    Offset vector = offset-startPosition-center;
+    Offset center = Offset(size.width / 2, size.height / 2);
+    Offset vector = offset - startPosition - center;
 
-    bool isPalette=vector.dx.abs() < squareRadio && vector.dy.abs() < squareRadio;
+    bool isPalette =
+        vector.dx.abs() < squareRadio && vector.dy.abs() < squareRadio;
     this.isWheel = !isPalette;
     this.isPalette = isPalette;
 
     //this.isWheel = vector.distance + _WheelPainter.strokeWidth > radio && vector.distance - squareRadio < radio;
     //this.isPalette =vector.dx.abs() < squareRadio && vector.dy.abs() < squareRadio;
 
-    if (this.isWheel) super.widget.onChanged(this.color.withHue(Wheel.vectorToHue(vector)));
-    if (this.isPalette) super.widget.onChanged(HSVColor.fromAHSV(
-        this.color.alpha,
-        this.color.hue,
-        Wheel.vectorToSaturation(vector.dx, squareRadio).clamp(0.0, 1.0),
-        Wheel.vectorToValue(vector.dy, squareRadio).clamp(0.0, 1.0)
-    ));
+    if (this.isWheel)
+      super.widget.onChanged(this.color.withHue(Wheel.vectorToHue(vector)));
+    if (this.isPalette)
+      super.widget.onChanged(HSVColor.fromAHSV(
+          this.color.alpha,
+          this.color.hue,
+          Wheel.vectorToSaturation(vector.dx, squareRadio).clamp(0.0, 1.0),
+          Wheel.vectorToValue(vector.dy, squareRadio).clamp(0.0, 1.0)));
   }
-  void onPanUpdate(Offset offset){
+
+  void onPanUpdate(Offset offset) {
     RenderBox renderBox = this.paletteKey.currentContext.findRenderObject();
     Size size = renderBox.size;
 
-    double radio =_WheelPainter.radio(size);
-    double squareRadio =_WheelPainter.squareRadio(radio);
+    double radio = _WheelPainter.radio(size);
+    double squareRadio = _WheelPainter.squareRadio(radio);
 
     Offset startPosition = renderBox.localToGlobal(Offset.zero);
-    Offset center = Offset(size.width/2, size.height/2);
-    Offset vector = offset-startPosition-center;
+    Offset center = Offset(size.width / 2, size.height / 2);
+    Offset vector = offset - startPosition - center;
 
-    if (this.isWheel) super.widget.onChanged(this.color.withHue(Wheel.vectorToHue(vector)));
-    if (this.isPalette) super.widget.onChanged(HSVColor.fromAHSV(
-        this.color.alpha,
-        this.color.hue,
-        Wheel.vectorToSaturation(vector.dx, squareRadio).clamp(0.0, 1.0),
-        Wheel.vectorToValue(vector.dy, squareRadio).clamp(0.0, 1.0)
-    ));
+    if (this.isWheel)
+      super.widget.onChanged(this.color.withHue(Wheel.vectorToHue(vector)));
+    if (this.isPalette)
+      super.widget.onChanged(HSVColor.fromAHSV(
+          this.color.alpha,
+          this.color.hue,
+          Wheel.vectorToSaturation(vector.dx, squareRadio).clamp(0.0, 1.0),
+          Wheel.vectorToValue(vector.dy, squareRadio).clamp(0.0, 1.0)));
   }
-  void onPanDown(Offset offset)=> this.isWheel = this.isPalette = false;
 
-
+  void onPanDown(Offset offset) => this.isWheel = this.isPalette = false;
 
   @override
   Widget build(BuildContext context) {
     return new GestureDetector(
-        onPanStart: (details)=>this.onPanStart(details.globalPosition),
-        onPanUpdate: (details)=>this.onPanUpdate(details.globalPosition),
-        onPanDown: (details)=>this.onPanDown(details.globalPosition),
+        onPanStart: (details) => this.onPanStart(details.globalPosition),
+        onPanUpdate: (details) => this.onPanUpdate(details.globalPosition),
+        onPanDown: (details) => this.onPanDown(details.globalPosition),
         child: new Container(
             key: this.paletteKey,
             padding: const EdgeInsets.only(top: 12.0),
             width: 240,
             height: 240,
             child: new CustomPaint(
-                painter: new _WheelPainter(color: this.color)
-            )
-        )
-    );
+                painter: new _WheelPainter(color: this.color))));
   }
 }
 
-
-class _WheelPainter extends CustomPainter{
-
+class _WheelPainter extends CustomPainter {
   static double strokeWidth = 8;
   static double doubleStrokeWidth = 16;
-  static double radio(Size size)=> Math.min(size.width, size.height).toDouble() / 2 - _WheelPainter.strokeWidth;
-  static double squareRadio(double radio) => (radio - _WheelPainter.strokeWidth)/ 1.414213562373095;
+
+  static double radio(Size size) =>
+      Math.min(size.width, size.height).toDouble() / 2 -
+      _WheelPainter.strokeWidth;
+
+  static double squareRadio(double radio) =>
+      (radio - _WheelPainter.strokeWidth) / 1.414213562373095;
 
   final HSVColor color;
 
-  _WheelPainter({
-    Key key,
-    this.color
-  }):super();
+  _WheelPainter({Key key, this.color}) : super();
 
   @override
   void paint(Canvas canvas, Size size) {
-
-    Offset center = new Offset(size.width/2, size.height/2);
-    double radio =_WheelPainter.radio(size);
-    double squareRadio =_WheelPainter.squareRadio(radio);
-
+    Offset center = new Offset(size.width / 2, size.height / 2);
+    double radio = _WheelPainter.radio(size);
+    double squareRadio = _WheelPainter.squareRadio(radio);
 
     //Wheel
-    canvas.drawCircle(center, radio, new Paint()..style=PaintingStyle.stroke..strokeWidth = _WheelPainter.doubleStrokeWidth..shader=new SweepGradient(colors: const [
-      Color.fromARGB(255, 255, 0, 0),
-      Color.fromARGB(255, 255, 255, 0),
-      Color.fromARGB(255, 0, 255, 0),
-      Color.fromARGB(255, 0, 255, 255),
-      Color.fromARGB(255, 0, 0, 255),
-      Color.fromARGB(255, 255, 0, 255),
-      Color.fromARGB(255, 255, 0, 0),
-    ]).createShader(Rect.fromLTWH(0, 0, radio, radio)));
-    canvas.drawCircle(center, radio - _WheelPainter.strokeWidth, new Paint()..style=PaintingStyle.stroke ..color=Colors.grey);
-    canvas.drawCircle(center, radio + _WheelPainter.strokeWidth, new Paint()..style=PaintingStyle.stroke ..color=Colors.grey);
-
+    canvas.drawCircle(
+        center,
+        radio,
+        new Paint()
+          ..style = PaintingStyle.stroke
+          ..strokeWidth = _WheelPainter.doubleStrokeWidth
+          ..shader = new SweepGradient(colors: const [
+            Color.fromARGB(255, 255, 0, 0),
+            Color.fromARGB(255, 255, 255, 0),
+            Color.fromARGB(255, 0, 255, 0),
+            Color.fromARGB(255, 0, 255, 255),
+            Color.fromARGB(255, 0, 0, 255),
+            Color.fromARGB(255, 255, 0, 255),
+            Color.fromARGB(255, 255, 0, 0),
+          ]).createShader(Rect.fromLTWH(0, 0, radio, radio)));
+    canvas.drawCircle(
+        center,
+        radio - _WheelPainter.strokeWidth,
+        new Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.grey);
+    canvas.drawCircle(
+        center,
+        radio + _WheelPainter.strokeWidth,
+        new Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.grey);
 
     //Palette
-    Rect rect = Rect.fromLTWH(center.dx - squareRadio, center.dy - squareRadio, squareRadio * 2, squareRadio * 2);
+    Rect rect = Rect.fromLTWH(center.dx - squareRadio, center.dy - squareRadio,
+        squareRadio * 2, squareRadio * 2);
     RRect rRect = RRect.fromRectAndRadius(rect, Radius.circular(4));
 
-    canvas.drawRRect(rRect, new Paint()..style=PaintingStyle.fill..shader = new LinearGradient(
-      begin: Alignment.centerLeft,
-      end: Alignment.centerRight,
-      colors: [Colors.white, HSVColor.fromAHSV(1.0, this.color.hue, 1.0, 1.0).toColor()],
-    ).createShader(rect));
+    canvas.drawRRect(
+        rRect,
+        new Paint()
+          ..style = PaintingStyle.fill
+          ..shader = new LinearGradient(
+            begin: Alignment.centerLeft,
+            end: Alignment.centerRight,
+            colors: [
+              Colors.white,
+              HSVColor.fromAHSV(1.0, this.color.hue, 1.0, 1.0).toColor()
+            ],
+          ).createShader(rect));
 
-    canvas.drawRRect(rRect, new Paint()..style=PaintingStyle.fill..shader = new LinearGradient(
-      begin: Alignment.topCenter,
-      end: Alignment.bottomCenter,
-      colors: [Colors.transparent, Colors.black],
-    ) .createShader(rect));
+    canvas.drawRRect(
+        rRect,
+        new Paint()
+          ..style = PaintingStyle.fill
+          ..shader = new LinearGradient(
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+            colors: [Colors.transparent, Colors.black],
+          ).createShader(rect));
 
-    canvas.drawRRect(rRect, new Paint()..style=PaintingStyle.stroke..color = Colors.grey);
-
+    canvas.drawRRect(
+        rRect,
+        new Paint()
+          ..style = PaintingStyle.stroke
+          ..color = Colors.grey);
 
     //Thumb
-    final Paint paintWhite = new Paint()..color=Colors.white..strokeWidth=4..style=PaintingStyle.stroke;
-    final Paint paintBlack = new Paint()..color=Colors.black..strokeWidth=6..style=PaintingStyle.stroke;
-    Offset wheel = Wheel.hueToVector(((this.color.hue + 360.0) * Math.pi / 180.0), radio, center);
+    final Paint paintWhite = new Paint()
+      ..color = Colors.white
+      ..strokeWidth = 4
+      ..style = PaintingStyle.stroke;
+    final Paint paintBlack = new Paint()
+      ..color = Colors.black
+      ..strokeWidth = 6
+      ..style = PaintingStyle.stroke;
+    Offset wheel = Wheel.hueToVector(
+        ((this.color.hue + 360.0) * Math.pi / 180.0), radio, center);
     canvas.drawCircle(wheel, 12, paintBlack);
     canvas.drawCircle(wheel, 12, paintWhite);
 
-
     //Thumb
-    double paletteX = Wheel.saturationToVector(this.color.saturation, squareRadio, center.dx);
-    double paletteY = Wheel.valueToVector(this.color.value, squareRadio, center.dy);
-    Offset paletteVector=new Offset(paletteX, paletteY);
+    double paletteX =
+        Wheel.saturationToVector(this.color.saturation, squareRadio, center.dx);
+    double paletteY =
+        Wheel.valueToVector(this.color.value, squareRadio, center.dy);
+    Offset paletteVector = new Offset(paletteX, paletteY);
     canvas.drawCircle(paletteVector, 12, paintBlack);
     canvas.drawCircle(paletteVector, 12, paintWhite);
   }
@@ -903,21 +866,9 @@ class _WheelPainter extends CustomPainter{
   bool shouldRepaint(_WheelPainter other) => true;
 }
 
-
-
-
 //
 //
 //---------------------------WheelPicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------PaletteHuePicker.dart-------------------------------
 //
@@ -934,106 +885,83 @@ class _WheelPainter extends CustomPainter{
 //import "SliderPicker.dart";
 
 class PaletteHuePicker extends StatefulWidget {
+  final HSVColor color;
 
-  final HSVColor color ;
   final ValueChanged<HSVColor> onChanged;
 
-  PaletteHuePicker({
-    Key key,
-    @required this.color,
-    @required this.onChanged
-  }) : assert(color != null),
+  PaletteHuePicker({Key key, @required this.color, @required this.onChanged})
+      : assert(color != null),
         super(key: key);
 
   @override
   _PaletteHuePickerState createState() => new _PaletteHuePickerState();
 }
 
-
 class _PaletteHuePickerState extends State<PaletteHuePicker> {
-
-  HSVColor get color=> super.widget.color;
+  HSVColor get color => super.widget.color;
 
   //Hue
-  void hueOnChange(double value) => super.widget.onChanged(this.color.withHue(value));
-  List<Color> get hueColors =>[
-    this.color.withHue(0.0).toColor(),
-    this.color.withHue(60.0).toColor(),
-    this.color.withHue(120.0).toColor(),
-    this.color.withHue(180.0).toColor(),
-    this.color.withHue(240.0).toColor(),
-    this.color.withHue(300.0).toColor(),
-    this.color.withHue(0.0).toColor()
-  ];
+  void hueOnChange(double value) =>
+      super.widget.onChanged(this.color.withHue(value));
+
+  List<Color> get hueColors => [
+        this.color.withHue(0.0).toColor(),
+        this.color.withHue(60.0).toColor(),
+        this.color.withHue(120.0).toColor(),
+        this.color.withHue(180.0).toColor(),
+        this.color.withHue(240.0).toColor(),
+        this.color.withHue(300.0).toColor(),
+        this.color.withHue(0.0).toColor()
+      ];
 
   //Saturation Value
-  void saturationValueOnChange(Offset value) => super.widget.onChanged(HSVColor.fromAHSV(this.color.alpha, this.color.hue, value.dx, value.dy));
-  //Saturation
-  List<Color> get saturationColors =>[
-    Colors.white,
-    HSVColor.fromAHSV(1.0, this.color.hue, 1.0, 1.0).toColor()
-  ];
-  //Value
-  final List<Color> valueColors =[
-    Colors.transparent,
-    Colors.black
-  ];
+  void saturationValueOnChange(Offset value) => super.widget.onChanged(
+      HSVColor.fromAHSV(this.color.alpha, this.color.hue, value.dx, value.dy));
 
+  //Saturation
+  List<Color> get saturationColors => [
+        Colors.white,
+        HSVColor.fromAHSV(1.0, this.color.hue, 1.0, 1.0).toColor()
+      ];
+
+  //Value
+  final List<Color> valueColors = [Colors.transparent, Colors.black];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+    return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      //Palette
+      new SizedBox(
+          height: 280.0,
+          child: new Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+              child: new PalettePicker(
+                  position: new Offset(this.color.saturation, this.color.value),
+                  onChanged: this.saturationValueOnChange,
+                  leftRightColors: this.saturationColors,
+                  topPosition: 1.0,
+                  bottomPosition: 0.0,
+                  topBottomColors: this.valueColors))),
 
-          //Palette
-          new SizedBox(
-              height: 280.0,
-              child: new Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                  child: new PalettePicker(
-                      position: new Offset(this.color.saturation, this.color.value),
-                      onChanged: this.saturationValueOnChange,
-                      leftRightColors: this.saturationColors,
-                      topPosition: 1.0,
-                      bottomPosition: 0.0,
-                      topBottomColors: this.valueColors
-                  )
-              )
-          ),
-
-          //Slider
-          new SliderPicker(
-              min: 0.0,
-              max: 360.0,
-              value: this.color.hue,
-              onChanged: this.hueOnChange,
-              colors: this.hueColors
-          )
-
-        ]
-    );
+      //Slider
+      new SliderPicker(
+          min: 0.0,
+          max: 360.0,
+          value: this.color.hue,
+          onChanged: this.hueOnChange,
+          colors: this.hueColors)
+    ]);
   }
 }
-
 
 //
 //
 //---------------------------PaletteHuePicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------PaletteSaturationPicker.dart-------------------------------
 //
@@ -1050,38 +978,41 @@ class _PaletteHuePickerState extends State<PaletteHuePicker> {
 //import "SliderPicker.dart";
 
 class PaletteSaturationPicker extends StatefulWidget {
+  final HSVColor color;
 
-  final HSVColor color ;
   final ValueChanged<HSVColor> onChanged;
 
-  PaletteSaturationPicker({
-    Key key,
-    @required this.color,
-    @required this.onChanged
-  }) : assert(color != null),
+  PaletteSaturationPicker(
+      {Key key, @required this.color, @required this.onChanged})
+      : assert(color != null),
         super(key: key);
 
   @override
-  _PaletteSaturationPickerState createState() => new _PaletteSaturationPickerState();
+  _PaletteSaturationPickerState createState() =>
+      new _PaletteSaturationPickerState();
 }
 
-
 class _PaletteSaturationPickerState extends State<PaletteSaturationPicker> {
-
-  HSVColor get color=> super.widget.color;
+  HSVColor get color => super.widget.color;
 
   //Saturation
-  void saturationOnChange(double value) => super.widget.onChanged(this.color.withSaturation(value));
-  List<Color> get saturationColors =>[
-    this.color.withSaturation(0.0).toColor(),
-    this.color.withSaturation(1.0).toColor()
-  ];
+  void saturationOnChange(double value) =>
+      super.widget.onChanged(this.color.withSaturation(value));
+
+  List<Color> get saturationColors => [
+        this.color.withSaturation(0.0).toColor(),
+        this.color.withSaturation(1.0).toColor()
+      ];
 
   //Hue Value
   Offset get hueValueOffset => new Offset(this.color.hue, this.color.value);
-  void hueValueOnChange(Offset value) => super.widget.onChanged(HSVColor.fromAHSV(this.color.alpha, value.dx, this.color.saturation, value.dy));
+
+  void hueValueOnChange(Offset value) =>
+      super.widget.onChanged(HSVColor.fromAHSV(
+          this.color.alpha, value.dx, this.color.saturation, value.dy));
+
   //Hue
-  final List<Color> hueColors =[
+  final List<Color> hueColors = [
     const Color.fromARGB(255, 255, 0, 0),
     const Color.fromARGB(255, 255, 255, 0),
     const Color.fromARGB(255, 0, 255, 0),
@@ -1090,69 +1021,47 @@ class _PaletteSaturationPickerState extends State<PaletteSaturationPicker> {
     const Color.fromARGB(255, 255, 0, 255),
     const Color.fromARGB(255, 255, 0, 0)
   ];
-  //Value
-  final List<Color> valueColors =[
-    Colors.transparent,
-    Colors.black
-  ];
 
+  //Value
+  final List<Color> valueColors = [Colors.transparent, Colors.black];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+    return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      //Palette
+      new SizedBox(
+          height: 280.0,
+          child: new Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+              child: new PalettePicker(
+                  position: this.hueValueOffset,
+                  onChanged: this.hueValueOnChange,
+                  leftPosition: 0.0,
+                  rightPosition: 360.0,
+                  leftRightColors: this.hueColors,
+                  topPosition: 1.0,
+                  bottomPosition: 0.0,
+                  topBottomColors: this.valueColors))),
 
-          //Palette
-          new SizedBox(
-              height: 280.0,
-              child: new Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                  child: new PalettePicker(
-                      position: this.hueValueOffset,
-                      onChanged: this.hueValueOnChange,
-                      leftPosition: 0.0,
-                      rightPosition: 360.0,
-                      leftRightColors: this.hueColors,
-                      topPosition: 1.0,
-                      bottomPosition: 0.0,
-                      topBottomColors: this.valueColors
-                  )
-              )
-          ),
-
-          //Slider
-          new SliderPicker(
-              min: 0.0,
-              max: 1.0,
-              value: this.color.saturation,
-              onChanged: this.saturationOnChange,
-              colors: this.saturationColors
-          )
-
-        ]
-    );
+      //Slider
+      new SliderPicker(
+          min: 0.0,
+          max: 1.0,
+          value: this.color.saturation,
+          onChanged: this.saturationOnChange,
+          colors: this.saturationColors)
+    ]);
   }
 }
-
 
 //
 //
 //---------------------------PaletteSaturationPicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------PaletteValuePicker.dart-------------------------------
 //
@@ -1169,37 +1078,35 @@ class _PaletteSaturationPickerState extends State<PaletteSaturationPicker> {
 //import "SliderPicker.dart";
 
 class PaletteValuePicker extends StatefulWidget {
+  final HSVColor color;
 
-  final HSVColor color ;
   final ValueChanged<HSVColor> onChanged;
 
-  PaletteValuePicker({
-    Key key,
-    @required this.color,
-    @required this.onChanged
-  }) : assert(color != null),
+  PaletteValuePicker({Key key, @required this.color, @required this.onChanged})
+      : assert(color != null),
         super(key: key);
 
   @override
   _PaletteValuePickerState createState() => new _PaletteValuePickerState();
 }
 
-
 class _PaletteValuePickerState extends State<PaletteValuePicker> {
-
-  HSVColor get color=> super.widget.color;
+  HSVColor get color => super.widget.color;
 
   //Value
-  void valueOnChange(double value) => super.widget.onChanged(this.color.withValue(value));
-  List<Color> get valueColors =>[
-    Colors.black,
-    this.color.withValue(1.0).toColor()
-  ];
+  void valueOnChange(double value) =>
+      super.widget.onChanged(this.color.withValue(value));
+
+  List<Color> get valueColors =>
+      [Colors.black, this.color.withValue(1.0).toColor()];
 
   //Hue Saturation
-  void hueSaturationOnChange(Offset value) => super.widget.onChanged(HSVColor.fromAHSV(this.color.alpha, value.dx, value.dy, this.color.value));
+  void hueSaturationOnChange(Offset value) =>
+      super.widget.onChanged(HSVColor.fromAHSV(
+          this.color.alpha, value.dx, value.dy, this.color.value));
+
   //Hue
-  final List<Color> hueColors =[
+  final List<Color> hueColors = [
     const Color.fromARGB(255, 255, 0, 0),
     const Color.fromARGB(255, 255, 255, 0),
     const Color.fromARGB(255, 0, 255, 0),
@@ -1208,53 +1115,41 @@ class _PaletteValuePickerState extends State<PaletteValuePicker> {
     const Color.fromARGB(255, 255, 0, 255),
     const Color.fromARGB(255, 255, 0, 0)
   ];
-  //Saturation
-  final List<Color> saturationColors =[
-    Colors.transparent,
-    Colors.white
-  ];
 
+  //Saturation
+  final List<Color> saturationColors = [Colors.transparent, Colors.white];
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+    return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      //Palette
+      new SizedBox(
+          height: 280.0,
+          child: new Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
+              child: new PalettePicker(
+                  position: new Offset(this.color.hue, this.color.saturation),
+                  onChanged: this.hueSaturationOnChange,
+                  leftPosition: 0.0,
+                  rightPosition: 360.0,
+                  leftRightColors: this.hueColors,
+                  topPosition: 1.0,
+                  bottomPosition: 0.0,
+                  topBottomColors: this.saturationColors))),
 
-          //Palette
-          new SizedBox(
-              height: 280.0,
-              child: new Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 20),
-                  child: new PalettePicker(
-                      position: new Offset(this.color.hue, this.color.saturation),
-                      onChanged: this.hueSaturationOnChange,
-                      leftPosition: 0.0,
-                      rightPosition: 360.0,
-                      leftRightColors: this.hueColors,
-                      topPosition: 1.0,
-                      bottomPosition: 0.0,
-                      topBottomColors: this.saturationColors
-                  )
-              )
-          ),
-
-          //Slider
-          new SliderPicker(
-              min: 0.0,
-              max: 1.0,
-              value: this.color.value,
-              onChanged: this.valueOnChange,
-              colors: this.valueColors
-          )
-
-        ]
-    );
+      //Slider
+      new SliderPicker(
+          min: 0.0,
+          max: 1.0,
+          value: this.color.value,
+          onChanged: this.valueOnChange,
+          colors: this.valueColors)
+    ]);
   }
 }
 
@@ -1262,35 +1157,34 @@ class _PaletteValuePickerState extends State<PaletteValuePicker> {
 //
 //---------------------------PaletteValuePicker.dart-------------------------------
 
-
-
-
-
-
-
-
-
-
 //---------------------------HexPicker.dart-------------------------------
 //
 //
 
 //import "package:flutter/material.dart";
 
-
-class Hex{
+class Hex {
   //Hex Number To Color
-  static Color intToColor(int hexNumber) => Color.fromARGB(255, (hexNumber >> 16) & 0xFF, ((hexNumber >> 8) & 0xFF), (hexNumber >> 0) & 0xFF);
+  static Color intToColor(int hexNumber) => Color.fromARGB(
+      255,
+      (hexNumber >> 16) & 0xFF,
+      ((hexNumber >> 8) & 0xFF),
+      (hexNumber >> 0) & 0xFF);
 
   //String To Hex Number
-  static int stringToInt(String hex) => int.parse(hex, radix:16);
+  static int stringToInt(String hex) => int.parse(hex, radix: 16);
 
   //String To Color
-  static String colorToString(Color color) => _colorToString(color.red.toRadixString(16)) + _colorToString(color.green.toRadixString(16)) + _colorToString(color.blue.toRadixString(16));
-  static String _colorToString(String text) => text.length==1?  "0"+text: text;
+  static String colorToString(Color color) =>
+      _colorToString(color.red.toRadixString(16)) +
+      _colorToString(color.green.toRadixString(16)) +
+      _colorToString(color.blue.toRadixString(16));
+
+  static String _colorToString(String text) =>
+      text.length == 1 ? "0" + text : text;
 
   //Subste
-  static String textSubString(String text){
+  static String textSubString(String text) {
     if (text == null) return null;
 
     if (text.length < 6) return null;
@@ -1302,17 +1196,14 @@ class Hex{
 }
 
 class HexPicker extends StatefulWidget {
-
   final Color color;
   final ValueChanged<Color> onChanged;
   final TextEditingController controller;
 
-  HexPicker({
-    Key key,
-    @required this.color,
-    @required this.onChanged
-  }) : assert(color != null),
-        this.controller=new TextEditingController(text: Hex.colorToString(color).toUpperCase()),
+  HexPicker({Key key, @required this.color, @required this.onChanged})
+      : assert(color != null),
+        this.controller = new TextEditingController(
+            text: Hex.colorToString(color).toUpperCase()),
         super(key: key);
 
   @override
@@ -1320,67 +1211,47 @@ class HexPicker extends StatefulWidget {
 }
 
 class _HexPickerState extends State<HexPicker> {
+  void textOnSubmitted(String value) =>
+      super.widget.onChanged(this.textOnChenged(value));
 
-  void textOnSubmitted(String value) =>super.widget.onChanged(this.textOnChenged(value));
-  Color textOnChenged(String text){
+  Color textOnChenged(String text) {
     String hex = Hex.textSubString(text);
     if (hex == null) return super.widget.color;
 
-    try{
+    try {
       return Hex.intToColor(Hex.stringToInt(hex));
-    }
-    catch (Exception){
+    } catch (Exception) {
       return super.widget.color;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Row(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
+    return new Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      //Text
+      new Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 4),
+          child: new Text(
+            "#",
+            style: Theme.of(context).textTheme.title.copyWith(fontSize: 18),
+          )),
 
-          //Text
-          new Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 4),
-              child: new Text(
-                "#",
-                style: Theme.of(context).textTheme.title.copyWith(fontSize: 18),
-              )
-          ),
-
-          //TextField
-          new Expanded(
-              child: new TextField(
-                style: Theme.of(context).textTheme.headline.copyWith(fontSize: 20),
-                focusNode: new FocusNode()..addListener(() {}),
-                controller: super.widget.controller,
-                onSubmitted: this.textOnSubmitted,
-                decoration: new InputDecoration.collapsed(
-                    hintText: "hex code"
-                ),
-              )
-          )
-
-        ]
-    );
+      //TextField
+      new Expanded(
+          child: new TextField(
+        style: Theme.of(context).textTheme.headline.copyWith(fontSize: 20),
+        focusNode: new FocusNode()..addListener(() {}),
+        controller: super.widget.controller,
+        onSubmitted: this.textOnSubmitted,
+        decoration: new InputDecoration.collapsed(hintText: "hex code"),
+      ))
+    ]);
   }
-
 }
-
 
 //
 //
 //---------------------------HexPicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------AlphaPicker.dart-------------------------------
 //
@@ -1389,9 +1260,7 @@ class _HexPickerState extends State<HexPicker> {
 //import "package:flutter/material.dart";
 //import "SliderPicker.dart";
 
-
 class AlphaPicker extends StatefulWidget {
-
   final int alpha;
   final ValueChanged<int> onChanged;
 
@@ -1399,7 +1268,7 @@ class AlphaPicker extends StatefulWidget {
     Key key,
     @required this.alpha,
     @required this.onChanged,
-  }) : assert(alpha != null),
+  })  : assert(alpha != null),
         super(key: key);
 
   @override
@@ -1407,78 +1276,64 @@ class AlphaPicker extends StatefulWidget {
 }
 
 class _AlphaPickerState extends State<AlphaPicker> {
-
   void valueOnChanged(double ratio) {
     super.widget.onChanged(ratio.toInt());
   }
 
-
-  Widget buildTitle(String title, String text){
+  Widget buildTitle(String title, String text) {
     return new SizedBox(
         height: 34.0,
-        child: new Row(
-            children: <Widget>[
-              new Opacity(
-                  opacity: 0.5,
+        child: new Row(children: <Widget>[
+          new Opacity(
+              opacity: 0.5,
+              child: new Text(title, style: Theme.of(context).textTheme.title)),
+          new Expanded(
+              child: new Align(
+                  alignment: Alignment.centerRight,
                   child: new Text(
-                      title,
-                      style: Theme.of(context).textTheme.title
-                  )
-              ),
-              new Expanded(
-                  child: new Align(
-                      alignment: Alignment.centerRight,
-                      child: new Text(
-                        text,
-                        style: Theme.of(context).textTheme.headline.copyWith(fontSize: 18),
-                      )
-                  )
-              )
-            ]
-        )
-    );
+                    text,
+                    style: Theme.of(context)
+                        .textTheme
+                        .headline
+                        .copyWith(fontSize: 18),
+                  )))
+        ]));
   }
 
   @override
   Widget build(BuildContext context) {
-    return new Column(
-        mainAxisSize: MainAxisSize.min,
-        children: <Widget>[
-
-          //Alpha
-          this.buildTitle("A", super.widget.alpha.toString()),
-          new SliderPicker(
-              value: super.widget.alpha.toDouble(),
-              min: 0.0,
-              max: 255.0,
-              onChanged: this.valueOnChanged,
-              child: new CustomPaint(
-                painter: new AlphaTrackPainter(),
-              )
-          )
-
-        ]
-    );
+    return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+      //Alpha
+      this.buildTitle("A", super.widget.alpha.toString()),
+      new SliderPicker(
+          value: super.widget.alpha.toDouble(),
+          min: 0.0,
+          max: 255.0,
+          onChanged: this.valueOnChanged,
+          child: new CustomPaint(
+            painter: new AlphaTrackPainter(),
+          ))
+    ]);
   }
 }
 
-
 /// Track
-class AlphaTrackPainter extends CustomPainter  {
-
+class AlphaTrackPainter extends CustomPainter {
   @override
   void paint(Canvas canvas, Size size) {
-
-    double side=size.height/ 2;
-    Paint paint=Paint()..color=Colors.black12;
+    double side = size.height / 2;
+    Paint paint = Paint()..color = Colors.black12;
 
     for (int i = 0; i * side < size.width; i++) {
-      if (i%2==0) canvas.drawRect(Rect.fromLTWH(i * side, 0, side, side), paint);
-      else canvas.drawRect(Rect.fromLTWH(i * side, side, side, side), paint);
+      if (i % 2 == 0)
+        canvas.drawRect(Rect.fromLTWH(i * side, 0, side, side), paint);
+      else
+        canvas.drawRect(Rect.fromLTWH(i * side, side, side, side), paint);
     }
 
     Rect rect = Offset.zero & size;
-    Gradient gradient = LinearGradient(colors: const[Colors.transparent, Colors.grey]);
+    Gradient gradient =
+        LinearGradient(colors: const [Colors.transparent, Colors.grey]);
     canvas.drawRect(rect, Paint()..shader = gradient.createShader(rect));
   }
 
@@ -1486,19 +1341,9 @@ class AlphaTrackPainter extends CustomPainter  {
   bool shouldRepaint(CustomPainter oldDelegate) => false;
 }
 
-
 //
 //
 //---------------------------AlphaPicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------SwatchesPicker.dart-------------------------------
 //
@@ -1509,37 +1354,30 @@ class AlphaTrackPainter extends CustomPainter  {
 //import "SliderPicker.dart";
 
 class SwatchesPicker extends StatefulWidget {
-
   final ValueChanged<Color> onChanged;
 
-  SwatchesPicker({
-    Key key,
-    @required this.onChanged
-  }) : super(key: key);
+  SwatchesPicker({Key key, @required this.onChanged}) : super(key: key);
 
   @override
   _SwatchesPickerState createState() => new _SwatchesPickerState();
 }
 
-class _SwatchesPickerState extends State<SwatchesPicker> with SingleTickerProviderStateMixin {
-
+class _SwatchesPickerState extends State<SwatchesPicker>
+    with SingleTickerProviderStateMixin {
   TabController controller;
 
-  void itemClick(Color item)=>super.widget.onChanged(item);
+  void itemClick(Color item) => super.widget.onChanged(item);
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
-    this.controller=new TabController(
-        initialIndex: 1,
-        length: swatches.length,
-        vsync: this
-    );
+    this.controller = new TabController(
+        initialIndex: 1, length: swatches.length, vsync: this);
   }
 
-  Widget buildListView(Color item){
-    if(item==null) return Divider(height: 60.0);
+  Widget buildListView(Color item) {
+    if (item == null) return Divider(height: 60.0);
 
     return new Container(
         width: 40.0,
@@ -1548,20 +1386,15 @@ class _SwatchesPickerState extends State<SwatchesPicker> with SingleTickerProvid
         decoration: BoxDecoration(
             color: item,
             shape: BoxShape.circle,
-            border: new Border.all(color: Colors.grey, width: 1)
-        ),
+            border: new Border.all(color: Colors.grey, width: 1)),
         child: new InkWell(
             borderRadius: new BorderRadius.all(new Radius.circular(20)),
-            onTap: ()=>this.itemClick(item),
-            splashColor: item
-        )
-    );
+            onTap: () => this.itemClick(item),
+            splashColor: item));
   }
 
-
-
   @override
-  Widget build(BuildContext context){
+  Widget build(BuildContext context) {
     return new SafeArea(
         child: new Container(
             width: 470.0,
@@ -1571,16 +1404,9 @@ class _SwatchesPickerState extends State<SwatchesPicker> with SingleTickerProvid
                 mainAxisSpacing: 4.0,
                 crossAxisSpacing: 4.0,
                 padding: const EdgeInsets.all(4.0),
-                children: swatches.map(this.buildListView).toList()
-            )
-        )
-    );
+                children: swatches.map(this.buildListView).toList())));
   }
 }
-
-
-
-
 
 List<Color> swatches = [
   //[
@@ -1928,21 +1754,9 @@ List<Color> swatches = [
   //]
 ];
 
-
-
-
 //
 //
 //---------------------------SwatchesPicker.dart-------------------------------
-
-
-
-
-
-
-
-
-
 
 //---------------------------ColorPicker.dart-------------------------------
 //
@@ -1959,219 +1773,203 @@ List<Color> swatches = [
 //import "package:color_picker/Pickers/HexPicker.dart";
 //import "package:color_picker/Pickers/AlphaPicker.dart";
 
-class _IPicker{
+class _IPicker {
   int index;
   String name;
   WidgetBuilder builder;
 
-  _IPicker({
-    @required this.index,
-    @required this.name,
-    @required this.builder
-  });
+  _IPicker({@required this.index, @required this.name, @required this.builder});
 }
 
 class ColorPicker extends StatefulWidget {
-
   final Color color;
   final ValueChanged<Color> onChanged;
 
-  const ColorPicker({
-    Key key,
-    this.color = Colors.blue,
-    @required this.onChanged
-  }): super(key: key);
+  const ColorPicker(
+      {Key key, this.color = Colors.blue, @required this.onChanged})
+      : super(key: key);
 
   @override
-  ColorPickerState createState() => new ColorPickerState(color:  this.color);
+  ColorPickerState createState() => new ColorPickerState(color: this.color);
 }
 
 class ColorPickerState extends State<ColorPicker> {
-
   //Color
   int _alpha;
   Color _color;
   HSVColor _hSVColor;
 
-  Color get color=>this.color;
-  set color(Color value)=>this.color=value;
+  Color get color => this.color;
 
-  ColorPickerState({
-    Color color
-  }) : this._alpha=color.alpha,
-        this._color=color,
-        this._hSVColor=HSVColor.fromColor(color);
+  set color(Color value) => this.color = value;
+
+  ColorPickerState({Color color})
+      : this._alpha = color.alpha,
+        this._color = color,
+        this._hSVColor = HSVColor.fromColor(color);
 
   void _alphaOnChanged(int value) {
-    this._alpha=value;
+    this._alpha = value;
     super.widget.onChanged(this._color.withAlpha(value));
   }
-  void _colorOnChanged(Color value){
-    this._color=value;
-    this._hSVColor=HSVColor.fromColor(value);
+
+  void _colorOnChanged(Color value) {
+    this._color = value;
+    this._hSVColor = HSVColor.fromColor(value);
     super.widget.onChanged(value);
   }
-  void _hSVColorOnChanged(HSVColor value){
-    this._color=value.toColor();
-    this._hSVColor=value;
+
+  void _hSVColorOnChanged(HSVColor value) {
+    this._color = value.toColor();
+    this._hSVColor = value;
     super.widget.onChanged(value.toColor());
   }
-  void _colorWithAlphaOnChanged(Color value){
-    this._alpha=value.alpha;
-    Color color=value.withAlpha(255);
-    this._color=color;
-    this._hSVColor=HSVColor.fromColor(color);
+
+  void _colorWithAlphaOnChanged(Color value) {
+    this._alpha = value.alpha;
+    Color color = value.withAlpha(255);
+    this._color = color;
+    this._hSVColor = HSVColor.fromColor(color);
     super.widget.onChanged(value);
   }
 
-
   //pickers
-  int _index = 4;
+  int _index = 1;
   List<_IPicker> _pickers;
-  void _pickerOnChanged(_IPicker value) => this._index=this._pickers.indexOf(value);
 
+  void _pickerOnChanged(_IPicker value) =>
+      this._index = this._pickers.indexOf(value);
 
   @override
-  void initState(){
+  void initState() {
     super.initState();
 
     //pickers
     this._pickers = [
-
       //SwatchesPicker
       new _IPicker(
           index: 0,
           name: "Swatches",
-          builder: (context)=>new SwatchesPicker(
-            onChanged: (value)=>super.setState(()=>this._colorWithAlphaOnChanged(value)),
-          )
-      ),
+          builder: (context) => new SwatchesPicker(
+                onChanged: (value) =>
+                    super.setState(() => this._colorWithAlphaOnChanged(value)),
+              )),
 
-      //RGBPicker
-      new _IPicker(
-          index: 1,
-          name: "RGB",
-          builder: (context)=>new RGBPicker(
-            color: this._color,
-            onChanged: (value)=>super.setState(()=>this._colorOnChanged(value)),
-          )
-      ),
-
-      //HSVPicker
-      new _IPicker(
-          index: 2,
-          name: "HSV",
-          builder: (context)=>new HSVPicker(
-            color: this._hSVColor,
-            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
-          )
-      ),
-
-      //WheelPicker
-      new _IPicker(
-          index: 3,
-          name: "Wheel",
-          builder: (context)=>new WheelPicker(
-            color: this._hSVColor,
-            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
-          )
-      ),
+//      //RGBPicker
+//      new _IPicker(
+//          index: 1,
+//          name: "RGB",
+//          builder: (context)=>new RGBPicker(
+//            color: this._color,
+//            onChanged: (value)=>super.setState(()=>this._colorOnChanged(value)),
+//          )
+//      ),
+//
+//      //HSVPicker
+//      new _IPicker(
+//          index: 2,
+//          name: "HSV",
+//          builder: (context)=>new HSVPicker(
+//            color: this._hSVColor,
+//            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
+//          )
+//      ),
+//
+//      //WheelPicker
+//      new _IPicker(
+//          index: 3,
+//          name: "Wheel",
+//          builder: (context)=>new WheelPicker(
+//            color: this._hSVColor,
+//            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
+//          )
+//      ),
 
       //PaletteHuePicker
       new _IPicker(
-          index: 4,
+          index: 1,
           name: "Palette Hue",
-          builder: (context)=>new PaletteHuePicker(
-            color: this._hSVColor,
-            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
-          )
-      ),
+          builder: (context) => new PaletteHuePicker(
+                color: this._hSVColor,
+                onChanged: (value) =>
+                    super.setState(() => this._hSVColorOnChanged(value)),
+              )),
 
-      //PaletteSaturationPicker
-      new _IPicker(
-          index: 5,
-          name: "Palette Saturation",
-          builder: (context)=>new PaletteSaturationPicker(
-            color: this._hSVColor,
-            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
-          )
-      ),
-
-      //PaletteValuePicker
-      new _IPicker(
-          index: 6,
-          name: "Palette Value",
-          builder: (context)=>new PaletteValuePicker(
-            color: this._hSVColor,
-            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
-          )
-      ),
-
+//      //PaletteSaturationPicker
+//      new _IPicker(
+//          index: 5,
+//          name: "Palette Saturation",
+//          builder: (context)=>new PaletteSaturationPicker(
+//            color: this._hSVColor,
+//            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
+//          )
+//      ),
+//
+//      //PaletteValuePicker
+//      new _IPicker(
+//          index: 6,
+//          name: "Palette Value",
+//          builder: (context)=>new PaletteValuePicker(
+//            color: this._hSVColor,
+//            onChanged: (value)=>super.setState(()=>this._hSVColorOnChanged(value)),
+//          )
+//      ),
     ];
   }
-
 
   //Dropdown
   DropdownMenuItem<_IPicker> _buildDropdownMenuItems(_IPicker item) {
     return new DropdownMenuItem<_IPicker>(
         value: item,
         child: new Padding(
-            padding: const EdgeInsets.fromLTRB(10.0,8.0,10.0,0.0),
+            padding: const EdgeInsets.fromLTRB(10.0, 8.0, 10.0, 0.0),
             child: new Text(
               item.name,
-              style: this._index==item.index?
-              Theme.of(context).textTheme.headline.copyWith(fontSize: 18, color: Theme.of(context).accentColor):
-              Theme.of(context).textTheme.headline.copyWith(fontSize: 18),
-            )
-        )
-    );
+              style: this._index == item.index
+                  ? TextStyle(
+                      fontSize: 18,
+                      color: colorLeBleu,
+                      fontWeight: FontWeight.w500)
+                  : TextStyle(
+                      fontSize: 18,
+                      color: colorTextGrey,
+                    ),
+            )));
   }
-
 
   Widget _buildHead() {
     return new SizedBox(
         height: 50,
-        child: new Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-
-              //Avator
-              new Container(
-                  width: 32,
-                  height: 32,
+        child: new Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          //Avator
+          new Container(
+              width: 32,
+              height: 32,
+              decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  border: new Border.all(color: Colors.black26, width: 1)),
+              child: new Container(
                   decoration: BoxDecoration(
                       shape: BoxShape.circle,
-                      border: new Border.all(color: Colors.black26, width: 1)
-                  ),
-                  child: new Container(
-                      decoration: BoxDecoration(
-                          shape: BoxShape.circle,
-                          border: new Border.all(color: Colors.white, width: 3),
-                          color: this._color
-                      )
-                  )
-              ),
+                      border: new Border.all(color: Colors.white, width: 3),
+                      color: this._color))),
 
-              new SizedBox(width: 22),
+          new SizedBox(width: 22),
 
-              //HexPicker
-              new Expanded(
-                  child: new HexPicker(
-                    color: this._color,
-                    onChanged: (value)=>super.setState(()=>this._colorOnChanged(value)),
-                  )
-              )
-
-            ]
-        )
-    );
+          //HexPicker
+          new Expanded(
+              child: new HexPicker(
+            color: this._color,
+            onChanged: (value) =>
+                super.setState(() => this._colorOnChanged(value)),
+          ))
+        ]));
   }
 
   Widget _buildDropdown() {
     return new SizedBox(
         height: 38,
         child: Material(
-
             type: MaterialType.button,
             color: Theme.of(context).cardColor,
             shadowColor: Colors.black26,
@@ -2179,107 +1977,83 @@ class ColorPickerState extends State<ColorPicker> {
             shape: const RoundedRectangleBorder(
               borderRadius: BorderRadius.all(Radius.circular(2.0)),
             ),
-
             child: new DropdownButton<_IPicker>(
                 iconSize: 32.0,
                 isExpanded: true,
                 isDense: true,
-                style: Theme.of(context).textTheme.headline.copyWith(fontSize: 20),
+                style:
+                    Theme.of(context).textTheme.headline.copyWith(fontSize: 20),
                 value: this._pickers[this._index],
-                onChanged: (value)=>super.setState(()=>this._pickerOnChanged(value)),
-                items: this._pickers.map(this._buildDropdownMenuItems).toList()
-            )
-
-        )
-    );
+                onChanged: (value) =>
+                    super.setState(() => this._pickerOnChanged(value)),
+                items:
+                    this._pickers.map(this._buildDropdownMenuItems).toList())));
   }
 
   Widget _buildDropdown2() {
     return new SizedBox(
         height: 38,
         child: new DecoratedBox(
-
             decoration: BoxDecoration(
-                shape: BoxShape.rectangle,
                 border: new Border.all(
-                    color: Theme.of(context).dividerColor,
-                    width: 1
-                ),
-                borderRadius: const BorderRadius.all(
-                    const Radius.circular(3.0)
-                )
-            ),
-
+                    color: Theme.of(context).dividerColor, width: 1),
+                borderRadius:
+                    const BorderRadius.all(const Radius.circular(12.0))),
             child: new DropdownButton<_IPicker>(
                 iconSize: 32.0,
                 isExpanded: true,
+                elevation: 10,
+                underline: Container(),
                 isDense: true,
-                style: Theme.of(context).textTheme.headline.copyWith(fontSize: 20),
+                style:
+                    Theme.of(context).textTheme.headline.copyWith(fontSize: 20),
                 value: this._pickers[this._index],
-                onChanged: (value)=>super.setState(()=>this._pickerOnChanged(value)),
-                items: this._pickers.map(this._buildDropdownMenuItems).toList()
-            )
-
-        )
-    );
+                onChanged: (value) =>
+                    super.setState(() => this._pickerOnChanged(value)),
+                items:
+                    this._pickers.map(this._buildDropdownMenuItems).toList())));
   }
 
   Widget _buildBody() {
-    return new Container(
-        child: this._pickers[this._index].builder(context)
-    );
+    return new Container(child: this._pickers[this._index].builder(context));
   }
 
   Widget _buildAlphaPicker() {
     return new AlphaPicker(
       alpha: this._alpha,
-      onChanged: (value)=>super.setState(()=>this._alphaOnChanged(value)),
+      onChanged: (value) => super.setState(() => this._alphaOnChanged(value)),
     );
   }
 
-
   @override
   Widget build(BuildContext context) {
-
     Orientation orientation = MediaQuery.of(context).orientation;
     switch (orientation) {
-
       case Orientation.portrait:
-        return new Column(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              this._buildHead(),
-              this._buildDropdown2(),
-              this._buildBody(),
-              this._buildAlphaPicker(),
-            ]
-        );
+        return new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          this._buildHead(),
+          this._buildDropdown2(),
+          this._buildBody(),
+          this._buildAlphaPicker(),
+        ]);
 
       case Orientation.landscape:
-        return new Row(
-            mainAxisSize: MainAxisSize.min,
-            children: <Widget>[
-              new Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: <Widget>[
-                    this._buildHead(),
-                    this._buildDropdown(),
-                    this._buildAlphaPicker(),
-                  ]
-              ),
-              new Expanded(
-                  child: this._buildBody()
-              )
-            ]
-        );
-
+        return new Row(mainAxisSize: MainAxisSize.min, children: <Widget>[
+          Expanded(
+            child:
+                new Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              this._buildHead(),
+              this._buildDropdown(),
+              this._buildAlphaPicker(),
+            ]),
+          ),
+          new Expanded(child: this._buildBody())
+        ]);
     }
 
     return new Text("Color Picker");
   }
-
 }
-
 
 //
 //
