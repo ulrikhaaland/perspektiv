@@ -334,10 +334,25 @@ class _PieChartState extends State<PieChart> {
         //          outsideLabelStyleSpec:  charts.TextStyleSpec(...)),
         defaultRenderer: charts.ArcRendererConfig(
 //            arcWidth: 60,
+            strokeWidthPx: 0,
             arcRendererDecorators: [charts.ArcLabelDecorator()]));
   }
 
   List<charts.Series<SubCategory, int>> _createSeries() {
+    List<SubCategory> data = []..addAll(widget.subCategories);
+
+    final int loopLength = data.length;
+    for (var i = 0; i < loopLength; i++) {
+      SubCategory currentSub = widget.subCategories[i];
+      if (currentSub.percentage < 100)
+        data.insert(
+            i == 0 ? 1 : i + 1,
+            SubCategory(
+              color: colorBackGround,
+              percentage: 100 - currentSub.percentage,
+              name: "",
+            ));
+    }
     return [
       charts.Series<SubCategory, int>(
         colorFn: (SubCategory subCategory, _) {
@@ -349,9 +364,9 @@ class _PieChartState extends State<PieChart> {
         domainFn: (SubCategory subCategory, _) => subCategory.hashCode,
         measureFn: (SubCategory subCategory, _) =>
             subCategory.percentage.toInt(),
-        data: widget.subCategories,
+        data: data,
         // Set a label accessor to control the text of the arc label.
-        labelAccessorFn: (SubCategory subCategory, _) => '${subCategory.name}',
+        labelAccessorFn: (SubCategory subCategory, _) => subCategory.name ?? "",
         measureLowerBoundFn: (SubCategory subCategory, _) => 10,
         measureUpperBoundFn: (SubCategory subCategory, _) => 10,
         insideLabelStyleAccessorFn: (SubCategory subCategory, _) {

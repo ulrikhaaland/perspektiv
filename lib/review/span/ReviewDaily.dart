@@ -42,7 +42,6 @@ class _ReviewDailyState extends State<ReviewDaily> {
 
     if (listItemHeight < 50) listItemHeight = 50;
 
-    week.aggregate();
 
     return Padding(
       padding: const EdgeInsets.only(bottom: 32.0),

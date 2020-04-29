@@ -1,10 +1,14 @@
+import 'package:perspektiv/model/Aggregated.dart';
 import 'package:perspektiv/model/Review.dart';
 import 'package:perspektiv/model/SubCategory.dart';
 
 import 'Category.dart';
+import 'Comment.dart';
 import 'Day.dart';
 
 import 'package:json_annotation/json_annotation.dart';
+
+import 'Unit.dart';
 
 part 'Week.g.dart';
 
@@ -14,7 +18,7 @@ class Week {
   List<Day> days;
   Review review;
   @JsonKey(ignore: true)
-  List<Category> aggregatedCategories;
+  Aggregated get aggregated => _aggregate();
 
   Week({this.days, this.week, this.review});
 
@@ -22,48 +26,103 @@ class Week {
 
   Map<String, dynamic> toJson() => _$WeekToJson(this);
 
-  void aggregate() {
-    if (days.isEmpty) return;
+  Aggregated _aggregate() {
+    if (days.isEmpty) return Aggregated([], 100);
 
-    aggregatedCategories = [];
+    List<Category> aggregatedList = [];
+    double largestSubCatPercentage = 100;
 
     for (var day in days) {
       if (day.review != null) if (day.review.categories.isNotEmpty) {
         for (var category in day.review.categories) {
-          Category cat = aggregatedCategories
+          Category cat = aggregatedList
               .singleWhere((c) => category.name == c.name, orElse: () => null);
 
           if (cat == null) {
-            aggregatedCategories.add(Category(
+            Category newCat = Category(
                 id: "aggregated",
                 name: category.name,
-                comments: []..addAll(category.comments),
-                subCategories: []..addAll(category.subCategories)));
+                comments: [],
+                subCategories: []);
+
+            if (category.comments != null)
+              for (Comment comment in category.comments) {
+                newCat.comments
+                    .add(Comment(comment: comment.comment, init: comment.init));
+              }
+            if (category.subCategories != null)
+              for (SubCategory sub in category.subCategories) {
+                SubCategory newSub = SubCategory(
+                  name: sub.name,
+                  percentage: sub.percentage,
+                  color: sub.color,
+                  description: sub.description,
+                  units: [],
+                  comments: [],
+                );
+                if (sub.comments != null)
+                  for (Comment comment in sub.comments) {
+                    newSub.comments.add(Comment(
+                      comment: comment.comment,
+                      init: comment.init,
+                    ));
+                  }
+                if (sub.units != null)
+                  for (Unit unit in sub.units) {
+                    newSub.units.add(Unit(
+                      type: unit.type,
+                      duration: unit.duration,
+                      weight: unit.weight,
+                      customUnit: unit.customUnit,
+                      binary: unit.binary,
+                    ));
+                  }
+                newCat.subCategories.add(newSub);
+              }
+
+            aggregatedList.add(newCat);
           } else {
-            cat.subCategories.addAll(category.subCategories);
-          }
-        }
-      }
-    }
-    if (aggregatedCategories.isNotEmpty)
-      for (var category in aggregatedCategories) {
-        if (category.subCategories.isNotEmpty) {
-          SubCategory subSurvivor = category.subCategories[0];
-
-          List<SubCategory> isEquals = category.subCategories
-              .where((sub) => sub.name == subSurvivor.name)
-              .toList();
-
-          subSurvivor.percentage = subSurvivor.percentage / isEquals.length;
-
-          for (var subCategory in isEquals) {
-            if (subCategory != subSurvivor) {
-              subSurvivor.percentage = subSurvivor.percentage +
-                  (subCategory.percentage / isEquals.length);
-              category.subCategories.remove(subCategory);
+            for (SubCategory sub in category.subCategories) {
+              SubCategory checkIfExists = cat.subCategories
+                  .firstWhere((s) => s.name == sub.name, orElse: () => null);
+              if (checkIfExists == null) {
+                SubCategory newSub = SubCategory(
+                  name: sub.name,
+                  percentage: sub.percentage,
+                  color: sub.color,
+                  description: sub.description,
+                  units: []..addAll(sub.units ?? []),
+                  comments: []..addAll(sub.comments ?? []),
+                );
+                if (sub.units != null)
+                  for (Unit unit in sub.units) {
+                    newSub.units.add(Unit(
+                      type: unit.type,
+                      duration: unit.duration,
+                      weight: unit.weight,
+                      customUnit: unit.customUnit,
+                      binary: unit.binary,
+                    ));
+                  }
+                if (sub.comments != null)
+                  for (Comment comment in sub.comments) {
+                    newSub.comments.add(Comment(
+                      comment: comment.comment,
+                      init: comment.init,
+                    ));
+                  }
+                cat.subCategories.add(newSub);
+              } else {
+                checkIfExists.percentage =
+                    checkIfExists.percentage + sub.percentage;
+                if (checkIfExists.percentage > largestSubCatPercentage)
+                  largestSubCatPercentage = checkIfExists.percentage;
+              }
             }
           }
         }
       }
+    }
+    return Aggregated(aggregatedList, largestSubCatPercentage);
   }
 }

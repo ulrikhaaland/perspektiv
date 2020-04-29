@@ -33,7 +33,6 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
           itemCount: month.weeks.length,
           itemBuilder: (context, index) {
             Week week = month.weeks[index];
-            week.aggregate();
             Review review = week.review ??
                 Review(
                     comments: [],
@@ -47,6 +46,8 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
             if (widget.reviewBloc.reviews.contains(review) == false) {
               widget.reviewBloc.reviews.add(review);
             }
+            bool isAggregated = widget.reviewBloc.aggregated.value;
+
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -62,13 +63,13 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
                   child: Container(
                     height: 100,
                     child: ReviewListItem(
-                      reviewCategories:
-                          widget.reviewBloc.aggregated.value == false
-                              ? review.categories
-                              : week.aggregatedCategories,
+                      reviewCategories: isAggregated == false
+                          ? review.categories
+                          : week.aggregated.categories,
                       reviewBloc: widget.reviewBloc,
                       review: review,
                       itemAmount: month.weeks.length,
+                      aggregated: isAggregated,
                     ),
                   ),
                 ),

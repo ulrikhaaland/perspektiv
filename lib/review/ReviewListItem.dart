@@ -21,6 +21,7 @@ class ReviewListItem extends StatefulWidget {
   final ReviewBloc reviewBloc;
   final Size size;
   final List<Category> reviewCategories;
+  final bool aggregated;
 
   const ReviewListItem(
       {Key key,
@@ -29,7 +30,8 @@ class ReviewListItem extends StatefulWidget {
       this.reviewBloc,
       this.size,
       this.pageTitle,
-      this.reviewCategories})
+      this.reviewCategories,
+      this.aggregated})
       : assert(itemAmount != null),
         assert(review != null),
         super(key: key);
@@ -172,8 +174,20 @@ class ReviewListItemState extends State<ReviewListItem> {
 
     if (widget.size == null) maxWidth -= 32;
 
+    double divideByBiggestPercentage = 0;
+
+    if (widget.aggregated == true) {
+      for (SubCategory sub in theCategoryView.subCategories) {
+        if (sub.percentage > divideByBiggestPercentage)
+          divideByBiggestPercentage = sub.percentage;
+      }
+    } else {
+      divideByBiggestPercentage = 100;
+    }
+
     double widthAsPercentage =
-        ((maxWidth / theCategoryView.subCategories.length) / 100);
+        ((maxWidth / theCategoryView.subCategories.length) /
+            divideByBiggestPercentage);
 
     double fillWidth = widthAsPercentage *
         (widget.pageTitle != null

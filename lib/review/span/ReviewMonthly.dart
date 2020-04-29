@@ -33,7 +33,6 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
           itemCount: year.months.length,
           itemBuilder: (context, index) {
             Month month = year.months[index];
-            month.aggregate();
             Review review = month.review ??
                 Review(
                     comments: [],
@@ -46,6 +45,7 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
             if (widget.reviewBloc.reviews.contains(review) == false) {
               widget.reviewBloc.reviews.add(review);
             }
+            bool isAggregated = widget.reviewBloc.aggregated.value;
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -59,13 +59,13 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
                     widget.reviewBloc.reviewSpan.value = ReviewSpan.weekly;
                   },
                   child: ReviewListItem(
-                    reviewCategories:
-                        widget.reviewBloc.aggregated.value == false
-                            ? review.categories
-                            : month.aggregatedCategories,
+                    reviewCategories: isAggregated == false
+                        ? review.categories
+                        : month.aggregated.categories,
                     reviewBloc: widget.reviewBloc,
                     review: review,
                     itemAmount: year.months.length,
+                    aggregated: isAggregated,
                   ),
                 ),
               ],
@@ -98,9 +98,7 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
               text: month.weeks.first.review.title + lastWeekNumber,
               style: style)
         else
-          TextSpan(
-              text: month.monthName,
-              style: style)
+          TextSpan(text: month.monthName, style: style)
       ]));
     }
   }
