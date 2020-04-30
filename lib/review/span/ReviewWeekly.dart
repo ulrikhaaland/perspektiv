@@ -46,7 +46,16 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
             if (widget.reviewBloc.reviews.contains(review) == false) {
               widget.reviewBloc.reviews.add(review);
             }
+
             bool isAggregated = widget.reviewBloc.aggregated.value;
+            double largestSubPercentage = 0;
+            if (isAggregated)
+              for (Week week in month.weeks) {
+                if (week.aggregated.largestSubCatPercentage >=
+                    largestSubPercentage)
+                  largestSubPercentage =
+                      week.aggregated.largestSubCatPercentage;
+              }
 
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -63,13 +72,13 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
                   child: Container(
                     height: 100,
                     child: ReviewListItem(
-                      reviewCategories: isAggregated == false
-                          ? review.categories
-                          : week.aggregated.categories,
+                      reviewCategories: review.categories,
                       reviewBloc: widget.reviewBloc,
                       review: review,
                       itemAmount: month.weeks.length,
-                      aggregated: isAggregated,
+                      aggregated: week.aggregated
+                        ..largestSubCatPercentage = largestSubPercentage,
+                      isAggregated: isAggregated,
                     ),
                   ),
                 ),

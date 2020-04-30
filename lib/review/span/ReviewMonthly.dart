@@ -46,6 +46,15 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
               widget.reviewBloc.reviews.add(review);
             }
             bool isAggregated = widget.reviewBloc.aggregated.value;
+
+            double largestSubPercentage = 0;
+            if (isAggregated)
+              for (Month month in year.months) {
+                if (month.aggregated.largestSubCatPercentage >=
+                    largestSubPercentage)
+                  largestSubPercentage =
+                      month.aggregated.largestSubCatPercentage;
+              }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -59,13 +68,13 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
                     widget.reviewBloc.reviewSpan.value = ReviewSpan.weekly;
                   },
                   child: ReviewListItem(
-                    reviewCategories: isAggregated == false
-                        ? review.categories
-                        : month.aggregated.categories,
+                    reviewCategories: review.categories,
                     reviewBloc: widget.reviewBloc,
                     review: review,
                     itemAmount: year.months.length,
-                    aggregated: isAggregated,
+                    aggregated: month.aggregated
+                      ..largestSubCatPercentage = largestSubPercentage,
+                    isAggregated: isAggregated,
                   ),
                 ),
               ],

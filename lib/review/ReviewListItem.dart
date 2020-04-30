@@ -5,6 +5,7 @@ import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:perspektiv/bloc/CategoriesBloc.dart';
 import 'package:perspektiv/bloc/ReviewBloc.dart';
+import 'package:perspektiv/model/Aggregated.dart';
 import 'package:perspektiv/model/Category.dart';
 import 'package:perspektiv/model/Month.dart';
 import 'package:perspektiv/model/Review.dart';
@@ -21,7 +22,8 @@ class ReviewListItem extends StatefulWidget {
   final ReviewBloc reviewBloc;
   final Size size;
   final List<Category> reviewCategories;
-  final bool aggregated;
+  final bool isAggregated;
+  final Aggregated aggregated;
 
   const ReviewListItem(
       {Key key,
@@ -31,7 +33,8 @@ class ReviewListItem extends StatefulWidget {
       this.size,
       this.pageTitle,
       this.reviewCategories,
-      this.aggregated})
+      this.aggregated,
+      this.isAggregated = false})
       : assert(itemAmount != null),
         assert(review != null),
         super(key: key);
@@ -62,8 +65,9 @@ class ReviewListItemState extends State<ReviewListItem> {
 
   @override
   Widget build(BuildContext context) {
-    List<Category> categoryList =
-        widget.reviewCategories ?? widget.review.categories;
+    List<Category> categoryList = widget.isAggregated == false
+        ? (widget.reviewCategories ?? widget.review.categories)
+        : widget.aggregated.categories;
     theCategoryView = categoryList.firstWhere(
         (cat) => cat.name == widget.reviewBloc.reviewCategory.value,
         orElse: () => Category(subCategories: [
@@ -176,11 +180,12 @@ class ReviewListItemState extends State<ReviewListItem> {
 
     double divideByBiggestPercentage = 0;
 
-    if (widget.aggregated == true) {
-      for (SubCategory sub in theCategoryView.subCategories) {
-        if (sub.percentage > divideByBiggestPercentage)
-          divideByBiggestPercentage = sub.percentage;
-      }
+    if (widget.isAggregated == true) {
+      divideByBiggestPercentage = widget.aggregated.largestSubCatPercentage;
+//      for (SubCategory sub in theCategoryView.subCategories) {
+//        if (sub.percentage > divideByBiggestPercentage)
+//          divideByBiggestPercentage = sub.percentage;
+//      }
     } else {
       divideByBiggestPercentage = 100;
     }

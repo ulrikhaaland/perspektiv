@@ -30,7 +30,6 @@ class _ReviewYearlyState extends State<ReviewYearly> {
           itemCount: decade.years.length,
           itemBuilder: (context, index) {
             Year year = decade.years[index];
-            year.aggregate();
             Review review = year.review ??
                 Review(
                     comments: [],
@@ -42,6 +41,16 @@ class _ReviewYearlyState extends State<ReviewYearly> {
             if (widget.reviewBloc.reviews.contains(review) == false) {
               widget.reviewBloc.reviews.add(review);
             }
+
+            bool isAggregated = widget.reviewBloc.aggregated.value;
+            double largestSubPercentage = 0;
+            if (isAggregated)
+              for (Year year in decade.years) {
+                if (year.aggregated.largestSubCatPercentage >=
+                    largestSubPercentage)
+                  largestSubPercentage =
+                      year.aggregated.largestSubCatPercentage;
+              }
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: <Widget>[
@@ -56,12 +65,12 @@ class _ReviewYearlyState extends State<ReviewYearly> {
                   },
                   child: ReviewListItem(
                     reviewBloc: widget.reviewBloc,
-                    reviewCategories:
-                        widget.reviewBloc.aggregated.value == false
-                            ? review.categories
-                            : year.aggregatedCategories,
+                    reviewCategories: review.categories,
                     review: review,
                     itemAmount: decade.years.length,
+                    isAggregated: isAggregated,
+                    aggregated: year.aggregated
+                      ..largestSubCatPercentage = largestSubPercentage,
                   ),
                 ),
               ],
