@@ -268,8 +268,10 @@ class _HorizontalBarChartState extends State<HorizontalBarChart> {
       vertical: true,
       barRendererDecorator: charts.BarLabelDecorator<String>(
         labelPosition: charts.BarLabelPosition.inside,
-        labelAnchor: charts.BarLabelAnchor.middle,
+        labelAnchor: charts.BarLabelAnchor.start,
+        labelPadding: 10,
       ),
+
       // Hide domain axis.
       domainAxis: charts.OrdinalAxisSpec(renderSpec: charts.NoneRenderSpec()),
     );
@@ -322,18 +324,7 @@ class _PieChartState extends State<PieChart> {
   Widget build(BuildContext context) {
     return charts.PieChart(_createSeries(),
         animate: false,
-        // Add an [ArcLabelDecorator] configured to render labels outside of the
-        // arc with a leader line.
-        //
-        // Text style for inside / outside can be controlled independently by
-        // setting [insideLabelStyleSpec] and [outsideLabelStyleSpec].
-        //
-        // Example configuring different styles for inside/outside:
-        //        charts.ArcLabelDecorator(
-        //          insideLabelStyleSpec:  charts.TextStyleSpec(...),
-        //          outsideLabelStyleSpec:  charts.TextStyleSpec(...)),
         defaultRenderer: charts.ArcRendererConfig(
-//            arcWidth: 60,
             strokeWidthPx: 0,
             arcRendererDecorators: [charts.ArcLabelDecorator()]));
   }

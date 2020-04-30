@@ -91,7 +91,7 @@ class _ReviewWeeklyState extends State<ReviewWeekly> {
   Widget _getReviewListItemTitle({Review review, Week week}) {
     TextStyle style = TextStyle(
         color: colorTextGrey, fontWeight: FontWeight.bold, fontSize: 22);
-    if (widget.reviewBloc.aggregated.value == false) {
+    if (widget.reviewBloc.aggregated.value == true) {
       return Text(
         review.title,
         style: style,

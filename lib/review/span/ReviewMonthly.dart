@@ -86,7 +86,7 @@ class _ReviewMonthlyState extends State<ReviewMonthly> {
   Widget _getReviewListItemTitle({Review review, Month month}) {
     TextStyle style = TextStyle(
         color: colorTextGrey, fontWeight: FontWeight.bold, fontSize: 22);
-    if (widget.reviewBloc.aggregated.value == false) {
+    if (widget.reviewBloc.aggregated.value == true) {
       return Text(
         review.title,
         style: style,

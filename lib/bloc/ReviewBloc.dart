@@ -34,7 +34,7 @@ class ReviewBloc {
 
   ValueNotifier<DisplayType> displayType = ValueNotifier(DisplayType.filler);
 
-  ValueNotifier<bool> aggregated = ValueNotifier(false);
+  ValueNotifier<bool> aggregated = ValueNotifier(true);
 
   ValueNotifier<String> reviewCategory = ValueNotifier(null);
 

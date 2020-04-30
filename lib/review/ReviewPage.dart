@@ -209,8 +209,10 @@ class _ReviewPageState extends State<ReviewPage> {
 
   void _scrollToMaxExtent() {
     Timer(Duration(milliseconds: 100), () {
-      double position = _scrollController.positions.first.maxScrollExtent - 50;
-      _scrollController.positions.first.animateTo(position,
+      print(MediaQuery.of(context).size.height);
+      double position = _scrollController.positions.first.maxScrollExtent;
+      if(position > 0)
+      _scrollController.positions.first.animateTo(position -50,
           duration: Duration(milliseconds: 500), curve: Curves.linear);
     });
   }

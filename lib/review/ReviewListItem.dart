@@ -190,7 +190,8 @@ class ReviewListItemState extends State<ReviewListItem> {
       bgBorderRadius = BorderRadius.all(
         Radius.elliptical(20, 30),
       );
-      fillBorderRadius = bgBorderRadius;
+      if (divideByBiggestPercentage == sub.percentage)
+        fillBorderRadius = bgBorderRadius;
     }
 
     Size size = widget.size ?? MediaQuery.of(context).size;
