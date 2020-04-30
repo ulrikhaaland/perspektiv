@@ -72,7 +72,11 @@ class ReviewListItemState extends State<ReviewListItem> {
         (cat) => cat.name == widget.reviewBloc.reviewCategory.value,
         orElse: () => Category(subCategories: [
               SubCategory(
-                  name: "Ikke definert", color: Colors.grey, percentage: 100),
+                  name: "Ikke definert",
+                  color: Colors.grey,
+                  percentage: widget.isAggregated == false
+                      ? 100
+                      : widget.aggregated.largestSubCatPercentage),
             ]));
 
     if (init)
@@ -144,16 +148,33 @@ class ReviewListItemState extends State<ReviewListItem> {
     BorderRadius fillBorderRadius;
     BorderRadius bgBorderRadius;
 
-    bool subIsLast = sub == theCategoryView.subCategories.last;
+    bool subIsLast = false;
+    if (sub == theCategoryView.subCategories.last &&
+        theCategoryView.subCategories.length != 1) {
+      subIsLast = true;
+    }
 
 //    sub.percentage = 10;
+
+    double divideByBiggestPercentage = 0;
+
+    if (widget.isAggregated == true) {
+      divideByBiggestPercentage = widget.aggregated.largestSubCatPercentage;
+//      for (SubCategory sub in theCategoryView.subCategories) {
+//        if (sub.percentage > divideByBiggestPercentage)
+//          divideByBiggestPercentage = sub.percentage;
+//      }
+    } else {
+      divideByBiggestPercentage = 100;
+    }
 
     if (sub == theCategoryView.subCategories.first) {
       fillBorderRadius = BorderRadius.only(
           topLeft: Radius.elliptical(20, 30),
           bottomLeft: Radius.elliptical(20, 30));
       bgBorderRadius = fillBorderRadius;
-    } else if (subIsLast && sub.percentage >= 89) {
+    } else if (subIsLast &&
+        sub.percentage >= ((divideByBiggestPercentage / 100) * 89)) {
       fillBorderRadius = BorderRadius.only(
           topRight: Radius.elliptical(20, 30),
           bottomRight: Radius.elliptical(20, 30));
@@ -177,18 +198,6 @@ class ReviewListItemState extends State<ReviewListItem> {
     double maxWidth = size.width;
 
     if (widget.size == null) maxWidth -= 32;
-
-    double divideByBiggestPercentage = 0;
-
-    if (widget.isAggregated == true) {
-      divideByBiggestPercentage = widget.aggregated.largestSubCatPercentage;
-//      for (SubCategory sub in theCategoryView.subCategories) {
-//        if (sub.percentage > divideByBiggestPercentage)
-//          divideByBiggestPercentage = sub.percentage;
-//      }
-    } else {
-      divideByBiggestPercentage = 100;
-    }
 
     double widthAsPercentage =
         ((maxWidth / theCategoryView.subCategories.length) /
